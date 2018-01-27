@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+	</head>
+	<body>
+        <div class="container" id="app">
+            <H1>Vue To-Do</H1>
+            <div class="alert alert-secondary" role="alert">
+                <button v-on:click="addTodo()" class="btn btn-sm btn-success"><i class="fa fa-plus"></i></button>
+                &nbsp;&nbsp;&nbsp;
+                <input v-model="newDescription">
+            </div>
+            <hr>
+            <div v-for="todo in todos">
+                <div class="alert alert-primary" role="alert">
+                    <button v-if="!todo.isEdit" v-on:click="completeTodo(todo.id)" class="btn btn-sm btn-primary"><i class="fa fa-check"></i></button>
+                    <button v-if="todo.isEdit" v-on:click="toggleEditDescription(todo.id)" class="btn btn-sm btn-secondary"><i class="fa fa-undo"></i></button>
+                    <button v-if="todo.isEdit" v-on:click="saveTodo(todo.id)" class="btn btn-sm btn-success"><i class="fa fa-floppy-o"></i></button>
+                    &nbsp;&nbsp;&nbsp;
+                    <input v-if="todo.isEdit" v-model="todo.editDescription">
+                    <a href="javascript:void(0)" v-on:click="toggleEditDescription(todo.id)" v-if="!todo.isEdit">{{todo.description}}</a>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <script src="https://unpkg.com/vue"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.3.5"></script>
+        <script src="./app.js"></script>
+    </body>
+</html>
