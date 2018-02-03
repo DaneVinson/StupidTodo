@@ -39,10 +39,18 @@ namespace StupidTodo.WebApi.Controllers
         }
 
         [HttpGet]
+        [Route("done")]
+        public async Task<IActionResult> GetDoneTodosAsync()
+        {
+            await Task.CompletedTask;
+            return Ok(ToDos.Where(t => t.Done).ToArray());
+        }
+
+        [HttpGet]
         public async Task<IActionResult> GetTodosAsync()
         {
             await Task.CompletedTask;
-            return Ok(ToDos.ToArray());
+            return Ok(ToDos.Where(t => !t.Done).ToArray());
         }
 
         [HttpPut]
@@ -56,6 +64,7 @@ namespace StupidTodo.WebApi.Controllers
             else
             {
                 existingTodo.Description = todo.Description;
+                existingTodo.Done = todo.Done;
                 return Ok();
             }
         }
@@ -65,11 +74,10 @@ namespace StupidTodo.WebApi.Controllers
         {
             ToDos = new List<Todo>()
             {
-                new Todo() {Description = "Get up", Id = Guid.NewGuid().ToString() },
-                new Todo() {Description = "Shower", Id = Guid.NewGuid().ToString() },
-                new Todo() {Description = "Dress", Id = Guid.NewGuid().ToString() },
-                new Todo() {Description = "Brush teeth", Id = Guid.NewGuid().ToString() },
-                new Todo() {Description = "Drink coffee", Id = Guid.NewGuid().ToString() },
+                new Todo() { Description = "Gas up the car", Id = Guid.NewGuid().ToString() },
+                new Todo() { Description = "Find my next book", Id = Guid.NewGuid().ToString() },
+                new Todo() { Description = "Pick up milk", Id = Guid.NewGuid().ToString() },
+                new Todo() { Description = "Take a breath", Done = true, Id = Guid.NewGuid().ToString() }
             };
         }
 

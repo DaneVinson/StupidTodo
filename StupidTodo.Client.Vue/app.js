@@ -9,10 +9,11 @@ function createGuid(){
 var vm = new Vue({
     el: '#app',
     data: {
-      api: 'http://stupidtodo.azurewebsites.net/api/todos',
+      api: 'http://stupidtodo-api.azurewebsites.net/api/todos',
+      doneToggleText: 'Show done',
       newDescription: '',
-      todos: [
-      ]
+      showDone: false,
+      todos: []
     },
     methods: {
       addTodo : function () {
@@ -20,13 +21,16 @@ var vm = new Vue({
           let todo = {
             editDescription: this.newDescription,
             description: this.newDescription,
+            done: false,
             id: createGuid(),
             isEdit: false
           };
-          this.$http.post(this.api, {description: todo.description, id: todo.id }).then((response) => {
-            console.log('post');
-            console.log(response);
-          });
+          let dto = {
+            description: todo.description, 
+            done: todo.done, 
+            id: todo.id
+          };
+          this.$http.post(this.api, dto).then((response) => { });
           this.newDescription = '';
           this.todos.unshift(todo);
         }
@@ -34,12 +38,16 @@ var vm = new Vue({
       completeTodo : function (id) {
         let todo = this.todos.find(t => t.id == id);
         if (todo) {
+          todo.done = !todo.done;
+          this.saveTodo(id);
+        }
+      },
+      deleteTodo : function (id) {
+        let todo = this.todos.find(t => t.id == id);
+        if (todo) {
           this.$http.delete(this.api + '/' + id).then((response) => {
-            console.log('delete');
-            console.log(response);
           });
-          for (var i = 0; i < this.todos.length; i++)
-          {
+          for (let i = 0; i < this.todos.length; i++) {
             if (this.todos[i].id == id) {
               this.todos.splice(i, 1);
               i = this.todos.length;
@@ -47,28 +55,57 @@ var vm = new Vue({
           }
         }
       },
+      filteredTodos : function (done) {
+        let todos = [];
+        for (let i = 0; i < this.todos.length; i++) {
+          if (this.todos[i].done === done) {
+            todos.push(this.todos[i]);
+          }
+        }
+        return todos;
+      },
+      getDoneTodos : function () {
+        this.$http.get(this.api + '/done').then((response) => {
+          this.removeDoneTodos();
+          for (let i = 0; i < response.data.length; i++) {
+            this.todos.push(this.getTodoFromDto(response.data[i]));
+          }
+        });
+      },
+      getTodoFromDto : function (dto) {
+        return {
+          editDescription: dto.description,
+          description: dto.description,
+          done: dto.done,
+          id: dto.id,
+          isEdit: false
+        }
+      },
       getTodos : function () {
         this.$http.get(this.api).then((response) => {
           this.todos = [];
-          for (var i = 0; i < response.data.length; i++)
-          {
-            this.todos.push({
-              editDescription: response.data[i].description,
-              description: response.data[i].description,
-              id: response.data[i].id,
-              isEdit: false
-            })
+          for (let i = 0; i < response.data.length; i++) {
+            this.todos.push(this.getTodoFromDto(response.data[i]));
           }
         });
+      },
+      removeDoneTodos : function () {
+        let done = this.todos.find(t => t.done);
+        while (done) {
+          for (let i = 0; i < this.todos.length; i++) {
+            if (this.todos[i].id == done.id) {
+              this.todos.splice(i, 1);
+              i = this.todos.length;
+            }
+          }
+          done = this.todos.find(t => t.done);
+        }
       },
       saveTodo : function (id) {
         let todo = this.todos.find(t => t.id == id);
         if (todo) {
           todo.description = todo.editDescription;
-          this.$http.put(this.api + '/' + id, todo).then((response) => {
-            console.log('put');
-            console.log(response);
-          });
+          this.$http.put(this.api + '/' + id, todo).then((response) => { });
           todo.isEdit = false;
         }
       },
@@ -77,6 +114,17 @@ var vm = new Vue({
         if (todo) {
           todo.isEdit = !todo.isEdit;
           todo.editDescription = todo.description;
+        }
+      },
+      toggleShowDone : function () {
+        this.showDone = !this.showDone;
+        if (this.showDone){
+          this.doneToggleText = 'Hide done';
+          this.getDoneTodos();
+        }
+        else {
+          this.doneToggleText = 'Show done';
+          this.removeDoneTodos();
         }
       }
     }

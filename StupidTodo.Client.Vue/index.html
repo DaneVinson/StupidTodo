@@ -7,22 +7,36 @@
 	<body>
         <div class="container" id="app">
             <H1>Vue To-Do</H1>
-            <div class="alert alert-secondary" role="alert">
-                <button v-on:click="addTodo()" class="btn btn-sm btn-success"><i class="fa fa-plus"></i></button>
-                &nbsp;&nbsp;&nbsp;
-                <input v-model="newDescription">
-            </div>
+            <div class="row">
+                <div class="col-9 col-md-6 alert alert-secondary" role="alert">
+                    <button v-on:click="addTodo()" class="btn btn-sm btn-success"><i class="fa fa-plus"></i></button>
+                    &nbsp;&nbsp;&nbsp;
+                    <input v-model="newDescription">
+                </div>                            
+                <div class="col-3">
+                    <button v-on:click="toggleShowDone()" class="btn btn-sm btn-secondary">{{doneToggleText}}</button>
+                </div>
+            </div>     
             <hr>
-            <div v-for="todo in todos">
-                <div class="alert alert-primary" role="alert">
+            <div v-for="todo in filteredTodos(false)" class="row">
+                <div class="col-12 alert alert-primary" role="alert">
                     <button v-if="!todo.isEdit" v-on:click="completeTodo(todo.id)" class="btn btn-sm btn-primary"><i class="fa fa-check"></i></button>
                     <button v-if="todo.isEdit" v-on:click="toggleEditDescription(todo.id)" class="btn btn-sm btn-secondary"><i class="fa fa-undo"></i></button>
                     <button v-if="todo.isEdit" v-on:click="saveTodo(todo.id)" class="btn btn-sm btn-success"><i class="fa fa-floppy-o"></i></button>
                     &nbsp;&nbsp;&nbsp;
                     <input v-if="todo.isEdit" v-model="todo.editDescription">
-                    <a href="javascript:void(0)" v-on:click="toggleEditDescription(todo.id)" v-if="!todo.isEdit">{{todo.description}}</a>
+                    <a v-if="!todo.isEdit" href="javascript:void(0)" v-on:click="toggleEditDescription(todo.id)">{{todo.description}}</a>
                 </div>
             </div>
+            <hr>
+            <div v-if="showDone">
+                <div v-for="todo in filteredTodos(true)" class="row">
+                    <div class="col-12 alert alert-secondary" role="alert">
+                        <button v-on:click="completeTodo(todo.id)" class="btn btn-sm btn-secondary"><i class="fa fa-check"></i></button>
+                        &nbsp;&nbsp;&nbsp;
+                        {{todo.description}}
+                    </div>
+                </div>
             </div>
         </div>
 
