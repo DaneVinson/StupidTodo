@@ -35,6 +35,7 @@
                         <button v-on:click="completeTodo(todo.id)" class="btn btn-sm btn-secondary"><i class="fa fa-check"></i></button>
                         &nbsp;&nbsp;&nbsp;
                         {{todo.description}}
+                        <button v-on:click="deleteTodo(todo.id)" class="btn btn-sm btn-danger pull-right"><i class="fa fa-times"></i></button>
                     </div>
                 </div>
             </div>
