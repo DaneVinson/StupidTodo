@@ -1,15 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
-    <PackageReference Include="WindowsAzure.Storage" Version="9.1.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\StupidTodo.Domain.EventSource\StupidTodo.Domain.EventSource.csproj" />
     <ProjectReference Include="..\StupidTodo.Domain\StupidTodo.Domain.csproj" />
   </ItemGroup>
 

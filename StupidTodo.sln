@@ -14,9 +14,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Solution", ".Solution", "{
 		readme.md = readme.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StupidTodo.Domain.EventSource", "StupidTodo.Domain.EventSource\StupidTodo.Domain.EventSource.csproj", "{18FB3769-72D4-47F7-A083-073B5C74D064}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.Domain.EventSource", "StupidTodo.Domain.EventSource\StupidTodo.Domain.EventSource.csproj", "{18FB3769-72D4-47F7-A083-073B5C74D064}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.Domain.EventSource.Test", "StupidTodo.Domain.EventSource.Test\StupidTodo.Domain.EventSource.Test.csproj", "{DF3A0785-A129-4F6E-A65E-059E4D2A71AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StupidTodo.AdminConsole", "StupidTodo.AdminConsole\StupidTodo.AdminConsole.csproj", "{9B20A345-2338-4C92-8B6E-F8C1132E865F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,6 +46,10 @@ Global
 		{DF3A0785-A129-4F6E-A65E-059E4D2A71AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF3A0785-A129-4F6E-A65E-059E4D2A71AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF3A0785-A129-4F6E-A65E-059E4D2A71AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B20A345-2338-4C92-8B6E-F8C1132E865F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B20A345-2338-4C92-8B6E-F8C1132E865F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B20A345-2338-4C92-8B6E-F8C1132E865F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B20A345-2338-4C92-8B6E-F8C1132E865F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

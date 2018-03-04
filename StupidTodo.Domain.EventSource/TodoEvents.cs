@@ -6,9 +6,14 @@ using System.Threading.Tasks;
 
 namespace StupidTodo.Domain.EventSource
 {
-    public class Created : Event<Todo>
+    public interface IEvent
     {
-        public override Todo Execute(string jsonSchema, Todo ignoredTodo = null)
+        Todo Execute(string jsonSchema, Todo todo);
+    }
+
+    public class Created : IEvent
+    {
+        public Todo Execute(string jsonSchema, Todo ignored = null)
         {
             var schema = JsonConvert.DeserializeObject<CreateEventSchema>(jsonSchema);
             if (schema == null) { return null; }
@@ -22,9 +27,9 @@ namespace StupidTodo.Domain.EventSource
         }
     }
 
-    public class DescriptionUpdated : Event<Todo>
+    public class DescriptionUpdated : IEvent
     {
-        public override Todo Execute(string jsonSchema, Todo todo)
+        public Todo Execute(string jsonSchema, Todo todo)
         {
             if (todo == null) { return null; }
             var schema = JsonConvert.DeserializeObject<UpdateDescriptionEventSchema>(jsonSchema);
@@ -35,9 +40,9 @@ namespace StupidTodo.Domain.EventSource
         }
     }
 
-    public class DoneUpdated : Event<Todo>
+    public class DoneUpdated : IEvent
     {
-        public override Todo Execute(string jsonSchema, Todo todo)
+        public Todo Execute(string jsonSchema, Todo todo)
         {
             if (todo == null) { return null; }
             var schema = JsonConvert.DeserializeObject<UpdateDoneEventSchema>(jsonSchema);

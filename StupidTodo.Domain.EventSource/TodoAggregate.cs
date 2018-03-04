@@ -15,29 +15,32 @@ namespace StupidTodo.Domain.EventSource
         }
 
 
-        public async Task<Todo> GetTodoAsyc(string id)
+        public async Task<string> AddEvent(string todoId, Type eventType, string jsonSchema)
         {
-            // Get the events from storage
-            var eventSchemas = await EventStore.GetEventsAsync(id);
-            if (eventSchemas == null || eventSchemas.Count() == 0) { return null; }
+            var eventRecord = new EventRecord()
+            {
+                EventData = jsonSchema,
+                EventType = eventType.ToString(),
+                Id = Guid.NewGuid().ToString(),
+                OwnerId = todoId
+            };
+
+            return await EventStore.AddEventRecordAsync(eventRecord);
+        }
+
+        public async Task<Todo> GetTodoAsyc(string ownerId)
+        {
+            // Get the events records from storage
+            var eventRecords = await EventStore.GetEventRecordsAsync(ownerId);
+            if (eventRecords == null || eventRecords.Count() == 0) { return null; }
 
             // Hydrate a Todo using the events
             var todo = new Todo();
-            foreach (var eventSchemaJson in eventSchemas)
+            foreach (var eventRecord in eventRecords)
             {
-                // Get the event type
-                var eventSchema = JsonConvert.DeserializeObject<EventSchema<Event<Todo>>>(eventSchemaJson);
-
-                var eventTypeName = eventSchema.EventTypeName;
-                if (String.IsNullOrWhiteSpace(eventTypeName)) { continue; }
-
-                // Get the event
-                var t = Type.GetType(eventTypeName);
-                var todoEvent = (Event<Todo>)Activator.CreateInstance(Type.GetType(eventTypeName));
-                if (todoEvent == null) { continue; }
-
-                // Execute
-                todo = todoEvent.Execute(eventSchemaJson, todo);
+                // TODO: cache event instances
+                todo = (Activator.CreateInstance(Type.GetType(eventRecord.EventType)) as IEvent)
+                                    .Execute(eventRecord.EventData, todo);
             }
 
             return todo;
