@@ -9,13 +9,15 @@ namespace StupidTodo.Domain.EventSource
 {
     public class TodoAggregate
     {
-        public TodoAggregate(IEventStore eventStore)
+        // TODO: Push IProjector dependency to queue abstraction.
+        public TodoAggregate(IEventStore eventStore, IProjector<Todo> projector)
         {
-            EventStore = eventStore;
+            EventStore = eventStore ?? throw new ArgumentNullException();
+            TodoProjector = projector ?? throw new ArgumentNullException();
         }
 
 
-        public async Task<string> AddEvent(string todoId, Type eventType, string jsonSchema)
+        public async Task<Result<string>> AddEvent(string todoId, Type eventType, string jsonSchema)
         {
             var eventRecord = new EventRecord()
             {
@@ -25,13 +27,23 @@ namespace StupidTodo.Domain.EventSource
                 OwnerId = todoId
             };
 
-            return await EventStore.AddEventRecordAsync(eventRecord);
+            var result = new Result<string>();
+            var id = await EventStore.AddEventRecordAsync(eventRecord);
+            if (String.IsNullOrWhiteSpace(id)) { result.Message = "Add to event store failed."; }
+            else
+            {
+                result.Success = true;
+                result.Value = id;
+                await QueueProjectionAsync(eventRecord.OwnerId);
+            }
+
+            return result;
         }
 
-        public async Task<Todo> GetTodoAsyc(string ownerId)
+        public async Task<Todo> GetTodoAsyc(string todoId)
         {
             // Get the events records from storage
-            var eventRecords = await EventStore.GetEventRecordsAsync(ownerId);
+            var eventRecords = await EventStore.GetEventRecordsAsync(todoId);
             if (eventRecords == null || eventRecords.Count() == 0) { return null; }
 
             // Hydrate a Todo using the events
@@ -47,6 +59,13 @@ namespace StupidTodo.Domain.EventSource
         }
 
 
+        private async Task QueueProjectionAsync(string id)
+        {
+            // TODO: Queue this task using queue abstraction
+            var result = await TodoProjector.ProjectAsync(await GetTodoAsyc(id));
+        }
+
         private readonly IEventStore EventStore;
+        private readonly IProjector<Todo> TodoProjector;
     }
 }

@@ -11,17 +11,11 @@ namespace StupidTodo.Domain.EventSource.Test
     public class TodoAggregateTest
     {
         [Fact]
-        public async Task Test1()
+        public void Test1()
         {
-            var eventStore = Substitute.For<IEventStore>();
-            eventStore.GetEventRecordsAsync(Arg.Any<string>()).Returns(GetEventRecords());
-            var aggregate = new TodoAggregate(eventStore);
-
-            //var todo = await aggregate.GetTodoAsyc("some_id");
-            aggregate.AddEvent("some_id", typeof(Created), GetEventRecords().First().EventData).GetAwaiter().GetResult();
-
-            Assert.True(true);
+            Assert.True(false, "You don't have test 1.");
         }
+
 
         private IEnumerable<EventRecord> GetEventRecords()
         {

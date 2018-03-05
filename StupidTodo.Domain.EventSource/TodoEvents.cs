@@ -27,6 +27,16 @@ namespace StupidTodo.Domain.EventSource
         }
     }
 
+    public class Deleted : IEvent
+    {
+        public Todo Execute(string jsonSchema, Todo todo)
+        {
+            if (todo == null) { return null; }
+            var schema = JsonConvert.DeserializeObject<DeleteEventSchema>(jsonSchema);
+            return todo;
+        }
+    }
+
     public class DescriptionUpdated : IEvent
     {
         public Todo Execute(string jsonSchema, Todo todo)

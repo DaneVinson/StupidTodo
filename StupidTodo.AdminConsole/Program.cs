@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using StupidTodo.Data.AzureTableStorage;
+using StupidTodo.Domain;
 using StupidTodo.Domain.EventSource;
 using System;
 using System.Threading.Tasks;
@@ -7,14 +9,19 @@ namespace StupidTodo.AdminConsole
 {
     class Program
     {
-        private static readonly string AccountName = "";
-        private static readonly string Key = "";
+        private static readonly AzureTableStorageOptions AzureTableStorageOptions = new AzureTableStorageOptions()
+        {
+            AccountName = "{account}",
+            Key = "{key}"
+        };
 
         static void Main(string[] args)
         {
             try
             {
-                CreateTodoAsync("Another todo").GetAwaiter().GetResult();
+                var todoId = CreateTodoAsync("Another todo").GetAwaiter().GetResult();
+                UpdateDescription(todoId, "Updated todo").GetAwaiter().GetResult();
+                UpdateDescription(todoId, "Updated todo again").GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
@@ -29,29 +36,32 @@ namespace StupidTodo.AdminConsole
             }
         }
 
-        private static async Task CreateTodoAsync(string description)
+
+        private static async Task<string> CreateTodoAsync(string description)
         {
-            var options = new AzureTableStorageEventStoreOptions()
-            {
-                AccountName = AccountName,
-                Key = Key
-            };
             var schema = new CreateEventSchema()
             {
                 Description = description,
                 Id = Guid.NewGuid().ToString()
             };
-            var record = new EventRecord()
-            {
-                EventData = JsonConvert.SerializeObject(schema),
-                EventType = typeof(Created).ToString(),
-                Id = Guid.NewGuid().ToString(),
-                OwnerId = schema.Id
-            };
+            var result = await NewTodoAggregate().AddEvent(schema.Id, typeof(Created), JsonConvert.SerializeObject(schema));
+            Console.WriteLine($"New Todo: {result}");
 
-            var eventStore = new AzureTableStorageEventStore(options);
-            var todoId = await eventStore.AddEventRecordAsync(record);
-            Console.WriteLine($"New Todo Id: {todoId}");
+            return schema.Id;
+        }
+
+        private static async Task UpdateDescription(string todoId, string description)
+        {
+            var schema = new UpdateDescriptionEventSchema() { Description = description };
+            var result = await NewTodoAggregate().AddEvent(todoId, typeof(DescriptionUpdated), JsonConvert.SerializeObject(schema));
+            Console.WriteLine($"Updated description: {result}");
+        }
+
+        private static TodoAggregate NewTodoAggregate()
+        {
+            return new TodoAggregate(
+                        new AzureTableStorageEventStore(AzureTableStorageOptions),
+                        new AzureTableStorageTodoProjector(AzureTableStorageOptions));
         }
     }
 }

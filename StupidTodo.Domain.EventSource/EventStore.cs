@@ -1,6 +1,7 @@
 ﻿using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Table;
+using StupidTodo.Data.AzureTableStorage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace StupidTodo.Domain.EventSource
 
     public class AzureTableStorageEventStore : IEventStore
     {
-        public AzureTableStorageEventStore(AzureTableStorageEventStoreOptions options)
+        public AzureTableStorageEventStore(AzureTableStorageOptions options)
         {
             Options = options;
         }
@@ -25,36 +26,24 @@ namespace StupidTodo.Domain.EventSource
 
         public async Task<string> AddEventRecordAsync(IEventRecord eventRecord)
         {
-            var tableResult = await NewCloudTable().ExecuteAsync(TableOperation.Insert(eventRecord.GetEventTableRecord()));
-            if (tableResult.HttpStatusCode.IsSuccessCode()) { return eventRecord.Id; }
+            var result = await Options.GetCloudTable(AzureTableName).ExecuteAsync(TableOperation.Insert(eventRecord.GetEventRecordTableEntity()));
+            if (result.HttpStatusCode.IsSuccessCode()) { return eventRecord.Id; }
             else { return null; }
         }
 
         public async Task<IEnumerable<IEventRecord>> GetEventRecordsAsync(string ownerId)
         {
-            var records = await NewCloudTable()
-                                    .ExecuteTableQueryAsync(new TableQuery<EventTableRecord>()
-                                                                    .Where(TableQuery.GenerateFilterCondition(
-                                                                                        "PartitionKey", 
-                                                                                        QueryComparisons.Equal, 
-                                                                                        ownerId)));
+            var records = await Options.GetCloudTable(AzureTableName)
+                                        .ExecuteTableQueryAsync(new TableQuery<EventRecordTableEntity>()
+                                                                        .Where(TableQuery.GenerateFilterCondition(
+                                                                                            "PartitionKey", 
+                                                                                            QueryComparisons.Equal, 
+                                                                                            ownerId)));
             return records.OrderBy(r => r.Timestamp);   
         }
 
 
-        private CloudTable NewCloudTable()
-        {
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse($"DefaultEndpointsProtocol=https;AccountName={Options.AccountName};AccountKey={Options.Key}");
-            CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
-            return tableClient.GetTableReference("stupidtodo");
-        }
-
-        private readonly AzureTableStorageEventStoreOptions Options;
-    }
-
-    public class AzureTableStorageEventStoreOptions
-    {
-        public string AccountName { get; set; }
-        public string Key { get; set; }
+        private const string AzureTableName = "stupidtodoevents";
+        private readonly AzureTableStorageOptions Options;
     }
 }

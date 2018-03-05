@@ -1,15 +1,16 @@
-﻿using Microsoft.WindowsAzure.Storage.Table;
+﻿using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Table;
+using StupidTodo.Domain;
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StupidTodo.Domain.EventSource
+namespace StupidTodo.Data.AzureTableStorage
 {
     public static class Extensions
     {
-        internal static async Task<List<TElement>> ExecuteTableQueryAsync<TElement>(
+        public static async Task<List<TElement>> ExecuteTableQueryAsync<TElement>(
             this CloudTable cloudTable,
             TableQuery<TElement> tableQuery)
             where TElement : TableEntity, new()
@@ -29,10 +30,17 @@ namespace StupidTodo.Domain.EventSource
             return list;
         }
 
-        public static EventTableRecord GetEventTableRecord(this IEventRecord eventRecord)
+        public static CloudTable GetCloudTable(this AzureTableStorageOptions options, string tableName)
+        {
+            var account = CloudStorageAccount.Parse($"DefaultEndpointsProtocol=https;AccountName={options.AccountName};AccountKey={options.Key}");
+            var client = account?.CreateCloudTableClient();
+            return client?.GetTableReference(tableName);
+        }
+
+        public static EventRecordTableEntity GetEventRecordTableEntity(this IEventRecord eventRecord)
         {
             var now = DateTime.UtcNow;
-            return new EventTableRecord()
+            return new EventRecordTableEntity()
             {
                 EventData = eventRecord.EventData,
                 EventType = eventRecord.EventType,
@@ -43,14 +51,16 @@ namespace StupidTodo.Domain.EventSource
             };
         }
 
-        public static bool IsSuccessCode(this HttpStatusCode code)
+        public static TodoTableEntity GetTodoTableEntity(this ITodo todo)
         {
-            return (int)code > 199 && (int)code < 300;
-        }
-
-        public static bool IsSuccessCode(this int code)
-        {
-            return code > 199 && code < 300;
+            return new TodoTableEntity()
+            {
+                Description = todo.Description,
+                Done = todo.Done,
+                Id = todo.Id,
+                PartitionKey = "default_user",
+                RowKey = todo.Id
+            };
         }
     }
 }

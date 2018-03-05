@@ -10,6 +10,11 @@ namespace StupidTodo.Domain.EventSource
         public string Id { get; set; }
     }
 
+    public class DeleteEventSchema
+    {
+        public string Id { get; set; }
+    }
+
     public class UpdateDescriptionEventSchema
     {
         public string Description { get; set; }
