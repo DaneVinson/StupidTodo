@@ -43,11 +43,11 @@ namespace StupidTodo.Data.AzureTableStorage
             return new EventRecordTableEntity()
             {
                 EventData = eventRecord.EventData,
-                EventType = eventRecord.EventType,
+                HandlerType = eventRecord.HandlerType,
                 Id = eventRecord.Id,
                 OwnerId = eventRecord.OwnerId,
                 PartitionKey = eventRecord.OwnerId,
-                RowKey = eventRecord?.Id ?? Guid.NewGuid().ToString(),
+                RowKey = eventRecord.Id,
             };
         }
 
@@ -57,6 +57,7 @@ namespace StupidTodo.Data.AzureTableStorage
             {
                 Description = todo.Description,
                 Done = todo.Done,
+                ETag = "*",
                 Id = todo.Id,
                 PartitionKey = "default_user",
                 RowKey = todo.Id

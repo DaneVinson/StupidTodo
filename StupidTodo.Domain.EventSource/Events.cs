@@ -4,23 +4,23 @@ using System.Text;
 
 namespace StupidTodo.Domain.EventSource
 {
-    public class CreateEventSchema
+    public class CreatedEvent
     {
         public string Description { get; set; }
         public string Id { get; set; }
     }
 
-    public class DeleteEventSchema
+    public class DeletedEvent
     {
         public string Id { get; set; }
     }
 
-    public class UpdateDescriptionEventSchema
+    public class DescriptionUpdatedEvent
     {
         public string Description { get; set; }
     }
 
-    public class UpdateDoneEventSchema
+    public class DoneUpdatedEvent
     {
         public bool Done { get; set; }
     }

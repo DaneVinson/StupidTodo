@@ -7,6 +7,16 @@ namespace StupidTodo.Domain
 {
     public static class Extensions
     {
+        public static Todo GetTodo(this ITodo todo)
+        {
+            return new Todo()
+            {
+                Description = todo.Description,
+                Done = todo.Done,
+                Id = todo.Id
+            };
+        }
+
         public static bool IsSuccessCode(this HttpStatusCode code)
         {
             return ((int)code).IsSuccessCode();

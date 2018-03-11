@@ -16,6 +16,7 @@ namespace StupidTodo.Domain.EventSource
         Task<IEnumerable<IEventRecord>> GetEventRecordsAsync(string ownerId);
     }
 
+
     public class AzureTableStorageEventStore : IEventStore
     {
         public AzureTableStorageEventStore(AzureTableStorageOptions options)

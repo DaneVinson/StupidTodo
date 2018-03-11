@@ -12,7 +12,7 @@ namespace StupidTodo.Data.AzureTableStorage
     public class EventRecordTableEntity : TableEntity, IEventRecord
     {
         public string EventData { get; set; }
-        public string EventType { get; set; }
+        public string HandlerType { get; set; }
         public string Id { get; set; }
         public string OwnerId { get; set; }
     }

@@ -9,19 +9,22 @@ namespace StupidTodo.AdminConsole
 {
     class Program
     {
-        private static readonly AzureTableStorageOptions AzureTableStorageOptions = new AzureTableStorageOptions()
+		private static readonly AzureTableStorageOptions AzureTableStorageOptions = new AzureTableStorageOptions()
         {
-            AccountName = "{account}",
-            Key = "{key}"
+            AccountName = "danestorage",
+            Key = "FllBAnlnhTpVN+FBd1j4nq4MbJT75Fno2zEVThSXb0k6GWeXrN8/KHJ0NeheHC+LTTNr19T0+/ybc7I0JKkjFw=="
         };
+        //private static readonly AzureTableStorageOptions AzureTableStorageOptions = new AzureTableStorageOptions()
+        //{
+        //    AccountName = "{account}",
+        //    Key = "{key}"
+        //};
 
         static void Main(string[] args)
         {
             try
             {
-                var todoId = CreateTodoAsync("Another todo").GetAwaiter().GetResult();
-                UpdateDescription(todoId, "Updated todo").GetAwaiter().GetResult();
-                UpdateDescription(todoId, "Updated todo again").GetAwaiter().GetResult();
+                DoEventSourceStuff().GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
@@ -36,32 +39,27 @@ namespace StupidTodo.AdminConsole
             }
         }
 
-
-        private static async Task<string> CreateTodoAsync(string description)
+        private static async Task DoEventSourceStuff()
         {
-            var schema = new CreateEventSchema()
-            {
-                Description = description,
-                Id = Guid.NewGuid().ToString()
-            };
-            var result = await NewTodoAggregate().AddEvent(schema.Id, typeof(Created), JsonConvert.SerializeObject(schema));
-            Console.WriteLine($"New Todo: {result}");
+            string todoId = "";
+            ICommand command;
 
-            return schema.Id;
-        }
+            var queueWriter = new CommandQueueWriter(new CommandDispatcher<Todo>(
+                                                                new AzureTableStorageEventStore(AzureTableStorageOptions),
+                                                                new AzureTableStorageTodoProjector(AzureTableStorageOptions)));
 
-        private static async Task UpdateDescription(string todoId, string description)
-        {
-            var schema = new UpdateDescriptionEventSchema() { Description = description };
-            var result = await NewTodoAggregate().AddEvent(todoId, typeof(DescriptionUpdated), JsonConvert.SerializeObject(schema));
-            Console.WriteLine($"Updated description: {result}");
-        }
+            command = new CreateCommand() { Description = "New thing to do", };
+            await queueWriter.WriteAsync(command);
 
-        private static TodoAggregate NewTodoAggregate()
-        {
-            return new TodoAggregate(
-                        new AzureTableStorageEventStore(AzureTableStorageOptions),
-                        new AzureTableStorageTodoProjector(AzureTableStorageOptions));
+            //command = new UpdateCommand() { Description = "Updated thing", TargetId = todoId };
+            //await queueWriter.WriteAsync(command);
+            //command = new UpdateCommand() { Description = "Updated thing again", TargetId = todoId };
+            //await queueWriter.WriteAsync(command);
+            //command = new UpdateCommand() { Done = true, TargetId = todoId };
+            //await queueWriter.WriteAsync(command);
+
+            //command = new DeleteCommand() { TargetId = todoId };
+            //await queueWriter.WriteAsync(command);
         }
     }
 }

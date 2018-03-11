@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:26420/",
+      "applicationUrl": "http://localhost:2528/",
       "sslPort": 0
     }
   },
@@ -16,14 +16,14 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "StupidTodo.WebApi": {
+    "StupidTodo.WebApi.Cqrs": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "api/todo",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:26421/"
+      "applicationUrl": "http://localhost:2529/"
     }
   }
 }

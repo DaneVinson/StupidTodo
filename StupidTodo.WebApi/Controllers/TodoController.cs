@@ -9,8 +9,8 @@ using StupidTodo.Domain;
 namespace StupidTodo.WebApi.Controllers
 {
     [Produces("application/json")]
-    [Route("api/todos")]
-    public class TodosController : Controller
+    [Route("api/todo")]
+    public class TodoController : Controller
     {
         [HttpPost]
         public async Task<IActionResult> AddTodoAsync([FromBody]Todo todo)
@@ -70,7 +70,7 @@ namespace StupidTodo.WebApi.Controllers
         }
 
 
-        static TodosController()
+        static TodoController()
         {
             ToDos = new List<Todo>()
             {
