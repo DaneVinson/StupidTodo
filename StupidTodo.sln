@@ -11,6 +11,8 @@ Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "StupidTodo.Client.Vue", "St
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Solution", ".Solution", "{B771CC4A-4585-4C51-AC22-3147B618C347}"
 	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
 		readme.md = readme.md
 	EndProjectSection
 EndProject
@@ -20,7 +22,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.AdminConsole", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.Data.AzureTableStorage", "StupidTodo.Data.AzureTableStorage\StupidTodo.Data.AzureTableStorage.csproj", "{9F5FE5BA-2CA5-438E-A637-A4A950574DFE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StupidTodo.WebApi.Cqrs", "StupidTodo.WebApi.Cqrs\StupidTodo.WebApi.Cqrs.csproj", "{E5C41714-C64B-4C3C-9693-E19134606792}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.WebApi.Cqrs", "StupidTodo.WebApi.Cqrs\StupidTodo.WebApi.Cqrs.csproj", "{E5C41714-C64B-4C3C-9693-E19134606792}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

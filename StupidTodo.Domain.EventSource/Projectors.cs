@@ -39,6 +39,7 @@ namespace StupidTodo.Domain.EventSource
             var result = new Result();
             var tableResult = await Options.GetCloudTable(AzureTableName)
                                             .ExecuteAsync(TableOperation.Delete(todo.GetTodoTableEntity()));
+            result.Success = tableResult.HttpStatusCode.IsSuccessCode();
             return result;
         }
 
@@ -56,6 +57,7 @@ namespace StupidTodo.Domain.EventSource
                                     .OrderBy(t => t.Timestamp)
                                     .Select(t => t.GetTodo())
                                     .ToList();
+            result.Success = true;
             return result;
         }
 

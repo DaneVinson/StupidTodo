@@ -8,6 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using StupidTodo.Data.AzureTableStorage;
+using StupidTodo.Domain;
+using StupidTodo.Domain.EventSource;
 
 namespace StupidTodo.WebApi.Cqrs
 {
@@ -18,15 +21,7 @@ namespace StupidTodo.WebApi.Cqrs
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddMvc();
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -34,7 +29,28 @@ namespace StupidTodo.WebApi.Cqrs
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseMvc();
+            app.UseMvc()
+                .UseCors(builder => builder.WithOrigins("*")
+                                            .AllowAnyMethod()
+                                            .AllowAnyHeader()
+                                            .AllowCredentials());
         }
+
+        public void ConfigureServices(IServiceCollection services)
+        {
+            var azureTableStorageOptions = new AzureTableStorageOptions();
+            Configuration.GetSection("AzureTableStorage").Bind(azureTableStorageOptions);
+
+            services.AddSingleton(azureTableStorageOptions)
+                    .AddTransient<IProjector<Todo>, AzureTableStorageTodoProjector>()
+                    .AddTransient<IEventStore, AzureTableStorageEventStore>()
+                    .AddTransient<IDispatcher<ICommand>, CommandDispatcher<Todo>>()
+                    .AddTransient<IQueueWriter<ICommand>, CommandQueueWriter>()
+                    .AddCors()
+                    .AddMvc();
+        }
+
+
+        public IConfiguration Configuration { get; }
     }
 }

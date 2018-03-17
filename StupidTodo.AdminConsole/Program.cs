@@ -1,30 +1,23 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using StupidTodo.Data.AzureTableStorage;
 using StupidTodo.Domain;
 using StupidTodo.Domain.EventSource;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace StupidTodo.AdminConsole
 {
     class Program
     {
-		private static readonly AzureTableStorageOptions AzureTableStorageOptions = new AzureTableStorageOptions()
-        {
-            AccountName = "danestorage",
-            Key = "FllBAnlnhTpVN+FBd1j4nq4MbJT75Fno2zEVThSXb0k6GWeXrN8/KHJ0NeheHC+LTTNr19T0+/ybc7I0JKkjFw=="
-        };
-        //private static readonly AzureTableStorageOptions AzureTableStorageOptions = new AzureTableStorageOptions()
-        //{
-        //    AccountName = "{account}",
-        //    Key = "{key}"
-        //};
-
         static void Main(string[] args)
         {
             try
             {
-                DoEventSourceStuff().GetAwaiter().GetResult();
+                Configure();
+
+                //DoEventSourceStuff().GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
@@ -39,14 +32,26 @@ namespace StupidTodo.AdminConsole
             }
         }
 
+        private static void Configure()
+        {
+            var configuration = new ConfigurationBuilder()
+                                        .SetBasePath(Directory.GetCurrentDirectory())
+                                        .AddJsonFile("appsettings.json", false, true)
+                                        .AddJsonFile("appsettings.development.json", true, true)
+                                        .AddEnvironmentVariables()
+                                        .Build();
+            TableStorageOptions = new AzureTableStorageOptions();
+            configuration.GetSection("AzureTableStorage").Bind(TableStorageOptions);
+        }
+
         private static async Task DoEventSourceStuff()
         {
             string todoId = "";
             ICommand command;
 
             var queueWriter = new CommandQueueWriter(new CommandDispatcher<Todo>(
-                                                                new AzureTableStorageEventStore(AzureTableStorageOptions),
-                                                                new AzureTableStorageTodoProjector(AzureTableStorageOptions)));
+                                                                new AzureTableStorageEventStore(TableStorageOptions),
+                                                                new AzureTableStorageTodoProjector(TableStorageOptions)));
 
             command = new CreateCommand() { Description = "New thing to do", };
             await queueWriter.WriteAsync(command);
@@ -61,5 +66,7 @@ namespace StupidTodo.AdminConsole
             //command = new DeleteCommand() { TargetId = todoId };
             //await queueWriter.WriteAsync(command);
         }
+
+        private static AzureTableStorageOptions TableStorageOptions { get; set; }
     }
 }

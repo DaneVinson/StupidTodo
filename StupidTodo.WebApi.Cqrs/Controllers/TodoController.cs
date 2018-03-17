@@ -15,9 +15,10 @@ namespace StupidTodo.WebApi.Cqrs.Controllers
     [Route("api/todo")]
     public class TodoController : Controller
     {
-        public TodoController(IQueueWriter<ICommand> queueWriter)
+        public TodoController(IQueueWriter<ICommand> queueWriter, IProjector<Todo> projector)
         {
             CommandQueueWriter = queueWriter ?? throw new ArgumentNullException();
+            Projector = projector ?? throw new ArgumentNullException();
         }
 
         #region REST
@@ -47,17 +48,17 @@ namespace StupidTodo.WebApi.Cqrs.Controllers
         [Route("done")]
         public async Task<IActionResult> GetDoneTodosAsync()
         {
-            // query
-
-            throw new NotImplementedException();
+            var result = await Projector.ViewAsync(true);
+            if (result.Success) { return Ok(result.Value); }
+            else { return BadRequest(result); }
         }
 
         [HttpGet]
         public async Task<IActionResult> GetTodosAsync()
         {
-            // query
-
-            throw new NotImplementedException();
+            var result = await Projector.ViewAsync(false);
+            if (result.Success) { return Ok(result.Value); }
+            else { return BadRequest(result); }
         }
 
         [HttpPut]
@@ -93,6 +94,7 @@ namespace StupidTodo.WebApi.Cqrs.Controllers
 
 
         private readonly IQueueWriter<ICommand> CommandQueueWriter;
+        private readonly IProjector<Todo> Projector;
 
         #endregion
     }

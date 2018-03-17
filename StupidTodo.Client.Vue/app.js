@@ -9,7 +9,7 @@ function createGuid(){
 var vm = new Vue({
     el: '#app',
     data: {
-      api: 'http://stupidtodo-api.azurewebsites.net/api/todos',
+      api: 'http://stupidtodo-api-cqrs.azurewebsites.net/api/todo',
       doneToggleText: 'Show done',
       newDescription: '',
       showDone: false,
@@ -64,7 +64,7 @@ var vm = new Vue({
         }
         return todos;
       },
-      getDoneTodos : function () {
+      getDoneTodos: function () {
         this.$http.get(this.api + '/done').then((response) => {
           this.removeDoneTodos();
           for (let i = 0; i < response.data.length; i++) {
