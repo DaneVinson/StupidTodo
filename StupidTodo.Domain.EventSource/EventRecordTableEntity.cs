@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace StupidTodo.Data.AzureTableStorage
+namespace StupidTodo.Domain.EventSource
 {
     /// <summary>
     /// Implementation of IEventRecord for use with Azure Storage Table.

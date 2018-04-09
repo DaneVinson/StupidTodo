@@ -8,7 +8,7 @@ namespace StupidTodo.Domain.EventSource
 {
     public interface IEventHandler<TEntity> where TEntity : new()
     {
-        TEntity ApplyEvent(TEntity todo, string eventJson);
+        TEntity ApplyEvent(TEntity entity, string eventJson);
     }
 
 

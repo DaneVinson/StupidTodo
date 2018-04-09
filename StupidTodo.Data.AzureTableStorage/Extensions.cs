@@ -37,20 +37,6 @@ namespace StupidTodo.Data.AzureTableStorage
             return client?.GetTableReference(tableName);
         }
 
-        public static EventRecordTableEntity GetEventRecordTableEntity(this IEventRecord eventRecord)
-        {
-            var now = DateTime.UtcNow;
-            return new EventRecordTableEntity()
-            {
-                EventData = eventRecord.EventData,
-                HandlerType = eventRecord.HandlerType,
-                Id = eventRecord.Id,
-                OwnerId = eventRecord.OwnerId,
-                PartitionKey = eventRecord.OwnerId,
-                RowKey = eventRecord.Id,
-            };
-        }
-
         public static TodoTableEntity GetTodoTableEntity(this ITodo todo)
         {
             return new TodoTableEntity()

@@ -6,11 +6,6 @@ using System.Threading.Tasks;
 
 namespace StupidTodo.Domain.EventSource
 {
-    public interface IDispatcher<T>
-    {
-        Task ReceiveAndExecuteAsync(string message);
-    }
-
     public class CommandDispatcher<TEntity> : IDispatcher<ICommand>
     {
         public CommandDispatcher(
@@ -21,12 +16,18 @@ namespace StupidTodo.Domain.EventSource
             Projector = projector ?? throw new ArgumentNullException();
         }
 
-        public async Task ReceiveAndExecuteAsync(string message)
+        public async Task<Result> DispatchAsync(string message)
         {
             var jObject = JObject.Parse(message);
             var handlerType = jObject["HandlerType"]?.ToString();
             var handler = Activator.CreateInstance(Type.GetType(handlerType), EventStore, Projector) as ICommandHandler;
             await handler.ExecuteCommandAsync(message);
+            return new Result() { Success = true };
+        }
+
+        Task<Result> IDispatcher<ICommand>.DispatchAsync(string message)
+        {
+            throw new NotImplementedException();
         }
 
         protected readonly IEventStore EventStore;

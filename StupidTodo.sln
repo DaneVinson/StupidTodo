@@ -24,6 +24,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.Data.AzureTableS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.WebApi.Cqrs", "StupidTodo.WebApi.Cqrs\StupidTodo.WebApi.Cqrs.csproj", "{E5C41714-C64B-4C3C-9693-E19134606792}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StupidTodo.WebApi.Cqrs2", "StupidTodo.WebApi.Cqrs2\StupidTodo.WebApi.Cqrs2.csproj", "{E0DD1FAF-D4D5-4003-AFA4-30E41F1C906E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StupidTodo.Domain.EventSource2", "StupidTodo.Domain.EventSource2\StupidTodo.Domain.EventSource2.csproj", "{8E5DEA49-F4B6-4FCC-B9DE-CD70B32BD8B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +62,14 @@ Global
 		{E5C41714-C64B-4C3C-9693-E19134606792}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E5C41714-C64B-4C3C-9693-E19134606792}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E5C41714-C64B-4C3C-9693-E19134606792}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0DD1FAF-D4D5-4003-AFA4-30E41F1C906E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0DD1FAF-D4D5-4003-AFA4-30E41F1C906E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0DD1FAF-D4D5-4003-AFA4-30E41F1C906E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0DD1FAF-D4D5-4003-AFA4-30E41F1C906E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E5DEA49-F4B6-4FCC-B9DE-CD70B32BD8B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E5DEA49-F4B6-4FCC-B9DE-CD70B32BD8B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E5DEA49-F4B6-4FCC-B9DE-CD70B32BD8B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E5DEA49-F4B6-4FCC-B9DE-CD70B32BD8B7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

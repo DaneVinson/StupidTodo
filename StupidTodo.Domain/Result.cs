@@ -4,8 +4,24 @@ using System.Text;
 
 namespace StupidTodo.Domain
 {
+    /// <summary>
+    /// Simple result object.
+    /// </summary>
     public class Result
     {
+        public Result()
+        { }
+
+        public Result(string message)
+        {
+            Message = message;
+        }
+
+        public Result(bool success)
+        {
+            Success = success;
+        }
+
         public string Message { get; set; }
         public bool Success { get; set; }
 
@@ -13,10 +29,5 @@ namespace StupidTodo.Domain
         {
             return Success ? "Success" : $"Failure: {Message}";
         }
-    }
-
-    public class Result<T> : Result
-    {
-        public T Value { get; set; }
     }
 }

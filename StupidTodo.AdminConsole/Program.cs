@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using StupidTodo.Data.AzureTableStorage;
 using StupidTodo.Domain;
 using StupidTodo.Domain.EventSource;
+using StupidTodo.Domain.EventSource2;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -15,9 +16,8 @@ namespace StupidTodo.AdminConsole
         {
             try
             {
-                Configure();
+                //Configure();
 
-                //DoEventSourceStuff().GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
@@ -40,17 +40,16 @@ namespace StupidTodo.AdminConsole
                                         .AddJsonFile("appsettings.development.json", true, true)
                                         .AddEnvironmentVariables()
                                         .Build();
-            TableStorageOptions = new AzureTableStorageOptions();
-            configuration.GetSection("AzureTableStorage").Bind(TableStorageOptions);
+            TableStorageOptions = configuration.NewObjectFromSection<AzureTableStorageOptions>("AzureTableStorage");
         }
 
         private static async Task DoEventSourceStuff()
         {
             string todoId = "";
-            ICommand command;
+            Domain.EventSource.ICommand command;
 
             var queueWriter = new CommandQueueWriter(new CommandDispatcher<Todo>(
-                                                                new AzureTableStorageEventStore(TableStorageOptions),
+                                                                new Domain.EventSource.AzureTableStorageEventStore(TableStorageOptions),
                                                                 new AzureTableStorageTodoProjector(TableStorageOptions)));
 
             command = new CreateCommand() { Description = "New thing to do", };

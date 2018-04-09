@@ -25,7 +25,7 @@ namespace StupidTodo.Domain.EventSource
             var json = JsonConvert.SerializeObject(message);
 
             // TODO: remove when dispatcher is moved
-            await CommandDispatcher.ReceiveAndExecuteAsync(json);
+            await CommandDispatcher.DispatchAsync(json);
         }
 
 

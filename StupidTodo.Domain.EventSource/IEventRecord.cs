@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace StupidTodo.Domain
+namespace StupidTodo.Domain.EventSource
 {
     public interface IEventRecord
     {

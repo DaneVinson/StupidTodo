@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -11,9 +10,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StupidTodo.Data.AzureTableStorage;
 using StupidTodo.Domain;
-using StupidTodo.Domain.EventSource;
+using StupidTodo.Domain.EventSource2;
+using StupidTodo.Domain2.EventSource;
 
-namespace StupidTodo.WebApi.Cqrs
+namespace StupidTodo.WebApi.Cqrs2
 {
     public class Startup
     {
@@ -43,10 +43,8 @@ namespace StupidTodo.WebApi.Cqrs
             Configuration.GetSection("AzureTableStorage").Bind(azureTableStorageOptions);
 
             services.AddSingleton(azureTableStorageOptions)
-                    .AddTransient<IProjector<Todo>, AzureTableStorageTodoProjector>()
+                    .AddTransient<IProjector<ITodo, bool>, AzureTableStorageTodoProjector>()
                     .AddTransient<IEventStore, AzureTableStorageEventStore>()
-                    .AddTransient<IDispatcher<ICommand>, CommandDispatcher<Todo>>()
-                    .AddTransient<IQueueWriter<ICommand>, CommandQueueWriter>()
                     .AddCors()
                     .AddMvc();
         }
