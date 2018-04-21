@@ -18,9 +18,9 @@ namespace StupidTodo.Domain.EventSource2
         public async Task<Result> DispatchAsync(string message)
         {
             var commandType = JObject.Parse(message)?["CommandType"]?.ToString();
-            if (String.IsNullOrWhiteSpace(commandType)) { return new Result() { Message = "The message was not a command." }; }
+            if (String.IsNullOrWhiteSpace(commandType)) { return new Result("The message was not a command."); }
             var type = Type.GetType(commandType);
-            if (type == null) { return new Result() { Message = "The message was not a known type." }; }
+            if (type == null) { return new Result("The message was not a known type."); }
 
             var command = JsonConvert.DeserializeObject(message, type) as ICommand;
             return await CommandHandler.ExecuteAsync(command);

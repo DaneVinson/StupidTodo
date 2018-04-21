@@ -17,7 +17,7 @@ namespace StupidTodo.WebApi.Cqrs2.Controllers
     public class TodoController : Controller
     {
         public TodoController(
-            IProjector<ITodo, bool> projector, 
+            IProjector<ITodo, bool> projector,
             IMessenger<ICommand> commandMessenger)
         {
             CommandMessenger = commandMessenger ?? throw new ArgumentNullException();
@@ -45,7 +45,7 @@ namespace StupidTodo.WebApi.Cqrs2.Controllers
         [Route("{id}")]
         public async Task<IActionResult> UpdateTodoAsync(Guid id, [FromBody]Todo todo)
         {
-            if (todo == null || id == Guid.Empty || !id.Equals(todo.Id)) { return BadRequest(); }
+            if (todo == null || id == Guid.Empty) { return BadRequest(); }
             return await SendCommandAsync(new UpdateTodoCommand(id, todo.Description, todo.Done));
         }
 

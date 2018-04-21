@@ -44,6 +44,12 @@ namespace StupidTodo.WebApi.Cqrs2
 
             services.AddSingleton(azureTableStorageOptions)
                     .AddTransient<IProjector<ITodo, bool>, AzureTableStorageTodoProjector>()
+                    .AddTransient<IMessenger<ICommand>, MessengerDispatcher<ICommand>>()
+                    .AddTransient<IMessenger<IEvent>, MessengerDispatcher<IEvent>>()
+                    .AddTransient<IDispatcher<ICommand>, CommandDispatcher>()
+                    .AddTransient<IDispatcher<IEvent>, CommandEventsDispatcher>()
+                    .AddTransient<ICommandHandler, TodoCommandHandler>()
+                    .AddTransient<IAggregate<ICommand, IEvent, ITodoState>, TodoEntity>()
                     .AddTransient<IEventStore, AzureTableStorageEventStore>()
                     .AddCors()
                     .AddMvc();

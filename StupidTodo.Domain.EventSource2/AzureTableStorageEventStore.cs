@@ -23,6 +23,19 @@ namespace StupidTodo.Domain.EventSource2
             else { return Guid.Empty; }
         }
 
+        public async Task<bool> AddEventRecordsAsync(IEnumerable<IEventRecord> eventRecords)
+        {
+            var operation = new TableBatchOperation();
+            foreach(var record in eventRecords)
+            {
+                operation.Add(TableOperation.Insert(record.GetEventRecordTableEntity()));
+            }
+            var result = await Options.GetCloudTable(AzureTableName).ExecuteBatchAsync(operation);
+
+            // TODO: Acting as if the the batch execute is atomic which it is not. Address the situation where only "some" events persisting successfully.
+            return result.Any(r => r.HttpStatusCode.IsSuccessCode());
+        }
+
         public async Task<IEnumerable<IEventRecord>> GetEventRecordsAsync(Guid entityId)
         {
             var records = await Options.GetCloudTable(AzureTableName)

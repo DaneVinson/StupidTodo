@@ -9,7 +9,7 @@ function createGuid(){
 var vm = new Vue({
     el: '#app',
     data: {
-      api: 'http://stupidtodo-api-cqrs.azurewebsites.net/api/todo',
+      api: 'http://stupidtodo-api-bravo.azurewebsites.net/api/todo',
       doneToggleText: 'Show done',
       newDescription: '',
       showDone: false,
@@ -104,6 +104,7 @@ var vm = new Vue({
       saveTodo : function (id) {
         let todo = this.todos.find(t => t.id == id);
         if (todo) {
+          console.log(todo);
           todo.description = todo.editDescription;
           this.$http.put(this.api + '/' + id, todo).then((response) => { });
           todo.isEdit = false;

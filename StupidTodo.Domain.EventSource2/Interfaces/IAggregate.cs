@@ -4,10 +4,10 @@ using System.Text;
 
 namespace StupidTodo.Domain.EventSource2
 {
-    public interface IAggregate
+    public interface IAggregate<TCommand, TEvent, TState>
     {
-        Result ApplyEvent(IEvent e);
-        IEnumerable<IEvent> GetUncommittedEvents();
-        Result Hydrate(IEnumerable<IEvent> events);
+        TState ApplyEvent(TEvent @event, TState state);
+        IEnumerable<TEvent> HandleCommand(TCommand command, TState state);
+        TState State { get; set; }
     }
 }
