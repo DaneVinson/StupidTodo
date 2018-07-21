@@ -34,7 +34,7 @@ namespace StupidTodo.Domain.EventSource2
 
             // Handle the event.
             Func<IEvent, Task<Result>> handler;
-            if (!Handlers.TryGetValue(@event.EventType, out handler)) { handler = e => DispatchNoOpEvent((NoOp)e); }
+            if (!Handlers.TryGetValue(@event.EventType, out handler)) { handler = e => DispatchNoOpEvent((IEvent)e); }
             return await handler(@event);
         }
 
@@ -60,7 +60,7 @@ namespace StupidTodo.Domain.EventSource2
             return Task.FromResult(new Result(true));
         }
 
-        private Task<Result> DispatchNoOpEvent(NoOp @event)
+        private Task<Result> DispatchNoOpEvent(IEvent @event)
         {
             return Task.FromResult(new Result(true));
         }

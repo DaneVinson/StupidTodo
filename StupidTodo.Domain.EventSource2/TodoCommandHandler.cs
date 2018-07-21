@@ -23,23 +23,35 @@ namespace StupidTodo.Domain.EventSource2
         {
             ITodoState state = await HydrateAggregate(command.Id);
 
-            var events = Aggregate.HandleCommand(command, state);
+            var events = Aggregate.HandleCommand(command, state).ToList();
 
             // Stop on failed events.
             var failed = events.FirstOrDefault(e => e.EventType == typeof(Failed));
             if (failed != null) { return await EventMessenger.SendMessageAsync(failed); }
 
             // Save new events.
-            events = events.Where(e => e.EventType != typeof(NoOp));
+            events = events.Where(e => e.EventType != typeof(NoOp)).ToList();
             if (!(await EventStore.AddEventRecordsAsync(events.Select(e => e.NewEventRecord(command.Id)))))
             {
                 return await EventMessenger.SendMessageAsync(new Failed(command.CommandType, command.Id, "Failed to persist event records."));
             }
 
-            // Send resulting messages.
-            var tasks = events.Select(e => EventMessenger.SendMessageAsync(e));
-            var results = await Task.WhenAll(tasks);
+            // Apply the events to get current state.
+            state = events.Aggregate(state, (s, e) => Aggregate.ApplyEvent(e, s));
 
+            // Emit all created or deleted events resulting.
+            var forwardEvents = events
+                                    .Where(e => e.EventType == typeof(TodoCreated) || e.EventType == typeof(TodoDeleted))
+                                    .ToList();
+
+            // Emit a TodoUpdated event if there were any property changed events.
+            if (events.Any(e => e.EventType == typeof(TodoDescriptionChanged) || e.EventType == typeof(TodoDoneChanged)))
+            {
+                forwardEvents.Add(new TodoUpdated(state.Description, state.Done, state.Id));
+            }
+
+            // Send events.
+            var results = await Task.WhenAll(forwardEvents.Select(e => EventMessenger.SendMessageAsync(e)));
             if (results.All(r => !r.Success)) { return results.First(); }
             else { return new Result(true); }
         }
@@ -47,7 +59,7 @@ namespace StupidTodo.Domain.EventSource2
         private async Task<ITodoState> HydrateAggregate(Guid id)
         {
             var eventRecords = await EventStore.GetEventRecordsAsync(id);
-            var events = eventRecords.Select(e => JsonConvert.DeserializeObject(e.EventData, e.EventType) as IEvent);
+            var events = eventRecords.Select(e => JsonConvert.DeserializeObject(e.EventData, Type.GetType(e.EventType)) as IEvent);
 
             ITodoState state = null;
             state = events.Aggregate(state, (s, e) => Aggregate.ApplyEvent(e, s));

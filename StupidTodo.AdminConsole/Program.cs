@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using StupidTodo.Data.AzureTableStorage;
 using StupidTodo.Domain;
-using StupidTodo.Domain.EventSource;
 using StupidTodo.Domain.EventSource2;
+using StupidTodo.Domain2.EventSource;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -16,8 +17,7 @@ namespace StupidTodo.AdminConsole
         {
             try
             {
-                //Configure();
-
+                DoStuffAsync().GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
@@ -32,7 +32,16 @@ namespace StupidTodo.AdminConsole
             }
         }
 
-        private static void Configure()
+        private static async Task DoStuffAsync()
+        {
+            using (var serviceProvider = GetServiceProvider())
+            {
+                var command = new UpdateTodoCommand(Guid.Parse("298abe23-4d63-4f7f-889c-5d552e50d9b0"), "Updated", true);
+                var messenger = serviceProvider.GetService<IMessenger<ICommand>>();
+                var result = await messenger.SendMessageAsync(command);
+            }
+        }
+        private static ServiceProvider GetServiceProvider()
         {
             var configuration = new ConfigurationBuilder()
                                         .SetBasePath(Directory.GetCurrentDirectory())
@@ -40,30 +49,18 @@ namespace StupidTodo.AdminConsole
                                         .AddJsonFile("appsettings.development.json", true, true)
                                         .AddEnvironmentVariables()
                                         .Build();
-            TableStorageOptions = configuration.NewObjectFromSection<AzureTableStorageOptions>("AzureTableStorage");
-        }
 
-        private static async Task DoEventSourceStuff()
-        {
-            string todoId = "";
-            Domain.EventSource.ICommand command;
-
-            var queueWriter = new CommandQueueWriter(new CommandDispatcher<Todo>(
-                                                                new Domain.EventSource.AzureTableStorageEventStore(TableStorageOptions),
-                                                                new AzureTableStorageTodoProjector(TableStorageOptions)));
-
-            command = new CreateCommand() { Description = "New thing to do", };
-            await queueWriter.WriteAsync(command);
-
-            //command = new UpdateCommand() { Description = "Updated thing", TargetId = todoId };
-            //await queueWriter.WriteAsync(command);
-            //command = new UpdateCommand() { Description = "Updated thing again", TargetId = todoId };
-            //await queueWriter.WriteAsync(command);
-            //command = new UpdateCommand() { Done = true, TargetId = todoId };
-            //await queueWriter.WriteAsync(command);
-
-            //command = new DeleteCommand() { TargetId = todoId };
-            //await queueWriter.WriteAsync(command);
+            return new ServiceCollection()
+                        .AddSingleton(configuration.NewObjectFromSection<AzureTableStorageOptions>("AzureTableStorage"))
+                        .AddTransient<IProjector<ITodo, bool>, AzureTableStorageTodoProjector>()
+                        .AddTransient<IMessenger<ICommand>, MessengerDispatcher<ICommand>>()
+                        .AddTransient<IMessenger<IEvent>, MessengerDispatcher<IEvent>>()
+                        .AddTransient<IDispatcher<ICommand>, CommandDispatcher>()
+                        .AddTransient<IDispatcher<IEvent>, CommandEventsDispatcher>()
+                        .AddTransient<ICommandHandler, TodoCommandHandler>()
+                        .AddTransient<IAggregate<ICommand, IEvent, ITodoState>, TodoEntity>()
+                        .AddTransient<IEventStore, AzureTableStorageEventStore>()
+                        .BuildServiceProvider();
         }
 
         private static AzureTableStorageOptions TableStorageOptions { get; set; }

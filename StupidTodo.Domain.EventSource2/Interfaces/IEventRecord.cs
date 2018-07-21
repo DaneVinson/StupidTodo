@@ -8,8 +8,8 @@ namespace StupidTodo.Domain.EventSource2
     {
         Guid EntityId { get; set; }
         string EventData { get; set; }
-        Type EventType { get; set; }
+        string EventType { get; set; }
         Guid Id { get; set; }
-        Version Version { get; set; }
+        string Version { get; set; }
     }
 }
