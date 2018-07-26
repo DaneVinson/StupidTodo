@@ -9,7 +9,7 @@ function createGuid(){
 var vm = new Vue({
     el: '#app',
     data: {
-      api: 'http://stupidtodo-api.azurewebsites.net/api/todos',
+      api: 'http://stupidtodo-api.azurewebsites.net/api/todo',
       doneToggleText: 'Show done',
       newDescription: '',
       showDone: false,
