@@ -33,6 +33,8 @@ namespace StupidTodo.WebApi
                                         .AllowAnyMethod()
                                         .AllowAnyHeader()
                                         .AllowCredentials());
+
+            app.UseBlazor<Client.Blazor.Program>();
         }
 
         public void ConfigureServices(IServiceCollection services)

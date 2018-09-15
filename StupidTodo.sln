@@ -12,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Solution", ".Solution", "{
 		readme.md = readme.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.Client.Vue", "StupidTodo.Client.Vue\StupidTodo.Client.Vue.csproj", "{05A58301-DE91-4AF4-B102-CE001AF01E60}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.Client.Blazor", "StupidTodo.Client.Blazor\StupidTodo.Client.Blazor.csproj", "{5922DD76-A354-45C1-BC86-FF9A0AB076EB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,10 +28,10 @@ Global
 		{EB99CEA1-B6E2-4DB9-8509-AF785A9D507D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB99CEA1-B6E2-4DB9-8509-AF785A9D507D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB99CEA1-B6E2-4DB9-8509-AF785A9D507D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{05A58301-DE91-4AF4-B102-CE001AF01E60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{05A58301-DE91-4AF4-B102-CE001AF01E60}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{05A58301-DE91-4AF4-B102-CE001AF01E60}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{05A58301-DE91-4AF4-B102-CE001AF01E60}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5922DD76-A354-45C1-BC86-FF9A0AB076EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5922DD76-A354-45C1-BC86-FF9A0AB076EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5922DD76-A354-45C1-BC86-FF9A0AB076EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5922DD76-A354-45C1-BC86-FF9A0AB076EB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
