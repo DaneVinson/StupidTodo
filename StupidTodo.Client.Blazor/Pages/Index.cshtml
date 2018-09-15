@@ -1,7 +1,27 @@
-﻿@page "/"
+﻿@using StupidTodo.Domain
+@page "/"
+@inject HttpClient Http
 
-<h1>Hello, world!</h1>
+<h1>Stupid Todo Blazor</h1>
+@if (todos == null)
+{
+    <i class="fa fa-cog fa-spin" style="position: absolute; top:50%; left:50%; font-size:96px"></i>
+}
+else
+{
+    <ul>
+        @foreach (var todo in todos)
+        {
+            <li>@todo.Description</li>
+        }
+    </ul>
+}
 
-Welcome to your new app.
+@functions {
+    Todo[] todos;
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    protected override async Task OnInitAsync()
+    {
+        todos = await Http.GetJsonAsync<Todo[]>("api/todo");
+    }
+}
