@@ -3,25 +3,113 @@
 @inject HttpClient Http
 
 <h1>Stupid Todo Blazor</h1>
-@if (todos == null)
+
+@if (Busy)
 {
-    <i class="fa fa-circle-o-notch fa-spin" style="position: absolute; top:30%; left:45%; font-size:100px"></i>
+    <i class="fa fa-gear fa-spin" style="position: absolute; top:30%; left:45%; font-size:100px"></i>
 }
 else
 {
-    <ul>
-        @foreach (var todo in todos)
+    <div class="row">
+        <div class="col-9 col-md-6 alert alert-secondary" role="alert">
+            <button class="btn btn-sm btn-success"><i class="fa fa-plus"></i></button>
+            &nbsp;&nbsp;&nbsp;
+            <input>
+        </div>
+        <div class="col-3">
+            <button onclick="@(async () => await GetDoneAsync())" class="btn btn-sm btn-secondary">@ShowDoneText</button>
+        </div>
+    </div>
+    <hr />
+    @foreach (var todo in Todos.Where(t => !t.Done))
+    {
+        <div class="col-12 alert alert-primary" role="alert">
+            @if (todo.IsEditing)
+            {
+                <button onclick="@(() => CancelEdit(todo))" class="btn btn-sm btn-secondary"><i class="fa fa-undo"></i></button>
+                <button onclick="@(async () => await SaveTodoAsync(todo))" class="btn btn-sm btn-success"><i class="fa fa-floppy-o"></i></button>
+                <input type="text" bind="@todo.DescriptionEdit" />
+            }
+            else
+            {
+                <button onclick="@(async () => await ToggleDoneAsync(todo))" class="btn btn-sm btn-primary"><i class="fa fa-check"></i></button>
+                <a onclick="@(() => EditTodo(todo))" href="javascript:void(0)">@todo.Description</a>
+            }
+        </div>
+    }
+    @if (ShowingDone)
+    {
+        <hr />
+        @foreach (var todo in Todos.Where(t => t.Done))
         {
-            <li>@todo.Description</li>
+            <div class="col-12 alert alert-secondary" role="alert">
+                <button onclick="@(async () => await ToggleDoneAsync(todo))" class="btn btn-sm btn-secondary"><i class="fa fa-check"></i></button>
+                &nbsp;&nbsp;&nbsp;
+                @todo.Description
+                <button class="btn btn-sm btn-danger pull-right"><i class="fa fa-times"></i></button>
+            </div>
         }
-    </ul>
+    }
 }
 
 @functions {
-    Todo[] todos;
+    private bool Busy;
+    private string ShowDoneText;
+    private bool ShowingDone;
+    private StatefulTodo[] Todos;
+
+    private void CancelEdit(StatefulTodo todo)
+    {
+        todo.DescriptionEdit = todo.Description;
+        todo.IsEditing = false;
+    }
+
+    private void EditTodo(StatefulTodo todo)
+    {
+        todo.IsEditing = true;
+    }
+
+    private async Task GetDoneAsync()
+    {
+        Busy = true;
+        ShowingDone = !ShowingDone;
+        if (!ShowingDone)
+        {
+            ShowDoneText = "Show Done";
+            Todos = Todos.Where(t => !t.Done).ToArray();
+        }
+        else
+        {
+            ShowDoneText = "Hide Done";
+            var dones = await Http.GetJsonAsync<Todo[]>("api/todo/done");
+            dones = dones ?? new Todo[0];
+            Todos = Todos.Concat(dones).Select(t => new StatefulTodo(t)).ToArray();
+        }
+        Busy = false;
+    }
 
     protected override async Task OnInitAsync()
     {
-        todos = await Http.GetJsonAsync<Todo[]>("api/todo");
+        Busy = true;
+        ShowDoneText = "Show Done";
+        ShowingDone = false;
+        var todos = await Http.GetJsonAsync<Todo[]>("api/todo") ?? new Todo[0];
+        Todos = todos.Select(t => new StatefulTodo(t)).ToArray();
+        Busy = false;
+    }
+
+    private async Task SaveTodoAsync(StatefulTodo todo)
+    {
+        Busy = true;
+        todo.IsEditing = false;
+        todo.Description = todo.DescriptionEdit;
+        await Task.CompletedTask;
+        Busy = false;
+    }
+
+    private async Task ToggleDoneAsync(StatefulTodo todo)
+    {
+        todo.Done = !todo.Done;
+        await SaveTodoAsync(todo);
     }
 }

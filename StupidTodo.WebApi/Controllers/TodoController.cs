@@ -16,10 +16,10 @@ namespace StupidTodo.WebApi.Controllers
         public async Task<IActionResult> AddTodoAsync([FromBody]Todo todo)
         {
             await Task.CompletedTask;
-            if (todo?.Description == null || ToDos.Any(t => t.Id == todo.Id)) { return BadRequest(); }
+            if (todo?.Description == null || Todos.Any(t => t.Id == todo.Id)) { return BadRequest(); }
             else
             {
-                ToDos.Insert(0, todo);
+                Todos.Insert(0, todo);
                 return Ok();
             }
         }
@@ -29,11 +29,11 @@ namespace StupidTodo.WebApi.Controllers
         public async Task<IActionResult> DeleteTodoAsync(string id)
         {
             await Task.CompletedTask;
-            var todo = ToDos.FirstOrDefault(t => t.Id == id);
+            var todo = Todos.FirstOrDefault(t => t.Id == id);
             if (todo == null) { return NotFound(); }
             else
             {
-                ToDos.Remove(todo);
+                Todos.Remove(todo);
                 return Ok();
             }
         }
@@ -43,14 +43,14 @@ namespace StupidTodo.WebApi.Controllers
         public async Task<IActionResult> GetDoneTodosAsync()
         {
             await Task.CompletedTask;
-            return Ok(ToDos.Where(t => t.Done).ToArray());
+            return Ok(Todos.Where(t => t.Done).ToArray());
         }
 
         [HttpGet]
         public async Task<IActionResult> GetTodosAsync()
         {
             await Task.CompletedTask;
-            return Ok(ToDos.Where(t => !t.Done).ToArray());
+            return Ok(Todos.Where(t => !t.Done).ToArray());
         }
 
         [HttpPut]
@@ -58,7 +58,7 @@ namespace StupidTodo.WebApi.Controllers
         public async Task<IActionResult> UpdateTodoAsync(string id, [FromBody]Todo todo)
         {
             await Task.CompletedTask;
-            var existingTodo = ToDos.FirstOrDefault(t => t.Id == id);
+            var existingTodo = Todos.FirstOrDefault(t => t.Id == id);
             if (existingTodo == null) { return NotFound(); }
             else if (String.IsNullOrWhiteSpace(todo.Description)) { return BadRequest(); }
             else
@@ -72,7 +72,7 @@ namespace StupidTodo.WebApi.Controllers
 
         static TodoController()
         {
-            ToDos = new List<Todo>()
+            Todos = new List<Todo>()
             {
                 new Todo() { Description = "Gas up the car", Id = Guid.NewGuid().ToString() },
                 new Todo() { Description = "Find my next book", Id = Guid.NewGuid().ToString() },
@@ -81,6 +81,6 @@ namespace StupidTodo.WebApi.Controllers
             };
         }
 
-        private static readonly List<Todo> ToDos;
+        private static readonly List<Todo> Todos;
     }
 }
