@@ -3,4 +3,5 @@ A Stupid Todo client implemeted in [Vue.js](https://vuejs.org/).
 
 Open index.html directly with any modern browser (no web server required).
 
-Data from public instance of Stupid Todo API at [http://stupidtodo.azurewebsites.net/api/todos](http://stupidtodo.azurewebsites.net/api/todos)
+Live client: [https://stupidtodo-client-vue.azurewebsites.net](https://stupidtodo-client-vue.azurewebsites.net)
+Data from public instance of Stupid Todo API at [http://stupidtodo-api.azurewebsites.net/api/todos](http://stupidtodo.azurewebsites.net/api/todos)
