@@ -46,11 +46,13 @@ else
         <hr />
         @foreach (var todo in Todos.Where(t => t.Done))
         {
-            <div class="col-12 alert alert-secondary" role="alert">
-                <button onclick="@(async () => await ToggleDoneAsync(todo))" class="btn btn-sm btn-secondary"><i class="fa fa-check"></i></button>
-                &nbsp;&nbsp;&nbsp;
-                @todo.Description
-                <button onclick="@(async () => await DeleteTodoAsync(todo))" class="btn btn-sm btn-danger pull-right"><i class="fa fa-times"></i></button>
+            <div>
+                <div class="col-12 alert alert-secondary" role="alert">
+                    <button onclick="@(async () => await ToggleDoneAsync(todo))" class="btn btn-sm btn-secondary"><i class="fa fa-check"></i></button>
+                    &nbsp;&nbsp;&nbsp;
+                    @todo.Description
+                    <button onclick="@(async () => await DeleteTodoAsync(todo))" class="btn btn-sm btn-danger pull-right"><i class="fa fa-times"></i></button>
+                </div>
             </div>
         }
     }
