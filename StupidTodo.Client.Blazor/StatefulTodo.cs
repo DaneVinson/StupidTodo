@@ -8,6 +8,14 @@ namespace StupidTodo.Client.Blazor
 {
     public class StatefulTodo : Todo
     {
+        public StatefulTodo() : base()
+        { }
+
+        public StatefulTodo(string description) : base(description)
+        {
+            DescriptionEdit = description;
+        }
+
         public StatefulTodo(ITodo todo) : base(todo)
         {
             DescriptionEdit = todo?.Description;

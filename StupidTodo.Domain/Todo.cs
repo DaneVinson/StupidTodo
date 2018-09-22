@@ -9,6 +9,12 @@ namespace StupidTodo.Domain
         public Todo()
         { }
 
+        public Todo(string description)
+        {
+            Description = description;
+            Id = Guid.NewGuid().ToString();
+        }
+
         public Todo(ITodo todo)
         {
             if (todo != null)
