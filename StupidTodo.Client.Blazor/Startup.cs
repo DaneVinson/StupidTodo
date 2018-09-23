@@ -8,6 +8,7 @@ namespace StupidTodo.Client.Blazor
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<MainViewModel>();
         }
 
         public void Configure(IBlazorApplicationBuilder app)
