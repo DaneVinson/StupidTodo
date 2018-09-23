@@ -10,8 +10,9 @@ namespace StupidTodo.Client.Blazor
 {
     public class MainViewModel
     {
-        public MainViewModel(HttpClient httpClient)
+        public MainViewModel(HttpClient httpClient, HttpOptions httpOptions)
         {
+            HttpOptions = httpOptions ?? throw new ArgumentNullException();
             ServiceHttpClient = httpClient ?? throw new ArgumentNullException();
         }
 
@@ -27,7 +28,7 @@ namespace StupidTodo.Client.Blazor
             if (String.IsNullOrWhiteSpace(NewTodoDescription)) { return; }
 
             IsBusy = true;
-            var todo = await ServiceHttpClient.PostJsonAsync<Todo>("api/todo", new Todo(NewTodoDescription));
+            var todo = await ServiceHttpClient.PostJsonAsync<Todo>($"{HttpOptions.ApiUri}", new Todo(NewTodoDescription));
             if (todo != null) { Todos = Todos.Concat(new StatefulTodo[] { new StatefulTodo(todo) }).ToArray(); }
             NewTodoDescription = String.Empty;
             IsBusy = false;
@@ -36,7 +37,7 @@ namespace StupidTodo.Client.Blazor
 
         public async Task DeleteTodoAsync(StatefulTodo todo)
         {
-            var result = await ServiceHttpClient.DeleteAsync($"api/todo/{todo.Id}");
+            var result = await ServiceHttpClient.DeleteAsync($"{HttpOptions.ApiUri}/{todo.Id}");
             if (result != null && result.IsSuccessStatusCode)
             {
                 Todos = Todos.Where(t => t.Id != todo.Id).ToArray();
@@ -59,7 +60,7 @@ namespace StupidTodo.Client.Blazor
             }
             else
             {
-                var dones = await ServiceHttpClient.GetJsonAsync<Todo[]>("api/todo/done");
+                var dones = await ServiceHttpClient.GetJsonAsync<Todo[]>($"{HttpOptions.ApiUri}/done");
                 dones = dones ?? new Todo[0];
                 Todos = Todos.Where(t => !t.Done)
                             .Concat(dones)
@@ -73,7 +74,7 @@ namespace StupidTodo.Client.Blazor
         public async Task GetTodosAsync()
         {
             IsBusy = true;
-            var todos = await ServiceHttpClient.GetJsonAsync<Todo[]>("api/todo") ?? new Todo[0];
+            var todos = await ServiceHttpClient.GetJsonAsync<Todo[]>($"{HttpOptions.ApiUri}") ?? new Todo[0];
             Todos = todos.Select(t => new StatefulTodo(t)).ToArray();
             IsBusy = false;
         }
@@ -85,7 +86,7 @@ namespace StupidTodo.Client.Blazor
             IsBusy = true;
             string description = todo.Description;
             todo.Description = todo.DescriptionEdit;
-            var resultTodo = await ServiceHttpClient.PutJsonAsync<Todo>($"api/todo/{todo.Id}", todo);
+            var resultTodo = await ServiceHttpClient.PutJsonAsync<Todo>($"{HttpOptions.ApiUri}/{todo.Id}", todo);
             if (resultTodo != null)
             {
                 todo.Description = resultTodo.Description;
@@ -124,6 +125,7 @@ namespace StupidTodo.Client.Blazor
         public event Action ApplyStateChanged;
 
 
+        private readonly HttpOptions HttpOptions;
         private readonly HttpClient ServiceHttpClient;
     }
 }
