@@ -46,7 +46,7 @@ else
         <hr />
         @foreach (var todo in Todos.Where(t => t.Done))
         {
-            <div>
+            <div class="row">
                 <div class="col-12 alert alert-secondary" role="alert">
                     <button onclick="@(async () => await ToggleDoneAsync(todo))" class="btn btn-sm btn-secondary"><i class="fa fa-check"></i></button>
                     &nbsp;&nbsp;&nbsp;
