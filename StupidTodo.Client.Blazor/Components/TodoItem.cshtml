@@ -1,0 +1,24 @@
+﻿<!--View for a single Todo item (not done)-->
+<div class="row">
+    <div class="col-12 alert alert-primary" role="alert">
+        @if (Todo.IsEditing)
+        {
+            <button onclick="@(() => ViewModel.CancelEdit(Todo))" class="btn btn-sm btn-secondary"><i class="fa fa-undo"></i></button>
+            <button onclick="@(async () => await ViewModel.SaveTodoAsync(Todo))" class="btn btn-sm btn-success"><i class="fa fa-floppy-o"></i></button>
+            @:&nbsp;&nbsp;&nbsp;
+            <input type="text" bind="@Todo.DescriptionEdit" />
+        }
+        else
+        {
+            <button onclick="@(async () => await ViewModel.ToggleDoneAsync(Todo))" class="btn btn-sm btn-primary"><i class="fa fa-check"></i></button>
+            @:&nbsp;&nbsp;&nbsp;
+            <a onclick="@(() => ViewModel.EditTodo(Todo))" href="javascript:void(0)">@Todo.Description</a>
+        }
+    </div>
+</div>
+
+@functions
+{
+[Parameter] MainViewModel ViewModel { get; set; }
+[Parameter] StatefulTodo Todo { get; set; }
+}

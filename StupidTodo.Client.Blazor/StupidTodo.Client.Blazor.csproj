@@ -15,4 +15,13 @@
     <ProjectReference Include="..\StupidTodo.Domain\StupidTodo.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Components\DoneItem.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+    <Content Update="Components\TodoItem.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
+  </ItemGroup>
+
 </Project>

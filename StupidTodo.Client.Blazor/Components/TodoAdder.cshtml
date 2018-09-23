@@ -1,0 +1,16 @@
+﻿<!--View for the add Todo function-->
+<div class="row">
+    <div class="col-9 col-md-6 alert alert-secondary" role="alert">
+        <button onclick="@(async () => await ViewModel.CreateTodoAsync())" class="btn btn-sm btn-success"><i class="fa fa-plus"></i></button>
+        &nbsp;&nbsp;&nbsp;
+        <input type="text" bind="@ViewModel.NewTodoDescription" />
+    </div>
+    <div class="col-3">
+        <button onclick="@(async () => await ViewModel.GetDoneAsync())" class="btn btn-sm btn-secondary">@ViewModel.ShowDoneToggleText</button>
+    </div>
+</div>
+
+@functions 
+{
+    [Parameter] MainViewModel ViewModel { get; set; }
+}

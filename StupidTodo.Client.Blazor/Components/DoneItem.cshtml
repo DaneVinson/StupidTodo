@@ -1,0 +1,15 @@
+﻿<!--View for a single done Todo item-->
+<div class="row">
+    <div class="col-12 alert alert-secondary" role="alert">
+        <button onclick="@(async () => await ViewModel.ToggleDoneAsync(Todo))" class="btn btn-sm btn-secondary"><i class="fa fa-check"></i></button>
+        &nbsp;&nbsp;&nbsp;
+        @Todo.Description
+        <button onclick="@(async () => await ViewModel.DeleteTodoAsync(Todo))" class="btn btn-sm btn-danger pull-right"><i class="fa fa-times"></i></button>
+    </div>
+</div>
+
+@functions
+{
+[Parameter] MainViewModel ViewModel { get; set; }
+[Parameter] StatefulTodo Todo { get; set; }
+}

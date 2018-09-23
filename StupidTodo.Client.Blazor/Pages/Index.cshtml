@@ -1,65 +1,33 @@
 ﻿@using StupidTodo.Domain
 @page "/"
-@inject MainViewModel vm
+@inject MainViewModel viewModel
 
 <h1>Stupid Todo Blazor</h1>
-@if (vm.IsBusy)
+@if (viewModel.IsBusy)
 {
     <i class="fa fa-gear fa-spin" style="position: absolute; top:30%; left:45%; font-size:100px"></i>
 }
 else
 {
-    <div class="row">
-        <div class="col-9 col-md-6 alert alert-secondary" role="alert">
-            <button onclick="@(async () => await vm.CreateTodoAsync())" class="btn btn-sm btn-success"><i class="fa fa-plus"></i></button>
-            &nbsp;&nbsp;&nbsp;
-            <input type="text" bind="@vm.NewTodoDescription" />
-        </div>
-        <div class="col-3">
-            <button onclick="@(async () => await vm.GetDoneAsync())" class="btn btn-sm btn-secondary">@vm.ShowDoneToggleText</button>
-        </div>
-    </div>
-    <hr />
-    @foreach (var todo in vm.Todos.Where(t => !t.Done))
+    <TodoAdder ViewModel=viewModel />
+    @foreach (var todo in viewModel.Todos.Where(t => !t.Done))
     {
-        <div class="row">
-            <div class="col-12 alert alert-primary" role="alert">
-                @if (todo.IsEditing)
-                {
-                    <button onclick="@(() => vm.CancelEdit(todo))" class="btn btn-sm btn-secondary"><i class="fa fa-undo"></i></button>
-                    <button onclick="@(async () => await vm.SaveTodoAsync(todo))" class="btn btn-sm btn-success"><i class="fa fa-floppy-o"></i></button>
-                    @:&nbsp;&nbsp;&nbsp;
-                    <input type="text" bind="@todo.DescriptionEdit" />
-                }
-                else
-                {
-                    <button onclick="@(async () => await vm.ToggleDoneAsync(todo))" class="btn btn-sm btn-primary"><i class="fa fa-check"></i></button>
-                    @:&nbsp;&nbsp;&nbsp;
-                    <a onclick="@(() => vm.EditTodo(todo))" href="javascript:void(0)">@todo.Description</a>
-                }
-            </div>
-        </div>
+        <TodoItem ViewModel=viewModel Todo=todo />
     }
-    @if (vm.ShowingDone)
+    @if (viewModel.ShowingDone)
     {
         <hr />
-        @foreach (var todo in vm.Todos.Where(t => t.Done))
+        @foreach (var todo in viewModel.Todos.Where(t => t.Done))
         {
-            <div class="row">
-                <div class="col-12 alert alert-secondary" role="alert">
-                    <button onclick="@(async () => await vm.ToggleDoneAsync(todo))" class="btn btn-sm btn-secondary"><i class="fa fa-check"></i></button>
-                    &nbsp;&nbsp;&nbsp;
-                    @todo.Description
-                    <button onclick="@(async () => await vm.DeleteTodoAsync(todo))" class="btn btn-sm btn-danger pull-right"><i class="fa fa-times"></i></button>
-                </div>
-            </div>
+            <DoneItem ViewModel=viewModel Todo=todo />
         }
     }
 }
 
 @functions {
-    protected override async Task OnInitAsync()
-    {
-        await vm.GetTodosAsync();
-    }
+protected override async Task OnInitAsync()
+{
+    viewModel.ApplyStateChanged += StateHasChanged;
+    await viewModel.GetTodosAsync();
+}
 }

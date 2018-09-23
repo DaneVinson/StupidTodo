@@ -31,6 +31,7 @@ namespace StupidTodo.Client.Blazor
             if (todo != null) { Todos = Todos.Concat(new StatefulTodo[] { new StatefulTodo(todo) }).ToArray(); }
             NewTodoDescription = String.Empty;
             IsBusy = false;
+            ApplyStateChanged();
         }
 
         public async Task DeleteTodoAsync(StatefulTodo todo)
@@ -40,6 +41,7 @@ namespace StupidTodo.Client.Blazor
             {
                 Todos = Todos.Where(t => t.Id != todo.Id).ToArray();
             }
+            ApplyStateChanged();
         }
 
         public void EditTodo(StatefulTodo todo)
@@ -65,6 +67,7 @@ namespace StupidTodo.Client.Blazor
                             .ToArray();
             }
             IsBusy = false;
+            ApplyStateChanged();
         }
 
         public async Task GetTodosAsync()
@@ -107,6 +110,7 @@ namespace StupidTodo.Client.Blazor
             todo.Done = !todo.Done;
             var result = await SaveTodoAsync(todo);
             if (!result) { todo.Done = !todo.Done; }
+            ApplyStateChanged();
         }
 
 
@@ -115,6 +119,9 @@ namespace StupidTodo.Client.Blazor
         public string ShowDoneToggleText => ShowingDone ? "Hide done" : "Show done";
         public bool ShowingDone { get; set; }
         public StatefulTodo[] Todos { get; set; }
+
+
+        public event Action ApplyStateChanged;
 
 
         private readonly HttpClient ServiceHttpClient;
