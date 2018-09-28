@@ -2,16 +2,12 @@
 @page "/"
 @inject HttpClient Http
 
-<div class="row">
-    <h1>Stupid Todo Blazor</h1>
-</div>
+@if (Todos != null)
+{
+    <div class="row">
+        <h1>Stupid Todo Blazor</h1>
+    </div>
 
-@if (Busy)
-{
-    <i class="fa fa-gear fa-spin" style="position: absolute; top:30%; left:45%; font-size:100px"></i>
-}
-else
-{
     <div class="row">
         <div class="col-9 col-md-6 alert alert-secondary" role="alert">
             <button onclick="@(async () => await CreateTodoAsync())" class="btn btn-sm btn-success"><i class="fa fa-plus"></i></button>
@@ -31,11 +27,13 @@ else
                 {
                     <button onclick="@(() => CancelEdit(todo))" class="btn btn-sm btn-secondary"><i class="fa fa-undo"></i></button>
                     <button onclick="@(async () => await SaveTodoAsync(todo))" class="btn btn-sm btn-success"><i class="fa fa-floppy-o"></i></button>
+                    @:&nbsp;&nbsp;&nbsp;
                     <input type="text" bind="@todo.DescriptionEdit" />
                 }
                 else
                 {
                     <button onclick="@(async () => await ToggleDoneAsync(todo))" class="btn btn-sm btn-primary"><i class="fa fa-check"></i></button>
+                    @:&nbsp;&nbsp;&nbsp;
                     <a onclick="@(() => EditTodo(todo))" href="javascript:void(0)">@todo.Description</a>
                 }
             </div>
@@ -59,7 +57,6 @@ else
 }
 
 @functions {
-private bool Busy;
 private string NewTodoDescription;
 private string ShowDoneText;
 private bool ShowingDone;
@@ -75,11 +72,9 @@ private async Task CreateTodoAsync()
 {
     if (String.IsNullOrWhiteSpace(NewTodoDescription)) { return; }
 
-    Busy = true;
     var todo = await Http.PostJsonAsync<Todo>("api/todo", new Todo(NewTodoDescription));
     if (todo != null) { Todos = Todos.Concat(new StatefulTodo[] { new StatefulTodo(todo) }).ToArray(); }
     NewTodoDescription = String.Empty;
-    Busy = false;
 }
 
 private async Task DeleteTodoAsync(StatefulTodo todo)
@@ -98,16 +93,15 @@ private void EditTodo(StatefulTodo todo)
 
 private async Task GetDoneAsync()
 {
-    Busy = true;
     ShowingDone = !ShowingDone;
     if (!ShowingDone)
     {
-        ShowDoneText = "Show Done";
+        ShowDoneText = "Show done";
         Todos = Todos.Where(t => !t.Done).ToArray();
     }
     else
     {
-        ShowDoneText = "Hide Done";
+        ShowDoneText = "Hide done";
         var dones = await Http.GetJsonAsync<Todo[]>("api/todo/done");
         dones = dones ?? new Todo[0];
         Todos = Todos.Where(t => !t.Done)
@@ -115,25 +109,21 @@ private async Task GetDoneAsync()
                         .Select(t => new StatefulTodo(t))
                         .ToArray();
     }
-    Busy = false;
 }
 
 protected override async Task OnInitAsync()
 {
-    Busy = true;
     NewTodoDescription = String.Empty;
-    ShowDoneText = "Show Done";
+    ShowDoneText = "Show done";
     ShowingDone = false;
     var todos = await Http.GetJsonAsync<Todo[]>("api/todo") ?? new Todo[0];
     Todos = todos.Select(t => new StatefulTodo(t)).ToArray();
-    Busy = false;
 }
 
 private async Task<bool> SaveTodoAsync(StatefulTodo todo)
 {
     if (String.IsNullOrWhiteSpace(todo.DescriptionEdit)) { return false; }
 
-    Busy = true;
     string description = todo.Description;
     todo.Description = todo.DescriptionEdit;
     var resultTodo = await Http.PutJsonAsync<Todo>($"api/todo/{todo.Id}", todo);
@@ -143,7 +133,6 @@ private async Task<bool> SaveTodoAsync(StatefulTodo todo)
         todo.DescriptionEdit = resultTodo.Description;
         todo.Done = resultTodo.Done;
         todo.IsEditing = false;
-        Busy = false;
         return true;
     }
     else
@@ -151,7 +140,6 @@ private async Task<bool> SaveTodoAsync(StatefulTodo todo)
         todo.Description = description;
         todo.DescriptionEdit = description;
         todo.IsEditing = false;
-        Busy = false;
         return false;
     }
 }
