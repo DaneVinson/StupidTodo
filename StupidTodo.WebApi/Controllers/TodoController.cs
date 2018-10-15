@@ -20,7 +20,7 @@ namespace StupidTodo.WebApi.Controllers
             else
             {
                 ToDos.Insert(0, todo);
-                return Ok();
+                return Ok(todo);
             }
         }
 
@@ -65,7 +65,7 @@ namespace StupidTodo.WebApi.Controllers
             {
                 existingTodo.Description = todo.Description;
                 existingTodo.Done = todo.Done;
-                return Ok();
+                return Ok(existingTodo);
             }
         }
 
