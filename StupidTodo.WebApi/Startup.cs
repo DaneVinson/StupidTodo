@@ -37,10 +37,39 @@ namespace StupidTodo.WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors()
-                    .AddMvc();
+            ExploreConfiguration(services)
+                .AddCors()
+                .AddMvc();
         }
 
+        private IServiceCollection ExploreConfiguration(IServiceCollection services)
+        {
+            // Get a simple setting, 
+            //  case insensitive
+            //  recommend standardizing naming convention
+            IConfigurationSection section = Configuration.GetSection("SIMPLEsetting");
+
+            // multi level
+            string setting1 = Configuration.GetSection("SIMPLEGraph")["simpleGRAPHsetting1"];
+
+            // better way
+            IConfigurationSection s2 = Configuration.GetSection("simplegraph:simplegraphsetting1");
+
+            // even better way
+            string s3 = Configuration["simplegraph:simplegraphsetting1"];
+
+            string s4 = Configuration["configName"];
+            
+
+
+            // Bind to and object e.g.
+            // var foo = new Foo();
+            // Config.Bind(foo, "sectionName");
+
+            // From book
+
+            return services;
+        }
 
         public IConfiguration Configuration { get; }
     }

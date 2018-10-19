@@ -19,7 +19,13 @@ namespace StupidTodo.WebApi
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
-                .Build();
+                    // TODO: Blog point about config here
+                    .ConfigureAppConfiguration(options =>
+                    {
+                        options.AddJsonFile("config-simple.json", false, true);
+                        options.AddJsonFile("config-fantasy.json", false, true);
+                    })
+                    .UseStartup<Startup>()
+                    .Build();
     }
 }
