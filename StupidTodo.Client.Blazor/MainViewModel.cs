@@ -79,6 +79,12 @@ namespace StupidTodo.Client.Blazor
             IsBusy = false;
         }
 
+
+        public bool IsSaveEnabled(StatefulTodo todo)
+        {
+            return !String.IsNullOrWhiteSpace(todo.DescriptionEdit);
+        }
+
         public async Task<bool> SaveTodoAsync(StatefulTodo todo)
         {
             if (String.IsNullOrWhiteSpace(todo.DescriptionEdit)) { return false; }

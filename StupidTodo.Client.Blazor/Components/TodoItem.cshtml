@@ -1,24 +1,42 @@
-﻿<!--View for a single Todo item (not done)-->
+﻿@inject TodoViewModel ViewModel
+<!--View for a single Todo item -->
 <div class="row">
     <div class="col-12 alert alert-primary" role="alert">
-        @if (Todo.IsEditing)
+        @if (ViewModel.IsEditing)
         {
-            <button onclick="@(() => ViewModel.CancelEdit(Todo))" class="btn btn-sm btn-secondary"><i class="fa fa-undo"></i></button>
-            <button onclick="@(async () => await ViewModel.SaveTodoAsync(Todo))" class="btn btn-sm btn-success"><i class="fa fa-floppy-o"></i></button>
+            <button onclick=@(() => ViewModel.CancelEdit()) class="btn btn-sm btn-secondary"><i class="fa fa-undo"></i></button>
+            <button onclick=@(async () => await ViewModel.SaveTodoAsync()) disabled=@(ViewModel.HasErrors) class="btn btn-sm btn-success"><i class="fa fa-floppy-o"></i></button>
             @:&nbsp;&nbsp;&nbsp;
-            <input type="text" bind="@Todo.DescriptionEdit" />
+            @*<input type="text" oninput=@(args => ViewModel.DescriptionChanged(args)) bind=@ViewModel.Description />*@
+            <input type="text" bind-value-oninput=@ViewModel.Description />
         }
         else
         {
-            <button onclick="@(async () => await ViewModel.ToggleDoneAsync(Todo))" class="btn btn-sm btn-primary"><i class="fa fa-check"></i></button>
+            <button onclick=@(async () => await ViewModel.ToggleDoneAsync()) class="btn btn-sm btn-primary"><i class="fa fa-check"></i></button>
             @:&nbsp;&nbsp;&nbsp;
-            <a onclick="@(() => ViewModel.EditTodo(Todo))" href="javascript:void(0)">@Todo.Description</a>
+            <a onclick=@(() => ViewModel.BeginEdit()) href="javascript:void(0)">@ViewModel.Description</a>
         }
     </div>
 </div>
+@if (ViewModel.HasErrors)
+{
+    <div>
+        <ul>
+            @foreach (var error in ViewModel.Errors)
+            {
+                <li>@($"{error.PropertyName}: {error.Message}")</li>
+            }
+        </ul>
+    </div>
+}
 
 @functions
 {
-[Parameter] MainViewModel ViewModel { get; set; }
-[Parameter] StatefulTodo Todo { get; set; }
+    [Parameter]
+    private ITodo SourceTodo { get; set; }
+
+    protected override void OnInit()
+    {
+        ViewModel.Load(SourceTodo);
+    }
 }

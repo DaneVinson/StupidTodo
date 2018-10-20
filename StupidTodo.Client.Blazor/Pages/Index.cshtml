@@ -1,25 +1,25 @@
 ﻿@using StupidTodo.Domain
 @page "/"
-@inject MainViewModel viewModel
+@inject MainViewModel mainViewModel
 
 <h1>Stupid Todo Blazor</h1>
-@if (viewModel.IsBusy)
+@if (mainViewModel.IsBusy)
 {
     <i class="fa fa-gear fa-spin" style="position: absolute; top:30%; left:45%; font-size:100px"></i>
 }
 else
 {
-    <TodoAdder ViewModel=viewModel />
-    @foreach (var todo in viewModel.Todos.Where(t => !t.Done))
+    <TodoAdder ViewModel=mainViewModel />
+    @foreach (var todo in mainViewModel.Todos.Where(t => !t.Done))
     {
-        <TodoItem ViewModel=viewModel Todo=todo />
+        <TodoItem SourceTodo=todo />
     }
-    @if (viewModel.ShowingDone)
+    @if (mainViewModel.ShowingDone)
     {
         <hr />
-        @foreach (var todo in viewModel.Todos.Where(t => t.Done))
+        @foreach (var todo in mainViewModel.Todos.Where(t => t.Done))
         {
-            <DoneItem ViewModel=viewModel Todo=todo />
+            <DoneItem ViewModel=mainViewModel Todo=todo />
         }
     }
 }
@@ -27,7 +27,7 @@ else
 @functions {
 protected override async Task OnInitAsync()
 {
-    viewModel.ApplyStateChanged += StateHasChanged;
-    await viewModel.GetTodosAsync();
+    mainViewModel.ApplyStateChanged += StateHasChanged;
+    await mainViewModel.GetTodosAsync();
 }
 }

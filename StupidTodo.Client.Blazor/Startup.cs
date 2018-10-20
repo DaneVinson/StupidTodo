@@ -11,7 +11,8 @@ namespace StupidTodo.Client.Blazor
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(new HttpOptions("https://stupidtodo-blazor.azurewebsites.net/api/todo"))
-                    .AddSingleton<MainViewModel>();
+                    .AddSingleton<MainViewModel>()
+                    .AddTransient<TodoViewModel>();
         }
 
         public void Configure(IBlazorApplicationBuilder app)
