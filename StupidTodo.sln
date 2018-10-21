@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Solution", ".Solution", "{
 		readme.md = readme.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StupidTodo.ClientConsole", "StupidTodo.ClientConsole\StupidTodo.ClientConsole.csproj", "{C46F273B-BBC3-4606-B892-2FB50D072FD9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,10 @@ Global
 		{EB99CEA1-B6E2-4DB9-8509-AF785A9D507D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB99CEA1-B6E2-4DB9-8509-AF785A9D507D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB99CEA1-B6E2-4DB9-8509-AF785A9D507D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C46F273B-BBC3-4606-B892-2FB50D072FD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C46F273B-BBC3-4606-B892-2FB50D072FD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C46F273B-BBC3-4606-B892-2FB50D072FD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C46F273B-BBC3-4606-B892-2FB50D072FD9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

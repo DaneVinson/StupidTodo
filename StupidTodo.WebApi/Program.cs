@@ -19,7 +19,7 @@ namespace StupidTodo.WebApi
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                    // TODO: Blog point about config here
+                    // =NOTE= Blog point about customizing ASP.NET Core config here
                     .ConfigureAppConfiguration(options =>
                     {
                         options.AddJsonFile("config-simple.json", false, true);

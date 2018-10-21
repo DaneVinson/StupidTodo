@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+  
+  <!-- =NOTE= Secret sauce for async Main-->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\StupidTodo.Domain\StupidTodo.Domain.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="todos.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
