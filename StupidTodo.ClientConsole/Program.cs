@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using StupidTodo.Domain;
 using System;
 using System.IO;
@@ -10,13 +12,11 @@ namespace StupidTodo.ClientConsole
     {
         static async Task Main(string[] args)
         {
+            ServiceProvider serviceProvider = null;
             try
             {
-                var configuration = new ConfigurationBuilder()
-                                            .SetBasePath(Directory.GetCurrentDirectory())
-                                            .AddJsonFile("appsettings.json")
-                                            .AddJsonFile("todos.json")
-                                            .Build();
+                serviceProvider = NewServiceProvider();
+                var configuration = serviceProvider.GetRequiredService<IConfigurationRoot>();
 
                 // Quick way to get a simple setting
                 string api1 = configuration.GetSection("todoApiUri")?.Value;
@@ -31,8 +31,11 @@ namespace StupidTodo.ClientConsole
                 var options1 = new QueryOptions();
                 configuration.GetSection("apiQuery").Bind(options1);
 
-                // From book?
+                // A more elegant method
                 var options2 = configuration.GetSection("apiQuery").Get<QueryOptions>();
+
+                // =NOTE= from the book
+                var options3 = serviceProvider.GetService<IOptions<QueryOptions>>()?.Value;
 
                 // Note additional properties in config are ignored and additional properties on the binding class are default.
                 // Again very resiliant.
@@ -49,10 +52,26 @@ namespace StupidTodo.ClientConsole
             }
             finally
             {
+                if (serviceProvider != null) { serviceProvider.Dispose(); }
                 Console.WriteLine();
                 Console.WriteLine("...");
                 Console.ReadKey();
             }
+        }
+
+        private static ServiceProvider NewServiceProvider()
+        {
+            var configuration = new ConfigurationBuilder()
+                                        .SetBasePath(Directory.GetCurrentDirectory())
+                                        .AddJsonFile("appsettings.json")
+                                        .AddJsonFile("todos.json")
+                                        .Build();
+
+            return new ServiceCollection()
+                            .AddSingleton(configuration)
+                            // =NOTE= from the book
+                            .Configure<QueryOptions>(configuration.GetSection("apiQuery"))
+                            .BuildServiceProvider();
         }
     }
 }
