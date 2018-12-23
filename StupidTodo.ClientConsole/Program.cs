@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using StupidTodo.Domain;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -10,40 +11,43 @@ namespace StupidTodo.ClientConsole
 {
     class Program
     {
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
-            ServiceProvider serviceProvider = null;
             try
             {
-                serviceProvider = NewServiceProvider();
-                var configuration = serviceProvider.GetRequiredService<IConfigurationRoot>();
+                using (var serviceProvider = NewServiceProvider())
+                {
+                    var configuration = serviceProvider.GetRequiredService<IConfigurationRoot>();
 
-                // Quick way to get a simple setting
-                string api1 = configuration.GetSection("todoApiUri")?.Value;
+                    // Quick way to get a simple setting
+                    string favorite = configuration.GetSection("favoriteBeerStyle")?.Value;
 
-                // Note configuration is case-insensitive
-                string api2 = configuration.GetSection("TODOAPIURI")?.Value;
+                    // Note configuration is case-insensitive
+                    favorite = configuration.GetSection("FAVORITEBEERSTYLE")?.Value;
+                    favorite = configuration["favoriteBeerStyle"];
 
-                // A slick way to get even complex data, very resilient, =NOTE= my blog
-                string seconds = configuration["apiQuery:frequencySeconds"];
+                    // A slick way to get even complex data, very resilient, =NOTE= my blog
+                    string current = configuration["beerOfTheNow:name"];
+                    string currentBreweryName = configuration["beerOfTheNow:brewery:name"];
+                    string badName = configuration["beerOfTheNow:not_a_name"];
 
-                // Bind to an object
-                var options1 = new QueryOptions();
-                configuration.GetSection("apiQuery").Bind(options1);
+                    // Bind to an object
+                    var beer = new TheBeer();
+                    configuration.GetSection("beerOfTheNow").Bind(beer);
 
-                // A more elegant method
-                var options2 = configuration.GetSection("apiQuery").Get<QueryOptions>();
+                    // A more elegant method
+                    var beer2 = configuration.GetSection("beerOfTheNow").Get<TheBeer>();
 
-                // =NOTE= from the book
-                var options3 = serviceProvider.GetService<IOptions<QueryOptions>>()?.Value;
+                    // =NOTE= from the book
+                    var beer3 = serviceProvider.GetService<IOptions<TheBeer>>()?.Value;
 
-                // Note additional properties in config are ignored and additional properties on the binding class are default.
-                // Again very resiliant.
+                    // Note additional properties in config are ignored and additional properties on the binding class are default.
+                    // Again very resiliant.
 
-                // Get can be used to handle arrays of complex objects
-                var todos = configuration.GetSection("todos").Get<Todo[]>();
-
-                await Task.CompletedTask;
+                    // Loading collections from config
+                    var todos = configuration.GetSection("todos").Get<Todo[]>();
+                    var todos2 = serviceProvider.GetService<IOptions<List<Todo>>>()?.Value;
+                }
             }
             catch (Exception ex)
             {
@@ -52,7 +56,6 @@ namespace StupidTodo.ClientConsole
             }
             finally
             {
-                if (serviceProvider != null) { serviceProvider.Dispose(); }
                 Console.WriteLine();
                 Console.WriteLine("...");
                 Console.ReadKey();
@@ -70,7 +73,8 @@ namespace StupidTodo.ClientConsole
             return new ServiceCollection()
                             .AddSingleton(configuration)
                             // =NOTE= from the book
-                            .Configure<QueryOptions>(configuration.GetSection("apiQuery"))
+                            .Configure<TheBeer>(configuration.GetSection("beerOfTheNow"))
+                            .Configure<List<Todo>>(configuration.GetSection("todos"))
                             .BuildServiceProvider();
         }
     }
