@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace StupidTodo.ClientConsole
+namespace StupidTodo.Domain
 {
     public class TheBeer
     {

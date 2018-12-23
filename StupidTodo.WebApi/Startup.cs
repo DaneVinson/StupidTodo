@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using StupidTodo.Domain;
 
 namespace StupidTodo.WebApi
 {
@@ -30,46 +31,51 @@ namespace StupidTodo.WebApi
 
             app.UseMvc()
                 .UseCors(builder => builder.WithOrigins("*")
-                                        .AllowAnyMethod()
-                                        .AllowAnyHeader()
-                                        .AllowCredentials());
+                                            .AllowAnyMethod()
+                                            .AllowAnyHeader()
+                                            .AllowCredentials());
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            ExploreConfiguration(services)
-                .AddCors()
-                .AddMvc();
+            services = ExploreConfiguration(services);
+
+            services.AddCors()
+                    .AddMvc();
         }
 
         private IServiceCollection ExploreConfiguration(IServiceCollection services)
         {
-            // Get a simple setting, 
-            //  case insensitive
-            //  recommend standardizing naming convention
-            IConfigurationSection section = Configuration.GetSection("SIMPLEsetting");
+            // Equivalent ways to get simple config settings
+            string fav1 = Configuration.GetSection("favoriteBeerStyle")?.Value;
+            string fav2 = Configuration["favoriteBeerStyle"];
 
-            // multi level
-            string setting1 = Configuration.GetSection("SIMPLEGraph")["simpleGRAPHsetting1"];
+            // Get complex data, very resilient
+            string current = Configuration["beerOfTheNow:name"];
+            string currentBreweryName = Configuration["beerOfTheNow:brewery:name"];
+            string badName = Configuration["beerOfTheNow:BAD_NAME!_no_beer_for_you"];
 
-            // better way
-            IConfigurationSection s2 = Configuration.GetSection("simplegraph:simplegraphsetting1");
+            // Bind to an object then setup for DI
+            var beer = new TheBeer();
+            Configuration.GetSection("beerOfTheNow").Bind(beer);
 
-            // even better way
-            string s3 = Configuration["simplegraph:simplegraphsetting1"];
+            // A more elegant method
+            var beer2 = Configuration.GetSection("beerOfTheNow").Get<TheBeer>();
+            var todos = Configuration.GetSection("todos").Get<Todo[]>();
 
-            string s4 = Configuration["configName"];
-            
+            services.AddSingleton(beer);
+            services.AddSingleton(todos.ToList());
 
+            // =NOTE= from the book
+            services.Configure<TheBeer>(Configuration.GetSection("beerOfTheNow"))
+                    .Configure<List<Todo>>(Configuration.GetSection("todos"));
 
-            // Bind to and object e.g.
-            // var foo = new Foo();
-            // Config.Bind(foo, "sectionName");
-
-            // From book
+            // Note additional properties in config are ignored and additional properties on the binding class are default.
+            // Again very resiliant.
 
             return services;
         }
+
 
         public IConfiguration Configuration { get; }
     }

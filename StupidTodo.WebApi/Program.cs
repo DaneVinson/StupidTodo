@@ -22,8 +22,7 @@ namespace StupidTodo.WebApi
                     // =NOTE= Blog point about customizing ASP.NET Core config here
                     .ConfigureAppConfiguration(options =>
                     {
-                        options.AddJsonFile("config-simple.json", false, true);
-                        options.AddJsonFile("config-fantasy.json", false, true);
+                        options.AddJsonFile("todos.json", false, true);
                     })
                     .UseStartup<Startup>()
                     .Build();

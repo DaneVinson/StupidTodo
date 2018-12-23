@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using StupidTodo.Domain;
 
 namespace StupidTodo.WebApi.Controllers
@@ -12,6 +13,14 @@ namespace StupidTodo.WebApi.Controllers
     [Route("api/[controller]")]
     public class TodoController : Controller
     {
+        public TodoController(
+            IOptions<TheBeer> beerOptions, 
+            IOptions<List<Todo>> todoOptions)
+        {
+            Todos = todoOptions?.Value;
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> AddTodoAsync([FromBody]Todo todo)
         {
@@ -70,17 +79,23 @@ namespace StupidTodo.WebApi.Controllers
         }
 
 
-        static TodoController()
-        {
-            Todos = new List<Todo>()
-            {
-                new Todo() { Description = "Gas up the car", Id = Guid.NewGuid().ToString() },
-                new Todo() { Description = "Find my next book", Id = Guid.NewGuid().ToString() },
-                new Todo() { Description = "Pick up milk", Id = Guid.NewGuid().ToString() },
-                new Todo() { Description = "Take a breath", Done = true, Id = Guid.NewGuid().ToString() }
-            };
-        }
+        private readonly List<Todo> Todos;
 
-        private static readonly List<Todo> Todos;
+        #region Static Todos
+
+        //static TodoController()
+        //{
+        //    Todos = new List<Todo>()
+        //    {
+        //        new Todo() { Description = "Gas up the car", Id = Guid.NewGuid().ToString() },
+        //        new Todo() { Description = "Find my next book", Id = Guid.NewGuid().ToString() },
+        //        new Todo() { Description = "Pick up milk", Id = Guid.NewGuid().ToString() },
+        //        new Todo() { Description = "Take a breath", Done = true, Id = Guid.NewGuid().ToString() }
+        //    };
+        //}
+
+        //private static readonly List<Todo> Todos;
+
+        #endregion
     }
 }
