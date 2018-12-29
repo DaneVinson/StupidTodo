@@ -14,9 +14,12 @@ namespace StupidTodo.WebApi.Controllers
     public class TodoController : Controller
     {
         public TodoController(
+            TheBeer beer,
             IOptions<TheBeer> beerOptions, 
             IOptions<List<Todo>> todoOptions)
         {
+            Beer = beer;
+            BeerFromOptions = beerOptions?.Value;
             Todos = todoOptions?.Value;
         }
 
@@ -79,9 +82,11 @@ namespace StupidTodo.WebApi.Controllers
         }
 
 
+        private readonly TheBeer BeerFromOptions;
+        private readonly TheBeer Beer;
         private readonly List<Todo> Todos;
 
-        #region Static Todos
+        #region Static Todos, deprecated for branch
 
         //static TodoController()
         //{

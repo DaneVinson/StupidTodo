@@ -58,20 +58,17 @@ namespace StupidTodo.WebApi
             // Bind to an object then setup for DI
             var beer = new TheBeer();
             Configuration.GetSection("beerOfTheNow").Bind(beer);
+            services.AddSingleton(beer);
 
             // A more elegant method
-            var beer2 = Configuration.GetSection("beerOfTheNow").Get<TheBeer>();
-            var todos = Configuration.GetSection("todos").Get<Todo[]>();
-
-            services.AddSingleton(beer);
-            services.AddSingleton(todos.ToList());
+            services.AddSingleton(Configuration.GetSection("beerOfTheNow")?.Get<TheBeer>());
 
             // =NOTE= from the book
-            services.Configure<TheBeer>(Configuration.GetSection("beerOfTheNow"))
-                    .Configure<List<Todo>>(Configuration.GetSection("todos"));
+            services.Configure<TheBeer>(Configuration.GetSection("beerOfTheNow"));
 
-            // Note additional properties in config are ignored and additional properties on the binding class are default.
-            // Again very resiliant.
+            // Collections
+            services.AddSingleton(Configuration.GetSection("todos")?.Get<Todo[]>()?.ToList());
+            services.Configure<List<Todo>>(Configuration.GetSection("todos"));
 
             return services;
         }
