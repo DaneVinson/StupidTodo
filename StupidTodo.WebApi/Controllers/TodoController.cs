@@ -20,7 +20,10 @@ namespace StupidTodo.WebApi.Controllers
         {
             Beer = beer;
             BeerFromOptions = beerOptions?.Value;
-            Todos = todoOptions?.Value;
+            if (Todos == null)
+            {
+                Todos = todoOptions?.Value;
+            }
         }
 
 
@@ -84,23 +87,6 @@ namespace StupidTodo.WebApi.Controllers
 
         private readonly TheBeer BeerFromOptions;
         private readonly TheBeer Beer;
-        private readonly List<Todo> Todos;
-
-        #region Static Todos, deprecated for branch
-
-        //static TodoController()
-        //{
-        //    Todos = new List<Todo>()
-        //    {
-        //        new Todo() { Description = "Gas up the car", Id = Guid.NewGuid().ToString() },
-        //        new Todo() { Description = "Find my next book", Id = Guid.NewGuid().ToString() },
-        //        new Todo() { Description = "Pick up milk", Id = Guid.NewGuid().ToString() },
-        //        new Todo() { Description = "Take a breath", Done = true, Id = Guid.NewGuid().ToString() }
-        //    };
-        //}
-
-        //private static readonly List<Todo> Todos;
-
-        #endregion
+        private static List<Todo> Todos { get; set; }
     }
 }
