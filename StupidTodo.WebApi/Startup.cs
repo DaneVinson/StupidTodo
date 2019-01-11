@@ -28,7 +28,8 @@ namespace StupidTodo.WebApi
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseMvc()
+            app.UseStaticFiles()
+                .UseMvc()
                 .UseCors(builder => builder.WithOrigins("*")
                                         .AllowAnyMethod()
                                         .AllowAnyHeader()

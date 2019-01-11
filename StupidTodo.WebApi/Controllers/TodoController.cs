@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LiteDB;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using StupidTodo.Domain;
 
 namespace StupidTodo.WebApi.Controllers
@@ -13,15 +15,11 @@ namespace StupidTodo.WebApi.Controllers
     public class TodoController : Controller
     {
         [HttpPost]
-        public async Task<IActionResult> AddTodoAsync([FromBody]Todo todo)
+        public async Task<ActionResult<Todo>> AddTodoAsync([FromBody]Todo todo)
         {
             await Task.CompletedTask;
-            if (todo?.Description == null || Todos.Any(t => t.Id == todo.Id)) { return BadRequest(); }
-            else
-            {
-                Todos.Insert(0, todo);
-                return Ok(todo);
-            }
+
+            return UpsertTodo(todo);
         }
 
         [HttpDelete]
@@ -29,58 +27,78 @@ namespace StupidTodo.WebApi.Controllers
         public async Task<IActionResult> DeleteTodoAsync(string id)
         {
             await Task.CompletedTask;
-            var todo = Todos.FirstOrDefault(t => t.Id == id);
-            if (todo == null) { return NotFound(); }
-            else
+
+            using (var database = NewLiteDatabase())
             {
-                Todos.Remove(todo);
-                return Ok();
+                var success = GetTodosCollection(database).Delete(id);
+                if (success) { return Ok(); }
+                else { return BadRequest(); }
             }
         }
 
         [HttpGet]
         [Route("done")]
-        public async Task<IActionResult> GetDoneTodosAsync()
+        public async Task<ActionResult<IEnumerable<Todo>>> GetDoneTodosAsync()
         {
             await Task.CompletedTask;
-            return Ok(Todos.Where(t => t.Done).ToArray());
+
+            return GetTodos(true);
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetTodosAsync()
+        public async Task<ActionResult<IEnumerable<Todo>>> GetTodosAsync()
         {
             await Task.CompletedTask;
-            return Ok(Todos.Where(t => !t.Done).ToArray());
+
+            return GetTodos(false);
         }
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<IActionResult> UpdateTodoAsync(string id, [FromBody]Todo todo)
+        public async Task<ActionResult<Todo>> UpdateTodoAsync(string id, [FromBody]Todo todo)
         {
             await Task.CompletedTask;
-            var existingTodo = Todos.FirstOrDefault(t => t.Id == id);
-            if (existingTodo == null) { return NotFound(); }
-            else if (String.IsNullOrWhiteSpace(todo.Description)) { return BadRequest(); }
-            else
+
+            return UpsertTodo(todo);
+        }
+
+
+        private Todo[] GetTodos(bool done)
+        {
+            using (var database = NewLiteDatabase())
             {
-                existingTodo.Description = todo.Description;
-                existingTodo.Done = todo.Done;
-                return Ok(existingTodo);
+                return GetTodosCollection(database)?.FindAll()
+                                                    .Where(t => t.Done == done)
+                                                    .ToArray();
             }
         }
 
-
-        static TodoController()
+        private LiteCollection<Todo> GetTodosCollection(LiteDatabase database)
         {
-            Todos = new List<Todo>()
-            {
-                new Todo() { Description = "Gas up the car", Id = Guid.NewGuid().ToString() },
-                new Todo() { Description = "Find my next book", Id = Guid.NewGuid().ToString() },
-                new Todo() { Description = "Pick up milk", Id = Guid.NewGuid().ToString() },
-                new Todo() { Description = "Take a breath", Done = true, Id = Guid.NewGuid().ToString() }
-            };
+            return database.GetCollection<Todo>("todos");
         }
 
-        private static readonly List<Todo> Todos;
+        private LiteDatabase NewLiteDatabase()
+        {
+            return new LiteDatabase("stupid-todo.db");
+        }
+
+        private ActionResult<Todo> UpsertTodo(Todo todo)
+        {
+            // Validate
+            if (todo == null || 
+                String.IsNullOrWhiteSpace(todo.Description) || 
+                String.IsNullOrWhiteSpace(todo.Id))
+            {
+                return BadRequest();
+            }
+
+            using (var database = NewLiteDatabase())
+            {
+                var result = GetTodosCollection(database)?.Upsert(todo);
+                if (result == null || !result.Value) { return BadRequest(); }
+                else { return todo; }
+            }
+        }
     }
 }
