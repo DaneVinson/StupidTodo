@@ -1,8 +1,0 @@
-﻿{
-  "configName": "simple",
-  "simplesetting": "yep, it's simple",
-  "simplegraph": {
-    "simplegraphsetting1": "yep, this child is simple too",
-    "simplegraphsetting2": 23
-  }
-}

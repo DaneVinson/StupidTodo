@@ -60,7 +60,7 @@ namespace StupidTodo.WebApi
             Configuration.GetSection("beerOfTheNow").Bind(beer);
             services.AddSingleton(beer);
 
-            // A more elegant method
+            // A more elegant method?
             services.AddSingleton(Configuration.GetSection("beerOfTheNow")?.Get<TheBeer>());
 
             // The Configure method resolves depenencies of type IOptions<TOption>
