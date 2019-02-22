@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using StupidTodo.AzureStorageTables;
+using StupidTodo.Domain;
 
 namespace StupidTodo.WebApi
 {
@@ -28,15 +30,20 @@ namespace StupidTodo.WebApi
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseMvc()
+            app.UseStaticFiles()
+                .UseMvc()
                 .UseCors(builder => builder.WithOrigins("*")
-                                        .AllowAnyMethod()
-                                        .AllowAnyHeader()
-                                        .AllowCredentials());
+                                            .AllowAnyMethod()
+                                            .AllowAnyHeader()
+                                            .AllowCredentials());
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton(Configuration.GetSection("AzureStorage")?.Get<AzureStorageOptions>())
+                    .AddSingleton(Configuration.GetSection("User")?.Get<UserOptions>())
+                    .AddTransient<ITodoRepository, TodoRepository>();
+
             services.AddCors()
                     .AddMvc();
         }

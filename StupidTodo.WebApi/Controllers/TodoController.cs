@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using StupidTodo.AzureStorageTables;
 using StupidTodo.Domain;
 
 namespace StupidTodo.WebApi.Controllers
@@ -12,75 +13,54 @@ namespace StupidTodo.WebApi.Controllers
     [Route("api/[controller]")]
     public class TodoController : Controller
     {
-        [HttpPost]
-        public async Task<IActionResult> AddTodoAsync([FromBody]Todo todo)
+        public TodoController(ITodoRepository repository, UserOptions user)
         {
-            await Task.CompletedTask;
-            if (todo?.Description == null || Todos.Any(t => t.Id == todo.Id)) { return BadRequest(); }
-            else
-            {
-                Todos.Insert(0, todo);
-                return Ok(todo);
-            }
+            Repository = repository ?? throw new ArgumentNullException();
+            TodoUser = user ?? throw new ArgumentNullException();
+        }
+
+
+        [HttpPost]
+        public async Task<ActionResult<Todo>> AddTodoAsync([FromBody]Todo todo)
+        {
+            todo.UserId = TodoUser.Id;
+            todo = await Repository.AddTodoAsync(todo);
+            if (todo == null) { return BadRequest(); }
+            return todo;
         }
 
         [HttpDelete]
         [Route("{id}")]
-        public async Task<IActionResult> DeleteTodoAsync(string id)
+        public async Task<ActionResult> DeleteTodoAsync(string id)
         {
-            await Task.CompletedTask;
-            var todo = Todos.FirstOrDefault(t => t.Id == id);
-            if (todo == null) { return NotFound(); }
-            else
-            {
-                Todos.Remove(todo);
-                return Ok();
-            }
+            if (await Repository.DeleteTodoAsync(TodoUser.Id, id)) { return Ok(); }
+            else { return BadRequest(); }
         }
 
         [HttpGet]
         [Route("done")]
-        public async Task<IActionResult> GetDoneTodosAsync()
+        public async Task<ActionResult<IEnumerable<Todo>>> GetDoneTodosAsync()
         {
-            await Task.CompletedTask;
-            return Ok(Todos.Where(t => t.Done).ToArray());
+            return Ok(await Repository.GetTodosAsync(TodoUser.Id, true));
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetTodosAsync()
+        public async Task<ActionResult<IEnumerable<Todo>>> GetTodosAsync()
         {
-            await Task.CompletedTask;
-            return Ok(Todos.Where(t => !t.Done).ToArray());
+            return Ok(await Repository.GetTodosAsync(TodoUser.Id));
         }
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<IActionResult> UpdateTodoAsync(string id, [FromBody]Todo todo)
+        public async Task<ActionResult<Todo>> UpdateTodoAsync(string id, [FromBody]Todo todo)
         {
-            await Task.CompletedTask;
-            var existingTodo = Todos.FirstOrDefault(t => t.Id == id);
-            if (existingTodo == null) { return NotFound(); }
-            else if (String.IsNullOrWhiteSpace(todo.Description)) { return BadRequest(); }
-            else
-            {
-                existingTodo.Description = todo.Description;
-                existingTodo.Done = todo.Done;
-                return Ok(existingTodo);
-            }
+            todo = await Repository.UpdateTodoAsync(todo);
+            if (todo == null) { return BadRequest(); }
+            else { return todo; }
         }
 
 
-        static TodoController()
-        {
-            Todos = new List<Todo>()
-            {
-                new Todo() { Description = "Gas up the car", Id = Guid.NewGuid().ToString() },
-                new Todo() { Description = "Find my next book", Id = Guid.NewGuid().ToString() },
-                new Todo() { Description = "Pick up milk", Id = Guid.NewGuid().ToString() },
-                new Todo() { Description = "Take a breath", Done = true, Id = Guid.NewGuid().ToString() }
-            };
-        }
-
-        private static readonly List<Todo> Todos;
+        private readonly ITodoRepository Repository;
+        private readonly UserOptions TodoUser;
     }
 }
