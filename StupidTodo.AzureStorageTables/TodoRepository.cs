@@ -47,7 +47,7 @@ namespace StupidTodo.AzureStorageTables
 
         public async Task<Todo> UpdateTodoAsync(Todo todo)
         {
-            var result = await Options.ExecuteWithTableAsync(nameof(Todo), TableOperation.Replace(new TodoAdapter(todo)));
+            var result = await Options.ExecuteWithTableAsync(nameof(Todo), TableOperation.Replace(new TodoAdapter(todo) { ETag = "*" }));
             if (result.HttpStatusCode.IsSuccessCode()) { return todo; }
             return null;
         }

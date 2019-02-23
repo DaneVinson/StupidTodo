@@ -36,19 +36,19 @@ var vm = new Vue({
         }
       },
       completeTodo : function (id) {
-        let todo = this.todos.find(t => t.id == id);
+        let todo = this.todos.find(t => t.id === id);
         if (todo) {
           todo.done = !todo.done;
           this.saveTodo(id);
         }
       },
       deleteTodo : function (id) {
-        let todo = this.todos.find(t => t.id == id);
+        let todo = this.todos.find(t => t.id === id);
         if (todo) {
           this.$http.delete(this.api + '/' + id).then((response) => {
           });
           for (let i = 0; i < this.todos.length; i++) {
-            if (this.todos[i].id == id) {
+            if (this.todos[i].id === id) {
               this.todos.splice(i, 1);
               i = this.todos.length;
             }
@@ -74,12 +74,13 @@ var vm = new Vue({
       },
       getTodoFromDto : function (dto) {
         return {
-          editDescription: dto.description,
-          description: dto.description,
-          done: dto.done,
-          id: dto.id,
-          isEdit: false
-        }
+            editDescription: dto.description,
+            description: dto.description,
+            done: dto.done,
+            id: dto.id,
+            isEdit: false,
+            userId: dto.userId
+        };
       },
       getTodos : function () {
         this.$http.get(this.api).then((response) => {
@@ -93,7 +94,7 @@ var vm = new Vue({
         let done = this.todos.find(t => t.done);
         while (done) {
           for (let i = 0; i < this.todos.length; i++) {
-            if (this.todos[i].id == done.id) {
+            if (this.todos[i].id === done.id) {
               this.todos.splice(i, 1);
               i = this.todos.length;
             }
@@ -102,15 +103,16 @@ var vm = new Vue({
         }
       },
       saveTodo : function (id) {
-        let todo = this.todos.find(t => t.id == id);
+        let todo = this.todos.find(t => t.id === id);
         if (todo) {
+          console.log(todo);
           todo.description = todo.editDescription;
           this.$http.put(this.api + '/' + id, todo).then((response) => { });
           todo.isEdit = false;
         }
       },
       toggleEditDescription : function (id) {
-        let todo = this.todos.find(t => t.id == id);
+        let todo = this.todos.find(t => t.id === id);
         if (todo) {
           todo.isEdit = !todo.isEdit;
           todo.editDescription = todo.description;
