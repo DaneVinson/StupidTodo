@@ -13,20 +13,20 @@ namespace StupidTodo.WebApi.Controllers
     public class TodoController : Controller
     {
         [HttpPost]
-        public async Task<IActionResult> AddTodoAsync([FromBody]Todo todo)
+        public async Task<ActionResult<Todo>> AddTodoAsync([FromBody]Todo todo)
         {
             await Task.CompletedTask;
             if (todo?.Description == null || Todos.Any(t => t.Id == todo.Id)) { return BadRequest(); }
             else
             {
                 Todos.Insert(0, todo);
-                return Ok(todo);
+                return todo;
             }
         }
 
         [HttpDelete]
         [Route("{id}")]
-        public async Task<IActionResult> DeleteTodoAsync(string id)
+        public async Task<ActionResult> DeleteTodoAsync(string id)
         {
             await Task.CompletedTask;
             var todo = Todos.FirstOrDefault(t => t.Id == id);
@@ -40,22 +40,22 @@ namespace StupidTodo.WebApi.Controllers
 
         [HttpGet]
         [Route("done")]
-        public async Task<IActionResult> GetDoneTodosAsync()
+        public async Task<ActionResult<IEnumerable<Todo>>> GetDoneTodosAsync()
         {
             await Task.CompletedTask;
-            return Ok(Todos.Where(t => t.Done).ToArray());
+            return Todos.Where(t => t.Done).ToArray();
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetTodosAsync()
+        public async Task<ActionResult<IEnumerable<Todo>>> GetTodosAsync()
         {
             await Task.CompletedTask;
-            return Ok(Todos.Where(t => !t.Done).ToArray());
+            return Todos.Where(t => !t.Done).ToArray();
         }
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<IActionResult> UpdateTodoAsync(string id, [FromBody]Todo todo)
+        public async Task<ActionResult<Todo>> UpdateTodoAsync(string id, [FromBody]Todo todo)
         {
             await Task.CompletedTask;
             var existingTodo = Todos.FirstOrDefault(t => t.Id == id);
@@ -65,7 +65,7 @@ namespace StupidTodo.WebApi.Controllers
             {
                 existingTodo.Description = todo.Description;
                 existingTodo.Done = todo.Done;
-                return Ok(existingTodo);
+                return existingTodo;
             }
         }
 
@@ -74,13 +74,15 @@ namespace StupidTodo.WebApi.Controllers
         {
             Todos = new List<Todo>()
             {
-                new Todo() { Description = "Gas up the car", Id = Guid.NewGuid().ToString() },
-                new Todo() { Description = "Find my next book", Id = Guid.NewGuid().ToString() },
-                new Todo() { Description = "Pick up milk", Id = Guid.NewGuid().ToString() },
-                new Todo() { Description = "Take a breath", Done = true, Id = Guid.NewGuid().ToString() }
+                new Todo() { Description = "Gas up the car", Id = Guid.NewGuid().ToString(), UserId = BilboId },
+                new Todo() { Description = "Find my next book", Id = Guid.NewGuid().ToString(), UserId = BilboId },
+                new Todo() { Description = "Pick up milk", Id = Guid.NewGuid().ToString(), UserId = BilboId },
+                new Todo() { Description = "Take a breath", Done = true, Id = Guid.NewGuid().ToString(), UserId = BilboId }
             };
         }
 
         private static readonly List<Todo> Todos;
+
+        private const string BilboId = "bilbo.baggins@shire.me";
     }
 }
