@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Orleans;
+using Orleans.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using StupidTodo.AzureStorageTables;
 using StupidTodo.Domain;
 
 namespace StupidTodo.WebApi.Controllers
@@ -13,8 +14,9 @@ namespace StupidTodo.WebApi.Controllers
     [Route("api/[controller]")]
     public class TodoController : Controller
     {
-        public TodoController(ITodoRepository repository, UserOptions user)
+        public TodoController(ITodoRepository repository, IClusterClient clusterClient, UserOptions user)
         {
+            ClusterClient = clusterClient ?? throw new ArgumentNullException();
             Repository = repository ?? throw new ArgumentNullException();
             TodoUser = user ?? throw new ArgumentNullException();
         }
@@ -23,8 +25,7 @@ namespace StupidTodo.WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Todo>> AddTodoAsync([FromBody]Todo todo)
         {
-            todo.UserId = TodoUser.Id;
-            todo = await Repository.AddTodoAsync(todo);
+            todo = await GetGrain().AddTodoAsync(todo);
             if (todo == null) { return BadRequest(); }
             return todo;
         }
@@ -33,33 +34,41 @@ namespace StupidTodo.WebApi.Controllers
         [Route("{id}")]
         public async Task<ActionResult> DeleteTodoAsync(string id)
         {
-            if (await Repository.DeleteTodoAsync(TodoUser.Id, id)) { return Ok(); }
-            else { return BadRequest(); }
+            var success = await GetGrain().DeleteTodoAsync(id);
+            if (success) { return Ok(); }
+            return BadRequest();
         }
 
         [HttpGet]
         [Route("done")]
         public async Task<ActionResult<IEnumerable<Todo>>> GetDoneTodosAsync()
         {
-            return Ok(await Repository.GetTodosAsync(TodoUser.Id, true));
+            return (await GetGrain().GetTodosAsync(true))?.ToArray();
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Todo>>> GetTodosAsync()
         {
-            return Ok(await Repository.GetTodosAsync(TodoUser.Id));
+            return (await GetGrain().GetTodosAsync())?.ToArray();
         }
 
         [HttpPut]
         [Route("{id}")]
         public async Task<ActionResult<Todo>> UpdateTodoAsync(string id, [FromBody]Todo todo)
         {
-            todo = await Repository.UpdateTodoAsync(todo);
+            todo = await GetGrain().UpdateTodoAsync(todo);
             if (todo == null) { return BadRequest(); }
-            else { return todo; }
+            return todo;
         }
 
 
+        private IUsersTodoGrain GetGrain()
+        {
+            return ClusterClient.GetGrain<IUsersTodoGrain>(TodoUser.Id);
+        }
+
+
+        private readonly IClusterClient ClusterClient;
         private readonly ITodoRepository Repository;
         private readonly UserOptions TodoUser;
     }

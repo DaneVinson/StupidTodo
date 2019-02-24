@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace StupidTodo.AzureStorageTables
+namespace StupidTodo.AzureStorage
 {
     internal class TodoAdapter : TableEntityAdapter<Todo>
     {
