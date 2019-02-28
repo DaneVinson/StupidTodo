@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace StupidTodo.Orleans.Grains
 {
-    public class UsersTodoGrain : Grain, IUsersTodoGrain
+    public class UserTodosGrain : Grain, IUserTodosGrain
     {
-        public UsersTodoGrain(ITodoRepository repository)
+        public UserTodosGrain(ITodoRepository repository)
         {
             Repository = repository ?? throw new ArgumentNullException();
             Todos = new List<Todo>();
@@ -18,6 +18,7 @@ namespace StupidTodo.Orleans.Grains
 
         public override async Task OnActivateAsync()
         {
+            Todos.AddRange(await Repository.GetTodosAsync(this.GetPrimaryKeyString()));
             await base.OnActivateAsync();
         }
 

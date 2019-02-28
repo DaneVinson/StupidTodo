@@ -7,7 +7,12 @@ namespace StupidTodo.Domain
 {
     public interface ITodoRepository
     {
+        Task<IEnumerable<Todo>> AddTodosAsync(IEnumerable<Todo> todo);
+
+        Task<bool> DeleteTodoAsync(string userId, string id);
+
         Task<IEnumerable<Todo>> GetTodosAsync(string userId);
-        Task<bool> PersistTodosAsync(string userId, IEnumerable<Todo> todos);
+
+        Task<IEnumerable<Todo>> UpdateTodosAsync(IEnumerable<Todo> todos);
     }
 }

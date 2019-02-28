@@ -52,7 +52,7 @@ namespace StupidTodo.WebApi
                                                         })
                                                         .ConfigureLogging(logging => logging.AddConsole())
                                                         .Build())
-                    .AddTransient<ITodoRepository, TodoRepository>();
+                    .AddTransient<ITodoRepository, TodosBlobRepository>();
 
             services.AddCors()
                     .AddMvc();

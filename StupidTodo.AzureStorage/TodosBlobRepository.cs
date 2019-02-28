@@ -12,9 +12,9 @@ using System.Threading.Tasks;
 
 namespace StupidTodo.AzureStorage
 {
-    public class TodoRepository : ITodoRepository
+    public class TodosBlobRepository : ITodoRepository
     {
-        public TodoRepository(AzureStorageOptions options)
+        public TodosBlobRepository(AzureStorageOptions options)
         {
             Options = options ?? throw new ArgumentNullException();
 
@@ -23,6 +23,11 @@ namespace StupidTodo.AzureStorage
                                                 .GetContainerReference(Options.TodoContainer);
         }
 
+
+        public Task<IEnumerable<Todo>> AddTodosAsync(IEnumerable<Todo> todo)
+        {
+            throw new NotImplementedException($"{nameof(ITodoRepository)}.{nameof(AddTodosAsync)} implementation excluded from {nameof(TodosBlobRepository)}");
+        }
 
         public async Task<IEnumerable<Todo>> GetTodosAsync(string userId)
         {
@@ -35,14 +40,19 @@ namespace StupidTodo.AzureStorage
             }
         }
 
-        public async Task<bool> PersistTodosAsync(string userId, IEnumerable<Todo> todos)
+        public Task<bool> DeleteTodoAsync(string userId, string id)
         {
-            if (todos == null || !todos.Any()) { return false; }
+            throw new NotImplementedException($"{nameof(ITodoRepository)}.{nameof(DeleteTodoAsync)} implementation excluded from {nameof(TodosBlobRepository)}");
+        }
+
+        public async Task<IEnumerable<Todo>> UpdateTodosAsync(IEnumerable<Todo> todos)
+        {
+            if (todos == null || !todos.Any()) { return null; }
             using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(todos.ToArray()))))
             {
-                CloudBlockBlob blockBlob = BlobContainer.GetBlockBlobReference(userId);
+                CloudBlockBlob blockBlob = BlobContainer.GetBlockBlobReference(todos.First().UserId);
                 await blockBlob.UploadFromStreamAsync(stream);
-                return true;
+                return todos;
             }
         }
 

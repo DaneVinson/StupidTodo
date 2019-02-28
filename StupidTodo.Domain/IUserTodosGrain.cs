@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace StupidTodo.Domain
 {
-    public interface IUsersTodoGrain : IGrainWithStringKey
+    public interface IUserTodosGrain : IGrainWithStringKey
     {
         Task<Todo> AddTodoAsync(Todo todo);
 

@@ -62,9 +62,9 @@ namespace StupidTodo.WebApi.Controllers
         }
 
 
-        private IUsersTodoGrain GetGrain()
+        private IUserTodosGrain GetGrain()
         {
-            return ClusterClient.GetGrain<IUsersTodoGrain>(TodoUser.Id);
+            return ClusterClient.GetGrain<IUserTodosGrain>(TodoUser.Id);
         }
 
 

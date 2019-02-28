@@ -43,7 +43,7 @@ namespace StupidTodo.Orleans.Silo
                                                     options.ClusterId = "development";
                                                     options.ServiceId = "StupidTodo";
                                                 })
-                                                .ConfigureApplicationParts(parts => parts.AddApplicationPart(typeof(UsersTodoGrain).Assembly).WithReferences())
+                                                .ConfigureApplicationParts(parts => parts.AddApplicationPart(typeof(UserTodosGrain).Assembly).WithReferences())
                                                 .ConfigureLogging(logging => logging.AddConsole());
 
             var host = builder.Build();
