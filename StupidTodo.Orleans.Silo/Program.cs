@@ -1,9 +1,14 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Configuration;
 using Orleans.Hosting;
+using StupidTodo.AzureStorage;
+using StupidTodo.Domain;
 using StupidTodo.Orleans.Grains;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace StupidTodo.Orleans.Silo
@@ -43,6 +48,11 @@ namespace StupidTodo.Orleans.Silo
                                                     options.ClusterId = "development";
                                                     options.ServiceId = "StupidTodo";
                                                 })
+                                                .ConfigureServices(services =>
+                                                {
+                                                    services.AddSingleton(Configuration.GetSection("AzureStorage").Get<AzureStorageOptions>())
+                                                            .AddTransient<ITodoRepository, TodoTableRepository>();
+                                                })
                                                 .ConfigureApplicationParts(parts => parts.AddApplicationPart(typeof(UserTodosGrain).Assembly).WithReferences())
                                                 .ConfigureLogging(logging => logging.AddConsole());
 
@@ -50,5 +60,16 @@ namespace StupidTodo.Orleans.Silo
             await host.StartAsync();
             return host;
         }
+
+        static Program()
+        {
+            Configuration = new ConfigurationBuilder()
+                                    .SetBasePath(Directory.GetCurrentDirectory())
+                                    .AddJsonFile("appsettings.json")
+                                    .AddJsonFile("appsettings.Development.json")
+                                    .Build();
+        }
+
+        private static readonly IConfigurationRoot Configuration;
     }
 }

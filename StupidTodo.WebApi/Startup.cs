@@ -42,31 +42,19 @@ namespace StupidTodo.WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(Configuration.GetSection("AzureStorage")?.Get<AzureStorageOptions>())
-                    .AddSingleton(Configuration.GetSection("User")?.Get<UserOptions>())
+            services.AddSingleton(Configuration.GetSection("AzureStorage").Get<AzureStorageOptions>())
+                    .AddSingleton(Configuration.GetSection("User").Get<UserOptions>())
                     .AddSingleton(new ClientBuilder().UseLocalhostClustering()
                                                         .Configure<ClusterOptions>(options =>
                                                         {
                                                             options.ClusterId = "development";
                                                             options.ServiceId = "StupidTodo";
                                                         })
-                                                        .ConfigureLogging(logging => logging.AddConsole())
                                                         .Build())
                     .AddTransient<ITodoRepository, TodosBlobRepository>();
 
             services.AddCors()
                     .AddMvc();
-
-            IClusterClient client;
-            client = new ClientBuilder()
-                .UseLocalhostClustering()
-                .Configure<ClusterOptions>(options =>
-                {
-                    options.ClusterId = "development";
-                    options.ServiceId = "StupidTodo";
-                })
-                .ConfigureLogging(logging => logging.AddConsole())
-                .Build();
         }
 
 

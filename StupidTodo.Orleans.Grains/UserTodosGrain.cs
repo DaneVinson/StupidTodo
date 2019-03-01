@@ -16,33 +16,46 @@ namespace StupidTodo.Orleans.Grains
             Todos = new List<Todo>();
         }
 
+
         public override async Task OnActivateAsync()
         {
             Todos.AddRange(await Repository.GetTodosAsync(this.GetPrimaryKeyString()));
             await base.OnActivateAsync();
         }
 
+        #region IUserTodosGrain
 
-        public Task<Todo> AddTodoAsync(Todo todo)
+        public async Task<Todo> AddTodoAsync(Todo todo)
         {
-            throw new NotImplementedException();
+            var todos = await Repository.AddTodosAsync(new Todo[] { todo });
+            todo = todos?.FirstOrDefault();
+            if (todo != null) { Todos.Add(todo); }
+            return todo;
         }
 
-        public Task<bool> DeleteTodoAsync(string id)
+        public async Task<bool> DeleteTodoAsync(string id)
         {
-            throw new NotImplementedException();
+            var todo = Todos.FirstOrDefault(t => t.Id == id);
+            if (todo == null) { return false; }
+            var success = await Repository.DeleteTodoAsync(todo.UserId, id);
+            if (success) { Todos.Remove(todo); }
+            return success;
         }
 
         public Task<IEnumerable<Todo>> GetTodosAsync(bool done = false)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(Todos.Where(t => t.Done == done));
         }
 
-        public Task<Todo> UpdateTodoAsync(Todo todo)
+        public async Task<Todo> UpdateTodoAsync(Todo todo)
         {
-            throw new NotImplementedException();
+            var todos = await Repository.UpdateTodosAsync(new Todo[] { todo });
+            todo = todos?.FirstOrDefault();
+            if (todo != null) { Todos.Add(todo); }
+            return todo;
         }
 
+        #endregion
 
         private readonly List<Todo> Todos;
         private readonly ITodoRepository Repository;

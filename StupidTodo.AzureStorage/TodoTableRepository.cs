@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace StupidTodo.AzureStorage
 {
-    public class TodoRepository : ITodoRepository
+    public class TodoTableRepository : ITodoRepository
     {
-        public TodoRepository(AzureStorageOptions options)
+        public TodoTableRepository(AzureStorageOptions options)
         {
             Options = options ?? throw new ArgumentNullException();
         }
