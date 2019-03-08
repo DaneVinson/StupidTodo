@@ -44,7 +44,7 @@ namespace StupidTodo.Orleans.Grains
 
         public Task<IEnumerable<Todo>> GetTodosAsync(bool done = false)
         {
-            return Task.FromResult(Todos.Where(t => t.Done == done));
+            return Task.FromResult(Todos.Where(t => t.Done == done).ToArray().AsEnumerable());
         }
 
         public async Task<Todo> UpdateTodoAsync(Todo todo)

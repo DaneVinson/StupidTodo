@@ -56,8 +56,10 @@ namespace StupidTodo.AzureStorage
                 batchOperation.InsertOrReplace(new TodoAdapter(todo) { ETag = "*" });
             }
             var results = await Options.GetCloudTable(nameof(Todo)).ExecuteBatchAsync(batchOperation);
-            return results.Where(r => r.HttpStatusCode.IsSuccessCode()).Select(r => r.Result as Todo);
-
+            return results
+                    .Where(r => r.HttpStatusCode.IsSuccessCode())
+                    .Select(r => ((TodoAdapter)r.Result)?.OriginalEntity)
+                    .ToArray();
         }
 
 

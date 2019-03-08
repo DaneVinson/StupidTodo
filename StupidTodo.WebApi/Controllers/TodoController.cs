@@ -25,6 +25,7 @@ namespace StupidTodo.WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Todo>> AddTodoAsync([FromBody]Todo todo)
         {
+            todo.UserId = TodoUser.Id;
             todo = await GetGrain().AddTodoAsync(todo);
             if (todo == null) { return BadRequest(); }
             return todo;
@@ -56,6 +57,7 @@ namespace StupidTodo.WebApi.Controllers
         [Route("{id}")]
         public async Task<ActionResult<Todo>> UpdateTodoAsync(string id, [FromBody]Todo todo)
         {
+            todo.UserId = TodoUser.Id;
             todo = await GetGrain().UpdateTodoAsync(todo);
             if (todo == null) { return BadRequest(); }
             return todo;
@@ -64,6 +66,7 @@ namespace StupidTodo.WebApi.Controllers
 
         private IUserTodosGrain GetGrain()
         {
+            if (!ClusterClient.IsInitialized) { ClusterClient.Connect().GetAwaiter().GetResult(); }
             return ClusterClient.GetGrain<IUserTodosGrain>(TodoUser.Id);
         }
 
