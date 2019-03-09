@@ -51,7 +51,16 @@ namespace StupidTodo.Orleans.Grains
         {
             var todos = await Repository.UpdateTodosAsync(new Todo[] { todo });
             todo = todos?.FirstOrDefault();
-            if (todo != null) { Todos.Add(todo); }
+            if (todo != null)
+            {
+                var currentTodo = Todos.FirstOrDefault(t => t.Id == todo.Id);
+                if (currentTodo == null) { Todos.Add(todo); }
+                else
+                {
+                    currentTodo.Description = todo.Description;
+                    currentTodo.Done = todo.Done;
+                }
+            }
             return todo;
         }
 

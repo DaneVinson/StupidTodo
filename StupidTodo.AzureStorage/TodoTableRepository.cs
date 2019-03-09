@@ -55,15 +55,17 @@ namespace StupidTodo.AzureStorage
             {
                 batchOperation.InsertOrReplace(new TodoAdapter(todo) { ETag = "*" });
             }
-            var results = await Options.GetCloudTable(nameof(Todo)).ExecuteBatchAsync(batchOperation);
+            var results = await Options
+                                    .GetCloudTable(nameof(Todo))
+                                    .ExecuteBatchAsync(batchOperation);
             return results
                     .Where(r => r.HttpStatusCode.IsSuccessCode())
                     .Select(r => ((TodoAdapter)r.Result)?.OriginalEntity)
                     .ToArray();
         }
 
+        #region Examples of Insert and Replace TableOperation
 
-        // Example of Insert TableOperation
         public async Task<Todo> AddTodoAsync(Todo todo)
         {
             var result = await Options.ExecuteWithTableAsync(
@@ -73,7 +75,6 @@ namespace StupidTodo.AzureStorage
             return null;
         }
 
-        // Example of Replace TableOperation
         public async Task<Todo> UpdateTodoAsync(Todo todo)
         {
             var result = await Options.ExecuteWithTableAsync(nameof(Todo), TableOperation.Replace(new TodoAdapter(todo) { ETag = "*" }));
@@ -81,6 +82,7 @@ namespace StupidTodo.AzureStorage
             return null;
         }
 
+        #endregion
 
         private readonly AzureStorageOptions Options;
     }
