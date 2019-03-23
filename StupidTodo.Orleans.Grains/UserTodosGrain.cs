@@ -1,13 +1,16 @@
 ﻿using Orleans;
+using Orleans.Streams;
 using StupidTodo.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace StupidTodo.Orleans.Grains
 {
+    [ImplicitStreamSubscription("StupidTodo")]
     public class UserTodosGrain : Grain, IUserTodosGrain
     {
         public UserTodosGrain(ITodoRepository repository)
@@ -19,8 +22,25 @@ namespace StupidTodo.Orleans.Grains
 
         public override async Task OnActivateAsync()
         {
+            // We're using a string for the grain's primary key but the stream providers's GetStream method
+            // requires a GUID thus we convert primary key from string to GUID
+            var stream = GetStreamProvider("StupidTodoStreamProvider")
+                            .GetStream<string>(
+                                new Guid(MD5.Create().ComputeHash(Encoding.Default.GetBytes(this.GetPrimaryKeyString()))), 
+                                "StupidTodo");
+
+            // Get Todos and then listen for new events.
             Todos.AddRange(await Repository.GetTodosAsync(this.GetPrimaryKeyString()));
+            await stream.SubscribeAsync(async (data, token) => await HandleEventAsync(data, token));
+
             await base.OnActivateAsync();
+        }
+
+        private Task HandleEventAsync(string data, StreamSequenceToken token)
+        {
+            // deserilize data then handle the specific type.
+
+            throw new NotImplementedException();
         }
 
         #region IUserTodosGrain
