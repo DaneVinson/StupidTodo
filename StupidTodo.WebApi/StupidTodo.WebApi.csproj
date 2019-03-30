@@ -25,7 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\StupidTodo.AzureStorage\StupidTodo.AzureStorage.csproj" />
     <ProjectReference Include="..\StupidTodo.Domain\StupidTodo.Domain.csproj" />
   </ItemGroup>
 

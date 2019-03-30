@@ -14,10 +14,9 @@ namespace StupidTodo.WebApi.Controllers
     [Route("api/[controller]")]
     public class TodoController : Controller
     {
-        public TodoController(ITodoRepository repository, IClusterClient clusterClient, UserOptions user)
+        public TodoController(IClusterClient clusterClient, UserOptions user)
         {
             ClusterClient = clusterClient ?? throw new ArgumentNullException();
-            Repository = repository ?? throw new ArgumentNullException();
             TodoUser = user ?? throw new ArgumentNullException();
         }
 
@@ -72,7 +71,6 @@ namespace StupidTodo.WebApi.Controllers
 
 
         private readonly IClusterClient ClusterClient;
-        private readonly ITodoRepository Repository;
         private readonly UserOptions TodoUser;
     }
 }
