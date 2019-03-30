@@ -12,7 +12,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orleans;
 using Orleans.Configuration;
-using StupidTodo.AzureStorage;
 using StupidTodo.Domain;
 
 namespace StupidTodo.WebApi
@@ -42,16 +41,14 @@ namespace StupidTodo.WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(Configuration.GetSection("AzureStorage").Get<AzureStorageOptions>())
-                    .AddSingleton(Configuration.GetSection("User").Get<UserOptions>())
+            services.AddSingleton(Configuration.GetSection("User").Get<UserOptions>())
                     .AddSingleton(new ClientBuilder().UseLocalhostClustering()
                                                         .Configure<ClusterOptions>(options =>
                                                         {
                                                             options.ClusterId = "development";
                                                             options.ServiceId = "StupidTodo";
                                                         })
-                                                        .Build())
-                    .AddTransient<ITodoRepository, TodosBlobRepository>();
+                                                        .Build());
 
             services.AddCors()
                     .AddMvc();
