@@ -6,12 +6,14 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
+using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Orleans;
 using Orleans.Configuration;
+using StupidTodo.AzureServiceBus;
 using StupidTodo.Domain;
 
 namespace StupidTodo.WebApi
@@ -26,10 +28,7 @@ namespace StupidTodo.WebApi
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            if (env.IsDevelopment()) { app.UseDeveloperExceptionPage(); }
 
             app.UseStaticFiles()
                 .UseMvc()
@@ -42,13 +41,20 @@ namespace StupidTodo.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(Configuration.GetSection("User").Get<UserOptions>())
+                    .AddSingleton(Configuration.GetSection("AzureServiceBus").Get<AzureServiceBusOptions>())
                     .AddSingleton(new ClientBuilder().UseLocalhostClustering()
                                                         .Configure<ClusterOptions>(options =>
                                                         {
                                                             options.ClusterId = "development";
                                                             options.ServiceId = "StupidTodo";
                                                         })
-                                                        .Build());
+                                                        .Build())
+                    .AddSingleton<IQueueClient>(serviceProvider =>
+                    {
+                        var options = serviceProvider.GetService<AzureServiceBusOptions>();
+                        return new QueueClient(options.ConnectionString, options.CommandQueueName);
+                    })
+                    .AddTransient<IMessenger<CommandMessage>, CommandMessenger>();
 
             services.AddCors()
                     .AddMvc();
