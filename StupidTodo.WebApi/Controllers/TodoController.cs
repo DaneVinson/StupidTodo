@@ -95,9 +95,9 @@ namespace StupidTodo.WebApi.Controllers
 
             using (var database = NewLiteDatabase())
             {
-                var result = GetTodosCollection(database)?.Upsert(todo);
-                if (result == null || !result.Value) { return BadRequest(); }
-                else { return todo; }
+                var result = GetTodosCollection(database).Upsert(todo);
+                if (result) { return todo; }
+                else { return BadRequest(); }
             }
         }
     }
