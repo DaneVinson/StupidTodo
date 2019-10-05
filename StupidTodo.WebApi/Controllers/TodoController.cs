@@ -28,9 +28,9 @@ namespace StupidTodo.WebApi.Controllers
         {
             await Task.CompletedTask;
 
-            using (var database = NewLiteDatabase())
+            using (var database = new LiteDatabase(DatabaseName))
             {
-                var success = GetTodosCollection(database).Delete(id);
+                var success = database.GetCollection<Todo>(TodoCollectionName).Delete(id);
                 if (success) { return Ok(); }
                 else { return BadRequest(); }
             }
@@ -65,22 +65,12 @@ namespace StupidTodo.WebApi.Controllers
 
         private Todo[] GetTodos(bool done)
         {
-            using (var database = NewLiteDatabase())
+            using (var database = new LiteDatabase(DatabaseName))
             {
-                return GetTodosCollection(database)?.FindAll()
-                                                    .Where(t => t.Done == done)
-                                                    .ToArray();
+                return database.GetCollection<Todo>(TodoCollectionName)
+                                .Find(t => t.Done == done)
+                                .ToArray();
             }
-        }
-
-        private LiteCollection<Todo> GetTodosCollection(LiteDatabase database)
-        {
-            return database.GetCollection<Todo>("todos");
-        }
-
-        private LiteDatabase NewLiteDatabase()
-        {
-            return new LiteDatabase("stupid-todo.db");
         }
 
         private ActionResult<Todo> UpsertTodo(Todo todo)
@@ -93,12 +83,16 @@ namespace StupidTodo.WebApi.Controllers
                 return BadRequest();
             }
 
-            using (var database = NewLiteDatabase())
+            using (var database = new LiteDatabase(DatabaseName))
             {
-                var result = GetTodosCollection(database).Upsert(todo);
+                var result = database.GetCollection<Todo>(TodoCollectionName).Upsert(todo);
                 if (result) { return todo; }
                 else { return BadRequest(); }
             }
         }
+
+
+        private const string DatabaseName = "strupid-todo.db";
+        private const string TodoCollectionName = "todos";
     }
 }
