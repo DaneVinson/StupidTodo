@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace StupidTodo.WebApi
@@ -14,12 +15,10 @@ namespace StupidTodo.WebApi
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(builder => builder.UseStartup<Startup>())
+                .Build()
+                .Run();
         }
-
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
-                .Build();
     }
 }
