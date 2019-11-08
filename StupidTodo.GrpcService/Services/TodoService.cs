@@ -29,17 +29,25 @@ namespace StupidTodo.GrpcService
 
         public override Task GetDoneTodos(Empty request, IServerStreamWriter<TodoMessage> responseStream, ServerCallContext context)
         {
-            return base.GetDoneTodos(request, responseStream, context);
+            return Get(true, responseStream);
         }
 
         public override Task GetTodos(Empty request, IServerStreamWriter<TodoMessage> responseStream, ServerCallContext context)
         {
-            return base.GetTodos(request, responseStream, context);
+            return Get(false, responseStream);
         }
 
         public override async Task<TodoMessage> UpdateTodo(TodoMessage request, ServerCallContext context)
         {
             return TodoMessageFromTodo(await DataProvider.Upsert(TodoFromTodoMessage(request)));
+        }
+
+        private async Task Get(bool done, IServerStreamWriter<TodoMessage> responseStream)
+        {
+            (await DataProvider.Get(done))
+                                .Select(t => TodoMessageFromTodo(t))
+                                .ToList()
+                                .ForEach(t => responseStream.WriteAsync(t));
         }
 
 
