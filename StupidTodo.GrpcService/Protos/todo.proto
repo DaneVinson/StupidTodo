@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+option csharp_namespace = "StupidTodo.GrpcService";
+
+package Todo;
+
+service TodoSvc {
+	rpc AddTodo(TodoMessage) returns (TodoMessage);
+	rpc DeleteTodo(IdMessage) returns (SuccessMessage);
+	rpc GetDoneTodos(Empty) returns (stream TodoMessage);
+	rpc GetTodos(Empty) returns (stream TodoMessage);
+	rpc UpdateTodo(TodoMessage) returns (TodoMessage);
+}
+
+message Empty {
+}
+
+message IdMessage {
+	string Value = 1;
+}
+
+message SuccessMessage {
+	bool Value = 1;
+}
+
+message TodoMessage {
+    string Description = 1;
+    bool Done = 2;
+    string Id = 3;
+    string UserId = 4;
+}
