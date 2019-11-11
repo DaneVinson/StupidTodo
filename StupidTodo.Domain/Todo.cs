@@ -10,5 +10,10 @@ namespace StupidTodo.Domain
         public bool Done { get; set; }
         public string Id { get; set; }
         public string UserId { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Description} (Id: {Id}, Done: {Done})";
+        }
     }
 }

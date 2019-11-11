@@ -1,10 +1,11 @@
-﻿using System;
+﻿using StupidTodo.Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StupidTodo.Domain
+namespace StupidTodo.GrpcService
 {
     public class SimpleTodoDataProvider : ITodoDataProvider
     {
@@ -41,10 +42,10 @@ namespace StupidTodo.Domain
         {
             Todos = new List<Todo>()
             {
-                new Todo() { Description = "Gas up the car", Id = Guid.NewGuid().ToString(), UserId = Utility.BilboId },
-                new Todo() { Description = "Find my next book", Id = Guid.NewGuid().ToString(), UserId = Utility.BilboId },
-                new Todo() { Description = "Pick up milk", Id = Guid.NewGuid().ToString(), UserId = Utility.BilboId },
-                new Todo() { Description = "Take a breath", Done = true, Id = Guid.NewGuid().ToString(), UserId = Utility.BilboId }
+                new Todo() { Description = "Gas up the car", Id = Guid.NewGuid().ToString(), UserId = Bilbo.Id },
+                new Todo() { Description = "Find my next book", Id = Guid.NewGuid().ToString(), UserId = Bilbo.Id },
+                new Todo() { Description = "Pick up milk", Id = Guid.NewGuid().ToString(), UserId = Bilbo.Id },
+                new Todo() { Description = "Take a breath", Done = true, Id = Guid.NewGuid().ToString(), UserId = Bilbo.Id }
             };
         }
 

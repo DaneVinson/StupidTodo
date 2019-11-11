@@ -12,7 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Solution", ".Solution", "{
 		readme.md = readme.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StupidTodo.GrpcService", "StupidTodo.GrpcService\StupidTodo.GrpcService.csproj", "{DB243FA6-9CC1-4866-90DB-D6E91F5648CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.GrpcService", "StupidTodo.GrpcService\StupidTodo.GrpcService.csproj", "{DB243FA6-9CC1-4866-90DB-D6E91F5648CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StupidTodo.GrpcClient", "StupidTodo.GrpcClient\StupidTodo.GrpcClient.csproj", "{36EB6077-2D09-43A1-AB5C-2804F68A5CDF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +34,10 @@ Global
 		{DB243FA6-9CC1-4866-90DB-D6E91F5648CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB243FA6-9CC1-4866-90DB-D6E91F5648CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB243FA6-9CC1-4866-90DB-D6E91F5648CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36EB6077-2D09-43A1-AB5C-2804F68A5CDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36EB6077-2D09-43A1-AB5C-2804F68A5CDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36EB6077-2D09-43A1-AB5C-2804F68A5CDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36EB6077-2D09-43A1-AB5C-2804F68A5CDF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

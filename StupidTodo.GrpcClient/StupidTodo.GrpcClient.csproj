@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\StupidTodo.GrpcService\Utility.cs" Link="Utility.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.10.1" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.25.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.25.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\StupidTodo.Domain\StupidTodo.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Protos\" />
+  </ItemGroup>
+
+  <!--<ItemGroup>
+    <Protobuf Include="Protos\todo.proto" GrpcServices="Client" />
+  </ItemGroup>-->
+  
+  <ItemGroup>
+    <Protobuf Include="..\StupidTodo.GrpcService\Protos\todo.proto" GrpcServices="Client">
+      <Link>Protos\todo.proto</Link>
+    </Protobuf>
+  </ItemGroup>
+
+</Project>
