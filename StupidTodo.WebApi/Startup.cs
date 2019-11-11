@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using StupidTodo.Domain;
 
 namespace StupidTodo.WebApi
 {
@@ -33,7 +34,8 @@ namespace StupidTodo.WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddSingleton<ITodoDataProvider>(new SimpleTodoDataProvider())
+                    .AddControllers();
         }
 
 
