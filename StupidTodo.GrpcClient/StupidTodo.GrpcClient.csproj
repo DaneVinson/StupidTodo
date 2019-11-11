@@ -26,10 +26,6 @@
     <Folder Include="Protos\" />
   </ItemGroup>
 
-  <!--<ItemGroup>
-    <Protobuf Include="Protos\todo.proto" GrpcServices="Client" />
-  </ItemGroup>-->
-  
   <ItemGroup>
     <Protobuf Include="..\StupidTodo.GrpcService\Protos\todo.proto" GrpcServices="Client">
       <Link>Protos\todo.proto</Link>

@@ -1,5 +1,6 @@
 ﻿using Grpc.Core;
 using Grpc.Net.Client;
+using StupidTodo.Domain;
 using StupidTodo.GrpcService;
 using System;
 using System.Collections.Generic;

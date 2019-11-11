@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace StupidTodo.GrpcService
+namespace StupidTodo.Domain
 {
     public static class Bilbo
     {

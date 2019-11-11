@@ -5,8 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StupidTodo.GrpcService
+namespace StupidTodo.Domain
 {
+    /// <summary>
+    /// The simplest (default) impelmentation of <see cref="ITodoDataProvider"/>. 
+    /// Utilizes a static instance of Todo objects. Meant to exist as a singleton.
+    /// </summary>
     public class SimpleTodoDataProvider : ITodoDataProvider
     {
         public Task<bool> Delete(string id)

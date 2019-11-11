@@ -19,7 +19,7 @@ namespace StupidTodo.GrpcService
 
         public override async Task<TodoMessage> AddTodo(TodoMessage request, ServerCallContext context)
         {
-            return TodoMessageFromTodo(await DataProvider.Upsert(TodoFromTodoMessage(request)));
+            return Utility.TodoMessageFromTodo(await DataProvider.Upsert(Utility.TodoFromTodoMessage(request)));
         }
 
         public override async Task<SuccessMessage> DeleteTodo(IdMessage request, ServerCallContext context)
@@ -39,40 +39,15 @@ namespace StupidTodo.GrpcService
 
         public override async Task<TodoMessage> UpdateTodo(TodoMessage request, ServerCallContext context)
         {
-            return TodoMessageFromTodo(await DataProvider.Upsert(TodoFromTodoMessage(request)));
+            return Utility.TodoMessageFromTodo(await DataProvider.Upsert(Utility.TodoFromTodoMessage(request)));
         }
 
         private async Task Get(bool done, IServerStreamWriter<TodoMessage> responseStream)
         {
             (await DataProvider.Get(done))
-                                .Select(t => TodoMessageFromTodo(t))
+                                .Select(t => Utility.TodoMessageFromTodo(t))
                                 .ToList()
                                 .ForEach(t => responseStream.WriteAsync(t));
-        }
-
-
-        // gRPC <-> Domain mapping functions
-        private static Todo TodoFromTodoMessage(TodoMessage message)
-        {
-            var msg = message ?? new TodoMessage();
-            return new Todo()
-            {
-                Description = msg.Description,
-                Done = msg.Done,
-                Id = msg.Id,
-                UserId = msg.UserId
-            };
-        }
-        private static TodoMessage TodoMessageFromTodo(Todo todo)
-        {
-            var to = todo ?? new Todo();
-            return new TodoMessage()
-            {
-                Description = to.Description,
-                Done = to.Done,
-                Id = to.Id,
-                UserId = to.UserId
-            };
         }
 
 
