@@ -13,9 +13,10 @@ namespace StupidTodo.WebApi.Controllers
     [Route("api/[controller]")]
     public class TodoController : Controller
     {
-        public TodoController(ITodoDataProvider dataProvider)
+        public TodoController(ITodoDataProvider dataProvider, StupidTodoOptions options)
         {
             DataProvider = dataProvider ?? throw new ArgumentNullException(nameof(dataProvider));
+            Options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
         [HttpPost]
@@ -50,6 +51,13 @@ namespace StupidTodo.WebApi.Controllers
             return (await DataProvider.Get()).ToArray();
         }
 
+        [HttpGet]
+        [Route("options")]
+        public ActionResult<StupidTodoOptions> GetOptions()
+        {
+            return Options;
+        }
+
         [HttpPut]
         [Route("{id}")]
         public async Task<ActionResult<Todo>> UpdateTodoAsync(string id, [FromBody]Todo todo)
@@ -60,5 +68,6 @@ namespace StupidTodo.WebApi.Controllers
 
 
         private readonly ITodoDataProvider DataProvider;
+        private readonly StupidTodoOptions Options;
     }
 }

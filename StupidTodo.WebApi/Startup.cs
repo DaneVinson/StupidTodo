@@ -34,7 +34,8 @@ namespace StupidTodo.WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<ITodoDataProvider>(new SimpleTodoDataProvider())
+            services.AddSingleton(Configuration.GetSection("StupidTodoOptions").Get<StupidTodoOptions>())
+                    .AddSingleton<ITodoDataProvider>(new SimpleTodoDataProvider())
                     .AddControllers();
         }
 
