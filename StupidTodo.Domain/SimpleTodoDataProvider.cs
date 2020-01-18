@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StupidTodo.WebApi
+namespace StupidTodo.Domain
 {
     /// <summary>
     /// The simplest (default) impelmentation of <see cref="ITodoDataProvider"/>. 
@@ -53,6 +53,6 @@ namespace StupidTodo.WebApi
             };
         }
 
-        private static readonly List<Todo> Todos;
+        protected static List<Todo> Todos;
     }
 }

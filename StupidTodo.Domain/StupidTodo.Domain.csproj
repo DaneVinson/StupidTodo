@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <UserSecretsId>8df3391e-aaad-447e-895e-679f28cf4af5</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GenFu" Version="1.5.6" />
+    <PackageReference Include="System.Text.Json" Version="4.7.0" />
+  </ItemGroup>
 
 </Project>
