@@ -1,6 +1,9 @@
 ﻿using GenFu;
+using Grpc.Core;
+using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
 using StupidTodo.Domain;
+using StupidTodo.Grpc;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,14 +22,9 @@ namespace StupidTodo.AdminConsole
         {
             try
             {
-                // Increment each run for new data files
-                var run = 1;
+                //WriteGenFuData(1000);
 
-                // Test Web API
-                var data = await TestWebApi();
-                data.SaveToFile(Path.Combine(DataFilesFolder, $"WebApi-{data.GetTimes.Count}_iterations-run_{run}{Data.FileExtension}"));
-
-                // Test gRPC
+                await TestAll();
             }
             catch (Exception ex)
             {
@@ -38,14 +36,77 @@ namespace StupidTodo.AdminConsole
                 Console.WriteLine();
                 Console.WriteLine("...");
                 Console.ReadKey();
-            }   
+            }
         }
 
+
+        private async static Task TestAll()
+        {
+            // Test Web API
+            var webApiData = await TestWebApi();
+            webApiData.SaveToFile(GetDataFilePath(webApiData, "WebApi"));
+
+            // Test gRPC
+            var gRpcData = await TestGrpc();
+            gRpcData.SaveToFile(GetDataFilePath(gRpcData, "gRpc"));
+        }
 
         private async static Task<Data> TestGrpc()
         {
             var stopwatch = new Stopwatch();
             var data = new Data();
+            var empty = new EmptyMessage();
+            using (var channel = GrpcChannel.ForAddress(GrpcUri))
+            {
+                var client = new TodoSvc.TodoSvcClient(channel);
+
+                // Ensure warm-up
+                var warmer = await client.FirstAsync(empty);
+
+                for (int i = 0; i < Iterations; i++)
+                {
+                    // Get all
+                    stopwatch.Start();
+                    var todos = new List<TodoMessage>();
+                    using (var stream = client.Get(empty))
+                    {
+                        await foreach (var message in stream.ResponseStream.ReadAllAsync())
+                        {
+                            todos.Add(message);
+                        }
+                    }
+                    stopwatch.Stop();
+                    data.GetTimes.Add(stopwatch.Elapsed);
+
+                    // Send all
+                    stopwatch.Restart();
+                    using (var call = client.Send())
+                    {
+                        foreach (var todo in todos)
+                        {
+                            await call.RequestStream.WriteAsync(todo);
+                        }
+                        await call.RequestStream.CompleteAsync();
+                    }
+                    stopwatch.Stop();
+                    data.SendTimes.Add(stopwatch.Elapsed);
+
+                    // Get then send first Todo multiple times
+                    for (int j = 0; j < SingleSendReceiveCount; j++)
+                    {
+                        stopwatch.Restart();
+                        var todo = await client.FirstAsync(empty);
+                        stopwatch.Stop();
+                        data.FirstTimes.Add(stopwatch.Elapsed);
+
+                        stopwatch.Restart();
+                        await client.SendOneAsync(todo);
+                        stopwatch.Stop();
+                        data.SendOneTimes.Add(stopwatch.Elapsed);
+                    }
+                }
+            }
+
             return data;
         }
         
@@ -122,6 +183,13 @@ namespace StupidTodo.AdminConsole
             Console.WriteLine($"GenFu data written to {path}");
         }
 
+        private static string GetDataFilePath(Data data, string prependName)
+        {
+            return Path.Combine(
+                            DataFilesFolder,
+                            $"{prependName}-{data.GetTimes.Count}_iterations-run_{Configuration["Run"]}{Data.FileExtension}");
+        }
+
 
         static Program()
         {
@@ -130,6 +198,7 @@ namespace StupidTodo.AdminConsole
                                     .AddJsonFile("appsettings.json", false, true)
                                     .Build();
             DataFilesFolder = Configuration["DataFilesFolder"];
+            GrpcUri = Configuration["GrpcUri"];
             Iterations = Int32.Parse(Configuration["Iterations"]);
             SingleSendReceiveCount = Int32.Parse(Configuration["SingleSendReceiveCount"]);
             WebApiUri = Configuration["WebApiUri"];
@@ -137,6 +206,7 @@ namespace StupidTodo.AdminConsole
 
         private static readonly IConfiguration Configuration;
         private static readonly string DataFilesFolder;
+        private static readonly string GrpcUri;
         private static readonly int Iterations;
         private static readonly int SingleSendReceiveCount;
         private static readonly string WebApiUri;

@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "google/protobuf/timestamp.proto";
+
 option csharp_namespace = "StupidTodo.Grpc";
 
 package Todo;
@@ -17,8 +19,8 @@ message TodoMessage {
     string Id = 3;
     string UserId = 4;
     bool Boolean1 = 5;
-    //DateTime Date1 = 6;
-    //DateTimeOffset Date2 = 7;
+    google.protobuf.Timestamp Date1 = 6;
+    google.protobuf.Timestamp Date2 = 7;
     int32 Number1 = 8;
     int64 Number2 = 9;
     double Number3 = 10;

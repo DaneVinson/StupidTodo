@@ -34,6 +34,7 @@ namespace StupidTodo.Grpc
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IServiceCompareDataProvider>(new GenFuTodoDataProvider())
+                    .AddSingleton(new GrpcDataProvider())
                     .AddGrpc();
         }
     }
