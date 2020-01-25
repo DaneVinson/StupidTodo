@@ -9,7 +9,9 @@ package Todo;
 service TodoSvc {
     rpc First (EmptyMessage) returns (TodoMessage);
 	rpc Get (EmptyMessage) returns (stream TodoMessage);
+    rpc GetPackage (EmptyMessage) returns (TodosMessage);
     rpc Send (stream TodoMessage) returns (ResultMessage);
+    rpc SendPackage (TodosMessage) returns (ResultMessage);
     rpc SendOne (TodoMessage) returns (ResultMessage);
 }
 
@@ -27,6 +29,10 @@ message TodoMessage {
     double Number4 = 11;
     string String1 = 12;
     string String2 = 13;
+}
+
+message TodosMessage {
+    repeated TodoMessage Todos = 1;
 }
 
 message ResultMessage {

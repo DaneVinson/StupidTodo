@@ -22,9 +22,26 @@ namespace StupidTodo.AdminConsole
         {
             try
             {
-                //WriteGenFuData(1000);
+                //var data = Data.LoadFromFile(new FileInfo(@"C:\Users\dvinson\Documents\GitHub\StupidTodo\service-compare-data\WebApi-100_iterations-run_1.service-compare"));
+                //data.SaveStatisticsToFile("c:\\temp\\StupidTodoServiceCompare-WebApi-stats.txt");
+                //data = Data.LoadFromFile(new FileInfo(@"C:\Users\dvinson\Documents\GitHub\StupidTodo\service-compare-data\gRPC-100_iterations-run_1.service-compare"));
+                //data.SaveStatisticsToFile("c:\\temp\\StupidTodoServiceCompare-gRPC-stats.txt");
 
-                await TestAll();
+                // Test Web API
+                if (TestWebApiService)
+                {
+                    var webApiData = await TestWebApi();
+                    webApiData.SaveToFile(GetDataFilePath(webApiData, "WebApi"));
+                }
+
+                // Test gRPC
+                if (TestGrpcService)
+                {
+                    var gRpcData = await TestGrpc();
+                    gRpcData.SaveToFile(GetDataFilePath(gRpcData, "gRPC"));
+                }
+
+                //WriteGenFuData(5000);
             }
             catch (Exception ex)
             {
@@ -40,17 +57,6 @@ namespace StupidTodo.AdminConsole
         }
 
 
-        private async static Task TestAll()
-        {
-            // Test Web API
-            var webApiData = await TestWebApi();
-            webApiData.SaveToFile(GetDataFilePath(webApiData, "WebApi"));
-
-            // Test gRPC
-            var gRpcData = await TestGrpc();
-            gRpcData.SaveToFile(GetDataFilePath(gRpcData, "gRpc"));
-        }
-
         private async static Task<Data> TestGrpc()
         {
             var stopwatch = new Stopwatch();
@@ -60,14 +66,17 @@ namespace StupidTodo.AdminConsole
             {
                 var client = new TodoSvc.TodoSvcClient(channel);
 
+                Console.WriteLine($"Testing gRPC, {Iterations} iterations");
+
                 // Ensure warm-up
                 var warmer = await client.FirstAsync(empty);
 
                 for (int i = 0; i < Iterations; i++)
                 {
-                    // Get all
-                    stopwatch.Start();
                     var todos = new List<TodoMessage>();
+
+                    // Get all streaming
+                    stopwatch.Start();
                     using (var stream = client.Get(empty))
                     {
                         await foreach (var message in stream.ResponseStream.ReadAllAsync())
@@ -76,9 +85,17 @@ namespace StupidTodo.AdminConsole
                         }
                     }
                     stopwatch.Stop();
+                    data.GetStreamingTimes.Add(stopwatch.Elapsed);
+                    todos.Clear();
+
+                    // Get all in one package
+                    stopwatch.Start();
+                    var todosMessage = await client.GetPackageAsync(empty);
+                    todos.AddRange(todosMessage.Todos);
+                    stopwatch.Stop();
                     data.GetTimes.Add(stopwatch.Elapsed);
 
-                    // Send all
+                    // Send all streaming
                     stopwatch.Restart();
                     using (var call = client.Send())
                     {
@@ -88,6 +105,12 @@ namespace StupidTodo.AdminConsole
                         }
                         await call.RequestStream.CompleteAsync();
                     }
+                    stopwatch.Stop();
+                    data.SendStreamingTimes.Add(stopwatch.Elapsed);
+
+                    // Send all in one package
+                    stopwatch.Start();
+                    var result = await client.SendPackageAsync(todosMessage);
                     stopwatch.Stop();
                     data.SendTimes.Add(stopwatch.Elapsed);
 
@@ -100,10 +123,12 @@ namespace StupidTodo.AdminConsole
                         data.FirstTimes.Add(stopwatch.Elapsed);
 
                         stopwatch.Restart();
-                        await client.SendOneAsync(todo);
+                        result = await client.SendOneAsync(todo);
                         stopwatch.Stop();
                         data.SendOneTimes.Add(stopwatch.Elapsed);
                     }
+
+                    Console.WriteLine($"gRPC iteration {i + 1} of {Iterations} complete");
                 }
             }
 
@@ -118,9 +143,13 @@ namespace StupidTodo.AdminConsole
             {
                 httpClient.DefaultRequestHeaders.Clear();
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                Console.WriteLine($"Testing WebApi, {Iterations} iterations");
 
                 // Ensure service warm-up
-                var warmer = await httpClient.GetStringAsync($"{WebApiUri}/first");
+                var warm = await httpClient.GetStringAsync($"{WebApiUri}/all");
+                var warmResult = await httpClient.PostAsJsonAsync($"{WebApiUri}/send", JsonSerializer.Deserialize<Todo[]>(warm));
+                warm = await httpClient.GetStringAsync($"{WebApiUri}/first");
+                warmResult = await httpClient.PostAsJsonAsync($"{WebApiUri}/send-one", JsonSerializer.Deserialize<Todo>(warm));
 
                 for (int i = 0; i < Iterations; i++)
                 {
@@ -153,6 +182,8 @@ namespace StupidTodo.AdminConsole
                         data.SendOneTimes.Add(stopwatch.Elapsed);
                         if (!result.IsSuccessStatusCode) { Console.WriteLine($"ERROR: Sending one failed. {result.StatusCode}"); }
                     }
+
+                    Console.WriteLine($"WebApi iteration {i + 1} of {Iterations} complete");
                 }
             }
 
@@ -201,6 +232,9 @@ namespace StupidTodo.AdminConsole
             GrpcUri = Configuration["GrpcUri"];
             Iterations = Int32.Parse(Configuration["Iterations"]);
             SingleSendReceiveCount = Int32.Parse(Configuration["SingleSendReceiveCount"]);
+            var testTypes = Configuration["TestType"].Split(',');
+            TestGrpcService = testTypes.FirstOrDefault(s => s == "grpc") != null;
+            TestWebApiService = testTypes.FirstOrDefault(s => s == "webapi") != null;
             WebApiUri = Configuration["WebApiUri"];
         }
 
@@ -209,6 +243,8 @@ namespace StupidTodo.AdminConsole
         private static readonly string GrpcUri;
         private static readonly int Iterations;
         private static readonly int SingleSendReceiveCount;
+        private static readonly bool TestGrpcService;
+        private static readonly bool TestWebApiService;
         private static readonly string WebApiUri;
     }
 }

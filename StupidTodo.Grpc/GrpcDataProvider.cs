@@ -16,7 +16,7 @@ namespace StupidTodo.Grpc
                 return new TodoMessage()
                 {
                     Boolean1 = t.Boolean1,
-                    Date1 = Timestamp.FromDateTime(t.Date1),
+                    Date1 = Timestamp.FromDateTime(DateTime.SpecifyKind(t.Date1, DateTimeKind.Utc)),
                     Date2 = Timestamp.FromDateTimeOffset(t.Date2),
                     Description = t.Description,
                     Done = t.Done,
