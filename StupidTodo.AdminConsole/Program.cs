@@ -22,16 +22,12 @@ namespace StupidTodo.AdminConsole
         {
             try
             {
-                //var data = Data.LoadFromFile(new FileInfo(@"C:\Users\dvinson\Documents\GitHub\StupidTodo\service-compare-data\WebApi-100_iterations-run_1.service-compare"));
-                //data.SaveStatisticsToFile("c:\\temp\\StupidTodoServiceCompare-WebApi-stats.txt");
-                //data = Data.LoadFromFile(new FileInfo(@"C:\Users\dvinson\Documents\GitHub\StupidTodo\service-compare-data\gRPC-100_iterations-run_1.service-compare"));
-                //data.SaveStatisticsToFile("c:\\temp\\StupidTodoServiceCompare-gRPC-stats.txt");
-
                 // Test Web API
                 if (TestWebApiService)
                 {
-                    var webApiData = await TestWebApi();
+                    var webApiData = await Utility.TestWebApi(Options);
                     webApiData.SaveToFile(GetDataFilePath(webApiData, "WebApi"));
+                    webApiData.SaveStatisticsToFile("c:\\temp\\StupidTodoServiceCompare-WebApi-stats.txt");
                 }
 
                 // Test gRPC
@@ -39,6 +35,7 @@ namespace StupidTodo.AdminConsole
                 {
                     var gRpcData = await TestGrpc();
                     gRpcData.SaveToFile(GetDataFilePath(gRpcData, "gRPC"));
+                    gRpcData.SaveStatisticsToFile("c:\\temp\\StupidTodoServiceCompare-gRPC-stats.txt");
                 }
 
                 //WriteGenFuData(5000);
@@ -62,16 +59,16 @@ namespace StupidTodo.AdminConsole
             var stopwatch = new Stopwatch();
             var data = new Data();
             var empty = new EmptyMessage();
-            using (var channel = GrpcChannel.ForAddress(GrpcUri))
+            using (var channel = GrpcChannel.ForAddress(Options.GrpcUri))
             {
                 var client = new TodoSvc.TodoSvcClient(channel);
 
-                Console.WriteLine($"Testing gRPC, {Iterations} iterations");
+                Console.WriteLine($"Testing gRPC, {Options.Iterations} iterations");
 
                 // Ensure warm-up
                 var warmer = await client.FirstAsync(empty);
 
-                for (int i = 0; i < Iterations; i++)
+                for (int i = 0; i < Options.Iterations; i++)
                 {
                     var todos = new List<TodoMessage>();
 
@@ -114,82 +111,25 @@ namespace StupidTodo.AdminConsole
                     stopwatch.Stop();
                     data.SendTimes.Add(stopwatch.Elapsed);
 
-                    // Get then send first Todo multiple times
-                    for (int j = 0; j < SingleSendReceiveCount; j++)
-                    {
-                        stopwatch.Restart();
-                        var todo = await client.FirstAsync(empty);
-                        stopwatch.Stop();
-                        data.FirstTimes.Add(stopwatch.Elapsed);
+                    // Get first
+                    stopwatch.Restart();
+                    var firstTodo = await client.FirstAsync(empty);
+                    stopwatch.Stop();
+                    data.FirstTimes.Add(stopwatch.Elapsed);
 
-                        stopwatch.Restart();
-                        result = await client.SendOneAsync(todo);
-                        stopwatch.Stop();
-                        data.SendOneTimes.Add(stopwatch.Elapsed);
-                    }
+                    // Send one
+                    stopwatch.Restart();
+                    result = await client.SendOneAsync(firstTodo);
+                    stopwatch.Stop();
+                    data.SendOneTimes.Add(stopwatch.Elapsed);
 
-                    Console.WriteLine($"gRPC iteration {i + 1} of {Iterations} complete");
+                    Console.WriteLine($"gRPC iteration {i + 1} of {Options.Iterations} complete");
                 }
             }
 
             return data;
         }
         
-        private async static Task<Data> TestWebApi()
-        {
-            var stopwatch = new Stopwatch();
-            var data = new Data();
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.DefaultRequestHeaders.Clear();
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                Console.WriteLine($"Testing WebApi, {Iterations} iterations");
-
-                // Ensure service warm-up
-                var warm = await httpClient.GetStringAsync($"{WebApiUri}/all");
-                var warmResult = await httpClient.PostAsJsonAsync($"{WebApiUri}/send", JsonSerializer.Deserialize<Todo[]>(warm));
-                warm = await httpClient.GetStringAsync($"{WebApiUri}/first");
-                warmResult = await httpClient.PostAsJsonAsync($"{WebApiUri}/send-one", JsonSerializer.Deserialize<Todo>(warm));
-
-                for (int i = 0; i < Iterations; i++)
-                {
-                    // Get all
-                    stopwatch.Start();
-                    var json = await httpClient.GetStringAsync($"{WebApiUri}/all");
-                    var todos = JsonSerializer.Deserialize<Todo[]>(json);
-                    stopwatch.Stop();
-                    data.GetTimes.Add(stopwatch.Elapsed);
-
-                    // Send all
-                    stopwatch.Restart();
-                    var result = await httpClient.PostAsJsonAsync($"{WebApiUri}/send", todos);
-                    stopwatch.Stop();
-                    data.SendTimes.Add(stopwatch.Elapsed);
-                    if (!result.IsSuccessStatusCode) { Console.WriteLine($"ERROR: Sending all failed. {result.StatusCode}"); }
-
-                    // Get then send first Todo multiple times
-                    for (int j = 0; j < SingleSendReceiveCount; j++)
-                    {
-                        stopwatch.Restart();
-                        json = await httpClient.GetStringAsync($"{WebApiUri}/first");
-                        var todo = JsonSerializer.Deserialize<Todo>(json);
-                        stopwatch.Stop();
-                        data.FirstTimes.Add(stopwatch.Elapsed);
-
-                        stopwatch.Restart();
-                        result = await httpClient.PostAsJsonAsync($"{WebApiUri}/send-one", todo);
-                        stopwatch.Stop();
-                        data.SendOneTimes.Add(stopwatch.Elapsed);
-                        if (!result.IsSuccessStatusCode) { Console.WriteLine($"ERROR: Sending one failed. {result.StatusCode}"); }
-                    }
-
-                    Console.WriteLine($"WebApi iteration {i + 1} of {Iterations} complete");
-                }
-            }
-
-            return data;
-        }
-
 
         private static List<Todo> GenFuTodos(int count)
         {
@@ -217,8 +157,8 @@ namespace StupidTodo.AdminConsole
         private static string GetDataFilePath(Data data, string prependName)
         {
             return Path.Combine(
-                            DataFilesFolder,
-                            $"{prependName}-{data.GetTimes.Count}_iterations-run_{Configuration["Run"]}{Data.FileExtension}");
+                            Options.DataFilesFolder,
+                            $"{prependName}-{data.GetTimes.Count}_iterations{Data.FileExtension}");
         }
 
 
@@ -228,23 +168,21 @@ namespace StupidTodo.AdminConsole
                                     .SetBasePath(Directory.GetCurrentDirectory())
                                     .AddJsonFile("appsettings.json", false, true)
                                     .Build();
-            DataFilesFolder = Configuration["DataFilesFolder"];
-            GrpcUri = Configuration["GrpcUri"];
-            Iterations = Int32.Parse(Configuration["Iterations"]);
-            SingleSendReceiveCount = Int32.Parse(Configuration["SingleSendReceiveCount"]);
-            var testTypes = Configuration["TestType"].Split(',');
+            var testTypes = Configuration["TestTypes"].Split(',');
             TestGrpcService = testTypes.FirstOrDefault(s => s == "grpc") != null;
             TestWebApiService = testTypes.FirstOrDefault(s => s == "webapi") != null;
-            WebApiUri = Configuration["WebApiUri"];
+            Options = new TestingOptions()
+            {
+                DataFilesFolder = Configuration["DataFilesFolder"],
+                GrpcUri = Configuration["GrpcUri"],
+                Iterations = Int32.Parse(Configuration["Iterations"]),
+                WebApiUri = Configuration["WebApiUri"]
+            };
         }
 
         private static readonly IConfiguration Configuration;
-        private static readonly string DataFilesFolder;
-        private static readonly string GrpcUri;
-        private static readonly int Iterations;
-        private static readonly int SingleSendReceiveCount;
+        private static readonly TestingOptions Options;
         private static readonly bool TestGrpcService;
         private static readonly bool TestWebApiService;
-        private static readonly string WebApiUri;
     }
 }

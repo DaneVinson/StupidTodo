@@ -72,26 +72,32 @@ namespace StupidTodo.Domain
 
         public void SaveStatisticsToFile(string path)
         {
-            using (var writer = new StreamWriter(path))
+            using (var writer = new StreamWriter(path, true))
             {
+                writer.WriteLine($"{DateTime.Now}");
                 WriteLine(writer, $"{nameof(GetTimes)}", GetTimes.Select(t => t.TotalMilliseconds));
                 WriteLine(writer, $"{nameof(GetStreamingTimes)}", GetStreamingTimes.Select(t => t.TotalMilliseconds));
                 WriteLine(writer, $"{nameof(SendTimes)}", SendTimes.Select(t => t.TotalMilliseconds));
                 WriteLine(writer, $"{nameof(SendStreamingTimes)}", SendStreamingTimes.Select(t => t.TotalMilliseconds));
                 WriteLine(writer, $"{nameof(FirstTimes)}", FirstTimes.Select(t => t.TotalMilliseconds));
                 WriteLine(writer, $"{nameof(SendOneTimes)}", SendOneTimes.Select(t => t.TotalMilliseconds));
+                writer.WriteLine();
             }
 
             void WriteLine(StreamWriter writer, string propertyName, IEnumerable<double> times)
             {
-                writer.WriteLine(String.Format(
-                                            "[{0}] Count:{1}, Average:{2}, StandardDeviation:{3}, Min:{4}, Max:{5}",
-                                            propertyName,
-                                            times.Count(),
-                                            times.Average(),
-                                            GetStandardDeviation(times),
-                                            times.Min(),
-                                            times.Max()));
+                if (times.Any())
+                {
+                    writer.WriteLine(String.Format(
+                                                "[{0}] Count:{1}, Average:{2}, StandardDeviation:{3}, Min:{4}, Max:{5}",
+                                                propertyName,
+                                                times.Count(),
+                                                times.Average(),
+                                                GetStandardDeviation(times),
+                                                times.Min(),
+                                                times.Max()));
+                }
+                else { writer.WriteLine($"[{propertyName}] N/A"); }
             }
         }
 

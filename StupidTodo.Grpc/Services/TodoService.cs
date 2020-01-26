@@ -26,9 +26,13 @@ namespace StupidTodo.GrpcService
 
         public override async Task Get(EmptyMessage request, IServerStreamWriter<TodoMessage> responseStream, ServerCallContext context)
         {
-            (await DataProvider.Get())
-                                .ToList()
-                                .ForEach(t => responseStream.WriteAsync(t));
+            var todos = (await DataProvider.Get()).ToList();
+            var tasks = todos.Select(t => responseStream.WriteAsync(t));
+            await Task.WhenAll(tasks);
+
+            //(await DataProvider.Get())
+            //                    .ToList()
+            //                    .ForEach(t => responseStream.WriteAsync(t));
         }
 
         public override async Task<TodosMessage> GetPackage(EmptyMessage request, ServerCallContext context)
