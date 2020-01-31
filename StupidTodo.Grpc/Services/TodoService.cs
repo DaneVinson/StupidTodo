@@ -26,9 +26,16 @@ namespace StupidTodo.GrpcService
 
         public override async Task Get(EmptyMessage request, IServerStreamWriter<TodoMessage> responseStream, ServerCallContext context)
         {
-            var todos = (await DataProvider.Get()).ToList();
-            var tasks = todos.Select(t => responseStream.WriteAsync(t));
-            await Task.WhenAll(tasks);
+            foreach (var todo in (await DataProvider.Get()))
+            {
+                await responseStream.WriteAsync(todo);
+            }
+
+            // It looks like grpc needs the returned collection to be sent linearly.
+            // The following methods cause intermitent exceptions to be thrown
+
+            //var tasks = todos.Select(t => responseStream.WriteAsync(t));
+            //await Task.WhenAll(tasks);
 
             //(await DataProvider.Get())
             //                    .ToList()

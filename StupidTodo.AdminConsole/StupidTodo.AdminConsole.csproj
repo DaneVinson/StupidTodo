@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GenFu" Version="1.5.6" />
+    <PackageReference Include="GenFu" Version="1.6.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.0" />
@@ -18,6 +18,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="System.ServiceModel.Duplex" Version="4.4.*" />
+    <PackageReference Include="System.ServiceModel.Http" Version="4.4.*" />
+    <PackageReference Include="System.ServiceModel.NetTcp" Version="4.4.*" />
+    <PackageReference Include="System.ServiceModel.Security" Version="4.4.*" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,5 +42,9 @@
     <Protobuf Include="..\StupidTodo.Grpc\Protos\todo.proto" GrpcServices="Client">
       <Link>Protos\todo.proto</Link>
     </Protobuf>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services" />
   </ItemGroup>
 </Project>

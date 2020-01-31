@@ -11,8 +11,10 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.ServiceModel;
 using System.Text.Json;
 using System.Threading.Tasks;
+using TodoServiceReference;
 
 namespace StupidTodo.AdminConsole
 {
@@ -20,25 +22,25 @@ namespace StupidTodo.AdminConsole
     {
         static async Task Main(string[] args)
         {
+            Data data = null;
+
             try
             {
-                // Test Web API
-                if (TestWebApiService)
-                {
-                    var webApiData = await Utility.TestWebApi(Options);
-                    webApiData.SaveToFile(GetDataFilePath(webApiData, "WebApi"));
-                    webApiData.SaveStatisticsToFile("c:\\temp\\StupidTodoServiceCompare-WebApi-stats.txt");
-                }
-
-                // Test gRPC
-                if (TestGrpcService)
-                {
-                    var gRpcData = await TestGrpc();
-                    gRpcData.SaveToFile(GetDataFilePath(gRpcData, "gRPC"));
-                    gRpcData.SaveStatisticsToFile("c:\\temp\\StupidTodoServiceCompare-gRPC-stats.txt");
-                }
-
                 //WriteGenFuData(5000);
+
+                foreach (var test in TestTypes)
+                {
+                    data = test switch
+                    {
+                        "grpc" => await TestGrpc(),
+                        "webapiframework" => await TestWebApi(true),
+                        "webapi" => await TestWebApi(),
+                        "wcf" => await TestWcf(),
+                        _ => throw new ArgumentException($"'{test}' is and unknown test type")
+                    };
+                    data.SaveToFile(GetDataFilePath(test, data.GetTimes.Count));
+                    data.SaveStatisticsToFile(GetStatisticsFilePath(test));
+                }
             }
             catch (Exception ex)
             {
@@ -129,7 +131,106 @@ namespace StupidTodo.AdminConsole
 
             return data;
         }
-        
+
+        private static async Task<Data> TestWcf()
+        {
+            var stopwatch = new Stopwatch();
+            var data = new Data();
+
+            Console.WriteLine($"Testing WCF, {Options.Iterations} iterations");
+
+            TodoServiceClient client = new TodoServiceClient();
+            try
+            {
+                // Ensure warm-up
+                var warmer = await client.FirstAsync();
+
+                for (int i = 0; i < Options.Iterations; i++)
+                {
+                    // Get all
+                    stopwatch.Start();
+                    var todos = await client.GetAsync();
+                    stopwatch.Stop();
+                    data.GetTimes.Add(stopwatch.Elapsed);
+
+                    // Send all
+                    stopwatch.Restart();
+                    _ = await client.SendAsync(todos);
+                    stopwatch.Stop();
+                    data.SendTimes.Add(stopwatch.Elapsed);
+
+                    // Get first
+                    stopwatch.Restart();
+                    var todo = await client.FirstAsync();
+                    stopwatch.Stop();
+                    data.FirstTimes.Add(stopwatch.Elapsed);
+
+                    // Send one
+                    stopwatch.Restart();
+                    _ = await client.SendOneAsync(todo);
+                    stopwatch.Stop();
+                    data.SendOneTimes.Add(stopwatch.Elapsed);
+
+                    Console.WriteLine($"WCF iteration {i + 1} of {Options.Iterations} complete");
+                }
+            }
+            finally { client?.Close(); }
+           
+            return data;
+        }
+
+        public static async Task<Data> TestWebApi(bool apiIsFramework = false)
+        {
+            var stopwatch = new Stopwatch();
+            var data = new Data();
+            var uri = apiIsFramework ? Options.WebApiFrameworkUri : Options.WebApiUri;
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Clear();
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var framework = apiIsFramework ? ".NET Framework" : ".NET Core";
+                Console.WriteLine($"Testing {framework} Web API at {uri} [{Options.Iterations} iterations]");
+
+                // Ensure service warm-up
+                var warm = await httpClient.GetStringAsync($"{uri}/all");
+                var warmResult = await httpClient.PostAsJsonAsync($"{uri}/send", JsonSerializer.Deserialize<Todo[]>(warm));
+                warm = await httpClient.GetStringAsync($"{uri}/first");
+                warmResult = await httpClient.PostAsJsonAsync($"{uri}/send-one", JsonSerializer.Deserialize<Todo>(warm));
+
+                for (int i = 0; i < Options.Iterations; i++)
+                {
+                    // Get all
+                    stopwatch.Start();
+                    var json = await httpClient.GetStringAsync($"{uri}/all");
+                    var todos = JsonSerializer.Deserialize<Todo[]>(json);
+                    stopwatch.Stop();
+                    data.GetTimes.Add(stopwatch.Elapsed);
+
+                    // Send all
+                    stopwatch.Restart();
+                    await httpClient.PostAsJsonAsync($"{uri}/send", todos);
+                    stopwatch.Stop();
+                    data.SendTimes.Add(stopwatch.Elapsed);
+
+                    // Get first
+                    stopwatch.Restart();
+                    var todo = JsonSerializer.Deserialize<Todo>(await httpClient.GetStringAsync($"{uri}/first"));
+                    stopwatch.Stop();
+                    data.FirstTimes.Add(stopwatch.Elapsed);
+
+                    // Send one
+                    stopwatch.Restart();
+                    await httpClient.PostAsJsonAsync($"{uri}/send-one", todo);
+                    stopwatch.Stop();
+                    data.SendOneTimes.Add(stopwatch.Elapsed);
+
+                    Console.WriteLine($"{framework} Web API iteration {i + 1} of {Options.Iterations} complete");
+                }
+            }
+
+            return data;
+        }
+
 
         private static List<Todo> GenFuTodos(int count)
         {
@@ -154,11 +255,18 @@ namespace StupidTodo.AdminConsole
             Console.WriteLine($"GenFu data written to {path}");
         }
 
-        private static string GetDataFilePath(Data data, string prependName)
+        private static string GetDataFilePath(string testName, int iterations)
         {
             return Path.Combine(
                             Options.DataFilesFolder,
-                            $"{prependName}-{data.GetTimes.Count}_iterations{Data.FileExtension}");
+                            $"{testName}-{iterations}_iterations{Data.FileExtension}");
+        }
+
+        private static string GetStatisticsFilePath(string testName)
+        {
+            return Path.Combine(
+                            Options.DataFilesFolder,
+                            $"StupidTodoServiceCompare-{testName}-stats.txt");
         }
 
 
@@ -168,21 +276,20 @@ namespace StupidTodo.AdminConsole
                                     .SetBasePath(Directory.GetCurrentDirectory())
                                     .AddJsonFile("appsettings.json", false, true)
                                     .Build();
-            var testTypes = Configuration["TestTypes"].Split(',');
-            TestGrpcService = testTypes.FirstOrDefault(s => s == "grpc") != null;
-            TestWebApiService = testTypes.FirstOrDefault(s => s == "webapi") != null;
+            TestTypes = Configuration["TestTypes"].Split(',');
             Options = new TestingOptions()
             {
                 DataFilesFolder = Configuration["DataFilesFolder"],
                 GrpcUri = Configuration["GrpcUri"],
                 Iterations = Int32.Parse(Configuration["Iterations"]),
+                WebApiFrameworkUri = Configuration["WebApiFrameworkUri"],
                 WebApiUri = Configuration["WebApiUri"]
             };
         }
 
+
         private static readonly IConfiguration Configuration;
         private static readonly TestingOptions Options;
-        private static readonly bool TestGrpcService;
-        private static readonly bool TestWebApiService;
+        private static readonly string[] TestTypes;
     }
 }

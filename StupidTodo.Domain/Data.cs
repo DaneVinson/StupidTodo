@@ -75,21 +75,21 @@ namespace StupidTodo.Domain
             using (var writer = new StreamWriter(path, true))
             {
                 writer.WriteLine($"{DateTime.Now}");
-                WriteLine(writer, $"{nameof(GetTimes)}", GetTimes.Select(t => t.TotalMilliseconds));
-                WriteLine(writer, $"{nameof(GetStreamingTimes)}", GetStreamingTimes.Select(t => t.TotalMilliseconds));
-                WriteLine(writer, $"{nameof(SendTimes)}", SendTimes.Select(t => t.TotalMilliseconds));
-                WriteLine(writer, $"{nameof(SendStreamingTimes)}", SendStreamingTimes.Select(t => t.TotalMilliseconds));
-                WriteLine(writer, $"{nameof(FirstTimes)}", FirstTimes.Select(t => t.TotalMilliseconds));
-                WriteLine(writer, $"{nameof(SendOneTimes)}", SendOneTimes.Select(t => t.TotalMilliseconds));
+                WriteTimingLine(writer, $"{nameof(GetTimes)}", GetTimes.Select(t => t.TotalMilliseconds));
+                WriteTimingLine(writer, $"{nameof(GetStreamingTimes)}", GetStreamingTimes.Select(t => t.TotalMilliseconds));
+                WriteTimingLine(writer, $"{nameof(SendTimes)}", SendTimes.Select(t => t.TotalMilliseconds));
+                WriteTimingLine(writer, $"{nameof(SendStreamingTimes)}", SendStreamingTimes.Select(t => t.TotalMilliseconds));
+                WriteTimingLine(writer, $"{nameof(FirstTimes)}", FirstTimes.Select(t => t.TotalMilliseconds));
+                WriteTimingLine(writer, $"{nameof(SendOneTimes)}", SendOneTimes.Select(t => t.TotalMilliseconds));
                 writer.WriteLine();
             }
 
-            void WriteLine(StreamWriter writer, string propertyName, IEnumerable<double> times)
+            void WriteTimingLine(StreamWriter writer, string propertyName, IEnumerable<double> times)
             {
                 if (times.Any())
                 {
                     writer.WriteLine(String.Format(
-                                                "[{0}] Count:{1}, Average:{2}, StandardDeviation:{3}, Min:{4}, Max:{5}",
+                                                "[{0}] Iterations:{1}, Average:{2}, StandardDeviation:{3}, Min:{4}, Max:{5}",
                                                 propertyName,
                                                 times.Count(),
                                                 times.Average(),

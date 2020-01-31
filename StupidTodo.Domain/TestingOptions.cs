@@ -9,7 +9,7 @@ namespace StupidTodo.Domain
         public string DataFilesFolder { get; set; }
         public string GrpcUri { get; set; }
         public int Iterations { get; set; }
-        public string WcfUri { get; set; }
+        public string WebApiFrameworkUri { get; set; }
         public string WebApiUri { get; set; }
     }
 }
