@@ -1,6 +1,7 @@
 ﻿using StupidTodo.Domain;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.ServiceModel;
 using System.ServiceModel.Activation;
@@ -39,6 +40,11 @@ namespace StupidTodo.Framework.Wcf
             return Task.FromResult(true);
         }
 
+
+        static TodoService()
+        {
+            GenFuTodoDataProvider.LoadDataFile(ConfigurationManager.AppSettings["DataFilePath"]);
+        }
 
         private readonly GenFuTodoDataProvider DataProvider;
     }

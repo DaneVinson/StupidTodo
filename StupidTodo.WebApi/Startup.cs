@@ -34,11 +34,13 @@ namespace StupidTodo.WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            GenFuTodoDataProvider.LoadDataFile(Configuration["DataFilePath"]);
+
             services.AddSingleton<IServiceCompareDataProvider>(new GenFuTodoDataProvider())
                     .AddControllers();
         }
 
 
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
     }
 }

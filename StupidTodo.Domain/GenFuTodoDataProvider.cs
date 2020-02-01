@@ -13,18 +13,6 @@ namespace StupidTodo.Domain
     {
         static GenFuTodoDataProvider()
         {
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "genfu-data.json");
-            if (File.Exists(path))
-            {
-                string json = null;
-                using (var reader = new StreamReader(path))
-                {
-                    json = reader.ReadToEnd();
-                }
-
-                Todos = JsonSerializer.Deserialize<Todo[]>(json)?.ToList();
-            }
-
             if (Todos == null)
             {
                 GenFu.GenFu
@@ -35,6 +23,23 @@ namespace StupidTodo.Domain
                 Todos = A.ListOf<Todo>(5);
             }
         }
+
+        public static void LoadDataFile(string dataFilePath, bool forceReload = false)
+        {
+            if ((IsLoaded && !forceReload) || !File.Exists(dataFilePath)) { return; }
+
+            string json = null;
+            using (var reader = new StreamReader(dataFilePath))
+            {
+                json = reader.ReadToEnd();
+            }
+
+            Todos = JsonSerializer.Deserialize<Todo[]>(json)?.ToList();
+
+            IsLoaded = true;
+        }
+
+        private static bool IsLoaded { get; set; }
 
 
         public Task<IEnumerable<Todo>> Get()

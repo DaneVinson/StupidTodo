@@ -30,6 +30,7 @@ namespace StupidTodo.AdminConsole
 
                 foreach (var test in TestTypes)
                 {
+                    var start = DateTime.Now;
                     data = test switch
                     {
                         "grpc" => await TestGrpc(),
@@ -38,6 +39,7 @@ namespace StupidTodo.AdminConsole
                         "wcf" => await TestWcf(),
                         _ => throw new ArgumentException($"'{test}' is and unknown test type")
                     };
+                    Console.WriteLine($"{test} test completion in {DateTime.Now - start}");
                     data.SaveToFile(GetDataFilePath(test, data.GetTimes.Count));
                     data.SaveStatisticsToFile(GetStatisticsFilePath(test));
                 }
@@ -65,10 +67,28 @@ namespace StupidTodo.AdminConsole
             {
                 var client = new TodoSvc.TodoSvcClient(channel);
 
-                Console.WriteLine($"Testing gRPC, {Options.Iterations} iterations");
+                Console.Write($"Testing gRPC, {Options.Iterations} iterations");
 
                 // Ensure warm-up
-                var warmer = await client.FirstAsync(empty);
+                var warmup = await client.GetAsync(empty);
+                Console.WriteLine($", {warmup.Todos.Count} Todo objects");
+                using (var stream = client.GetStreaming(empty))
+                {
+                    await foreach (var message in stream.ResponseStream.ReadAllAsync())
+                    {
+                    }
+                }
+                var result = await client.SendAsync(warmup);
+                using (var call = client.SendStreaming())
+                {
+                    foreach (var todo in warmup.Todos)
+                    {
+                        await call.RequestStream.WriteAsync(todo);
+                    }
+                    await call.RequestStream.CompleteAsync();
+                }
+                var warm = await client.FirstAsync(empty);
+                result = await client.SendOneAsync(warm);
 
                 for (int i = 0; i < Options.Iterations; i++)
                 {
@@ -76,7 +96,7 @@ namespace StupidTodo.AdminConsole
 
                     // Get all streaming
                     stopwatch.Start();
-                    using (var stream = client.Get(empty))
+                    using (var stream = client.GetStreaming(empty))
                     {
                         await foreach (var message in stream.ResponseStream.ReadAllAsync())
                         {
@@ -89,14 +109,14 @@ namespace StupidTodo.AdminConsole
 
                     // Get all in one package
                     stopwatch.Start();
-                    var todosMessage = await client.GetPackageAsync(empty);
+                    var todosMessage = await client.GetAsync(empty);
                     todos.AddRange(todosMessage.Todos);
                     stopwatch.Stop();
                     data.GetTimes.Add(stopwatch.Elapsed);
 
                     // Send all streaming
                     stopwatch.Restart();
-                    using (var call = client.Send())
+                    using (var call = client.SendStreaming())
                     {
                         foreach (var todo in todos)
                         {
@@ -109,7 +129,7 @@ namespace StupidTodo.AdminConsole
 
                     // Send all in one package
                     stopwatch.Start();
-                    var result = await client.SendPackageAsync(todosMessage);
+                    result = await client.SendAsync(todosMessage);
                     stopwatch.Stop();
                     data.SendTimes.Add(stopwatch.Elapsed);
 
@@ -125,7 +145,7 @@ namespace StupidTodo.AdminConsole
                     stopwatch.Stop();
                     data.SendOneTimes.Add(stopwatch.Elapsed);
 
-                    Console.WriteLine($"gRPC iteration {i + 1} of {Options.Iterations} complete");
+                    WriteIterationLine(i + 1);
                 }
             }
 
@@ -137,13 +157,17 @@ namespace StupidTodo.AdminConsole
             var stopwatch = new Stopwatch();
             var data = new Data();
 
-            Console.WriteLine($"Testing WCF, {Options.Iterations} iterations");
+            Console.Write($"Testing WCF, {Options.Iterations} iterations");
 
             TodoServiceClient client = new TodoServiceClient();
             try
             {
                 // Ensure warm-up
-                var warmer = await client.FirstAsync();
+                var warmup = await client.GetAsync();
+                Console.WriteLine($", {warmup.Length} Todo objects");
+                var result = await client.SendAsync(warmup);
+                var warm = await client.FirstAsync();
+                result = await client.SendOneAsync(warm);
 
                 for (int i = 0; i < Options.Iterations; i++)
                 {
@@ -171,7 +195,7 @@ namespace StupidTodo.AdminConsole
                     stopwatch.Stop();
                     data.SendOneTimes.Add(stopwatch.Elapsed);
 
-                    Console.WriteLine($"WCF iteration {i + 1} of {Options.Iterations} complete");
+                    WriteIterationLine(i + 1);
                 }
             }
             finally { client?.Close(); }
@@ -189,13 +213,15 @@ namespace StupidTodo.AdminConsole
                 httpClient.DefaultRequestHeaders.Clear();
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 var framework = apiIsFramework ? ".NET Framework" : ".NET Core";
-                Console.WriteLine($"Testing {framework} Web API at {uri} [{Options.Iterations} iterations]");
+                Console.Write($"Testing {framework} Web API at {uri} [{Options.Iterations} iterations]");
 
                 // Ensure service warm-up
-                var warm = await httpClient.GetStringAsync($"{uri}/all");
-                var warmResult = await httpClient.PostAsJsonAsync($"{uri}/send", JsonSerializer.Deserialize<Todo[]>(warm));
-                warm = await httpClient.GetStringAsync($"{uri}/first");
-                warmResult = await httpClient.PostAsJsonAsync($"{uri}/send-one", JsonSerializer.Deserialize<Todo>(warm));
+                var warmJson = await httpClient.GetStringAsync($"{uri}/all");
+                var warmupTodos = JsonSerializer.Deserialize<Todo[]>(warmJson);
+                Console.WriteLine($", {warmupTodos.Length} Todo objects");
+                var warmResult = await httpClient.PostAsJsonAsync($"{uri}/send", warmupTodos);
+                warmJson = await httpClient.GetStringAsync($"{uri}/first");
+                warmResult = await httpClient.PostAsJsonAsync($"{uri}/send-one", JsonSerializer.Deserialize<Todo>(warmJson));
 
                 for (int i = 0; i < Options.Iterations; i++)
                 {
@@ -224,7 +250,7 @@ namespace StupidTodo.AdminConsole
                     stopwatch.Stop();
                     data.SendOneTimes.Add(stopwatch.Elapsed);
 
-                    Console.WriteLine($"{framework} Web API iteration {i + 1} of {Options.Iterations} complete");
+                    WriteIterationLine(i + 1);
                 }
             }
 
@@ -269,6 +295,10 @@ namespace StupidTodo.AdminConsole
                             $"StupidTodoServiceCompare-{testName}-stats.txt");
         }
 
+        private static void WriteIterationLine(int iteration)
+        {
+            Console.WriteLine($"{iteration} / {Options.Iterations}");
+        }
 
         static Program()
         {

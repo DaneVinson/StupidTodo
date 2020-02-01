@@ -24,7 +24,7 @@ namespace StupidTodo.GrpcService
             return DataProvider.First();
         }
 
-        public override async Task Get(EmptyMessage request, IServerStreamWriter<TodoMessage> responseStream, ServerCallContext context)
+        public override async Task GetStreaming(EmptyMessage request, IServerStreamWriter<TodoMessage> responseStream, ServerCallContext context)
         {
             foreach (var todo in (await DataProvider.Get()))
             {
@@ -42,14 +42,14 @@ namespace StupidTodo.GrpcService
             //                    .ForEach(t => responseStream.WriteAsync(t));
         }
 
-        public override async Task<TodosMessage> GetPackage(EmptyMessage request, ServerCallContext context)
+        public override async Task<TodosMessage> Get(EmptyMessage request, ServerCallContext context)
         {
             var todosMessage = new TodosMessage();
             todosMessage.Todos.AddRange(await DataProvider.Get());
             return todosMessage;
         }
 
-        public override async Task<ResultMessage> Send(IAsyncStreamReader<TodoMessage> requestStream, ServerCallContext context)
+        public override async Task<ResultMessage> SendStreaming(IAsyncStreamReader<TodoMessage> requestStream, ServerCallContext context)
         {
             var todos = new List<TodoMessage>();
             await foreach(var todo in requestStream.ReadAllAsync())
@@ -65,7 +65,7 @@ namespace StupidTodo.GrpcService
             return new ResultMessage() { Success = result };
         }
 
-        public override async Task<ResultMessage> SendPackage(TodosMessage request, ServerCallContext context)
+        public override async Task<ResultMessage> Send(TodosMessage request, ServerCallContext context)
         {
             var result = await DataProvider.Send(request.Todos);
             return new ResultMessage() { Success = true };
