@@ -58,93 +58,79 @@ namespace StupidTodo.AdminConsole
         }
 
 
-        private async static Task<Data> TestGrpc()
+        private static async Task<TimeSpan> RunTestIteration<TArg, TResult>(
+            int iteration, 
+            TArg arg, 
+            Func<TArg, Task<TResult>> testMethod)
         {
-            var stopwatch = new Stopwatch();
+            Watch.Restart();
+            _ = await testMethod.Invoke(arg);
+            Watch.Stop();
+            return Watch.Elapsed;
+        }
+
+        private static async Task<Data> TestGrpc()
+        {
+            Console.Write($"Testing gRPC, {Options.Iterations} iterations");
+
             var data = new Data();
             var empty = new EmptyMessage();
             using (var channel = GrpcChannel.ForAddress(Options.GrpcUri))
             {
                 var client = new TodoSvc.TodoSvcClient(channel);
 
-                Console.Write($"Testing gRPC, {Options.Iterations} iterations");
-
                 // Ensure warm-up
-                var warmup = await client.GetAsync(empty);
-                Console.WriteLine($", {warmup.Todos.Count} Todo objects");
+                var warmupTodos = await client.GetAsync(empty);
+                Console.WriteLine($", {warmupTodos.Todos.Count} Todo objects");
                 using (var stream = client.GetStreaming(empty))
                 {
                     await foreach (var message in stream.ResponseStream.ReadAllAsync())
                     {
                     }
                 }
-                var result = await client.SendAsync(warmup);
+                var result = await client.SendAsync(warmupTodos);
                 using (var call = client.SendStreaming())
                 {
-                    foreach (var todo in warmup.Todos)
+                    foreach (var todo in warmupTodos.Todos)
                     {
                         await call.RequestStream.WriteAsync(todo);
                     }
                     await call.RequestStream.CompleteAsync();
                 }
-                var warm = await client.FirstAsync(empty);
-                result = await client.SendOneAsync(warm);
+                var warmupTodo = await client.FirstAsync(empty);
+                result = await client.SendOneAsync(warmupTodo);
 
                 for (int i = 0; i < Options.Iterations; i++)
                 {
-                    var todos = new List<TodoMessage>();
-
-                    // Get all streaming
-                    stopwatch.Start();
-                    using (var stream = client.GetStreaming(empty))
+                    data.GetTimes.Add(await RunTestIteration(i, empty, async m => await client.GetAsync(m)));
+                    data.SendTimes.Add(await RunTestIteration(i, warmupTodos, async m => await client.SendAsync(m)));
+                    data.FirstTimes.Add(await RunTestIteration(i, empty, async m => await client.FirstAsync(m)));
+                    data.SendOneTimes.Add(await RunTestIteration(i, warmupTodo, async m => await client.SendOneAsync(m)));
+                    data.GetStreamingTimes.Add(await RunTestIteration(i, empty, async m =>
                     {
-                        await foreach (var message in stream.ResponseStream.ReadAllAsync())
+                        await client.GetAsync(m);
+                        var todosMessage = new TodosMessage();
+                        using (var stream = client.GetStreaming(empty))
                         {
-                            todos.Add(message);
+                            await foreach (var message in stream.ResponseStream.ReadAllAsync())
+                            {
+                                todosMessage.Todos.Add(message);
+                            }
                         }
-                    }
-                    stopwatch.Stop();
-                    data.GetStreamingTimes.Add(stopwatch.Elapsed);
-                    todos.Clear();
-
-                    // Get all in one package
-                    stopwatch.Start();
-                    var todosMessage = await client.GetAsync(empty);
-                    todos.AddRange(todosMessage.Todos);
-                    stopwatch.Stop();
-                    data.GetTimes.Add(stopwatch.Elapsed);
-
-                    // Send all streaming
-                    stopwatch.Restart();
-                    using (var call = client.SendStreaming())
+                        return todosMessage;
+                    }));
+                    data.SendStreamingTimes.Add(await RunTestIteration(i, warmupTodos, async m =>
                     {
-                        foreach (var todo in todos)
+                        using (var call = client.SendStreaming())
                         {
-                            await call.RequestStream.WriteAsync(todo);
+                            foreach (var todo in m.Todos)
+                            {
+                                await call.RequestStream.WriteAsync(todo);
+                            }
+                            await call.RequestStream.CompleteAsync();
                         }
-                        await call.RequestStream.CompleteAsync();
-                    }
-                    stopwatch.Stop();
-                    data.SendStreamingTimes.Add(stopwatch.Elapsed);
-
-                    // Send all in one package
-                    stopwatch.Start();
-                    result = await client.SendAsync(todosMessage);
-                    stopwatch.Stop();
-                    data.SendTimes.Add(stopwatch.Elapsed);
-
-                    // Get first
-                    stopwatch.Restart();
-                    var firstTodo = await client.FirstAsync(empty);
-                    stopwatch.Stop();
-                    data.FirstTimes.Add(stopwatch.Elapsed);
-
-                    // Send one
-                    stopwatch.Restart();
-                    result = await client.SendOneAsync(firstTodo);
-                    stopwatch.Stop();
-                    data.SendOneTimes.Add(stopwatch.Elapsed);
-
+                        return new ResultMessage() { Success = true };
+                    }));
                     WriteIterationLine(i + 1);
                 }
             }
@@ -154,102 +140,76 @@ namespace StupidTodo.AdminConsole
 
         private static async Task<Data> TestWcf()
         {
-            var stopwatch = new Stopwatch();
-            var data = new Data();
-
             Console.Write($"Testing WCF, {Options.Iterations} iterations");
 
+            var data = new Data();
             TodoServiceClient client = new TodoServiceClient();
             try
             {
                 // Ensure warm-up
-                var warmup = await client.GetAsync();
-                Console.WriteLine($", {warmup.Length} Todo objects");
-                var result = await client.SendAsync(warmup);
-                var warm = await client.FirstAsync();
-                result = await client.SendOneAsync(warm);
+                var warmupTodos = await client.GetAsync();
+                Console.WriteLine($", {warmupTodos.Length} Todo objects");
+                var result = await client.SendAsync(warmupTodos);
+                var warmupTodo = await client.FirstAsync();
+                result = await client.SendOneAsync(warmupTodo);
 
                 for (int i = 0; i < Options.Iterations; i++)
                 {
-                    // Get all
-                    stopwatch.Start();
-                    var todos = await client.GetAsync();
-                    stopwatch.Stop();
-                    data.GetTimes.Add(stopwatch.Elapsed);
-
-                    // Send all
-                    stopwatch.Restart();
-                    _ = await client.SendAsync(todos);
-                    stopwatch.Stop();
-                    data.SendTimes.Add(stopwatch.Elapsed);
-
-                    // Get first
-                    stopwatch.Restart();
-                    var todo = await client.FirstAsync();
-                    stopwatch.Stop();
-                    data.FirstTimes.Add(stopwatch.Elapsed);
-
-                    // Send one
-                    stopwatch.Restart();
-                    _ = await client.SendOneAsync(todo);
-                    stopwatch.Stop();
-                    data.SendOneTimes.Add(stopwatch.Elapsed);
-
+                    data.GetTimes.Add(await RunTestIteration(i, string.Empty, _ => client.GetAsync()));
+                    data.SendTimes.Add(await RunTestIteration(i, warmupTodos, t => client.SendAsync(t)));
+                    data.FirstTimes.Add(await RunTestIteration(i, string.Empty, _ => client.FirstAsync()));
+                    data.SendOneTimes.Add(await RunTestIteration(i, warmupTodo, t => client.SendOneAsync(t)));
                     WriteIterationLine(i + 1);
                 }
             }
             finally { client?.Close(); }
-           
+
             return data;
         }
 
         public static async Task<Data> TestWebApi(bool apiIsFramework = false)
         {
-            var stopwatch = new Stopwatch();
-            var data = new Data();
             var uri = apiIsFramework ? Options.WebApiFrameworkUri : Options.WebApiUri;
+            var framework = apiIsFramework ? ".NET Framework" : ".NET Core";
+            Console.Write($"Testing {framework} Web API at {uri} [{Options.Iterations} iterations]");
+
+            var data = new Data();
             using (var httpClient = new HttpClient())
             {
                 httpClient.DefaultRequestHeaders.Clear();
                 httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                var framework = apiIsFramework ? ".NET Framework" : ".NET Core";
-                Console.Write($"Testing {framework} Web API at {uri} [{Options.Iterations} iterations]");
 
                 // Ensure service warm-up
-                var warmJson = await httpClient.GetStringAsync($"{uri}/all");
-                var warmupTodos = JsonSerializer.Deserialize<Todo[]>(warmJson);
+                var warmupJson = await httpClient.GetStringAsync($"{uri}/all");
+                var warmupTodos = JsonSerializer.Deserialize<Todo[]>(warmupJson);
                 Console.WriteLine($", {warmupTodos.Length} Todo objects");
-                var warmResult = await httpClient.PostAsJsonAsync($"{uri}/send", warmupTodos);
-                warmJson = await httpClient.GetStringAsync($"{uri}/first");
-                warmResult = await httpClient.PostAsJsonAsync($"{uri}/send-one", JsonSerializer.Deserialize<Todo>(warmJson));
+                _ = await httpClient.PostAsJsonAsync($"{uri}/send", warmupTodos);
+                warmupJson = await httpClient.GetStringAsync($"{uri}/first");
+                var warmupTodo = JsonSerializer.Deserialize<Todo>(warmupJson);
+                _ = await httpClient.PostAsJsonAsync($"{uri}/send-one", JsonSerializer.Deserialize<Todo>(warmupJson));
 
                 for (int i = 0; i < Options.Iterations; i++)
                 {
-                    // Get all
-                    stopwatch.Start();
-                    var json = await httpClient.GetStringAsync($"{uri}/all");
-                    var todos = JsonSerializer.Deserialize<Todo[]>(json);
-                    stopwatch.Stop();
-                    data.GetTimes.Add(stopwatch.Elapsed);
-
-                    // Send all
-                    stopwatch.Restart();
-                    await httpClient.PostAsJsonAsync($"{uri}/send", todos);
-                    stopwatch.Stop();
-                    data.SendTimes.Add(stopwatch.Elapsed);
-
-                    // Get first
-                    stopwatch.Restart();
-                    var todo = JsonSerializer.Deserialize<Todo>(await httpClient.GetStringAsync($"{uri}/first"));
-                    stopwatch.Stop();
-                    data.FirstTimes.Add(stopwatch.Elapsed);
-
-                    // Send one
-                    stopwatch.Restart();
-                    await httpClient.PostAsJsonAsync($"{uri}/send-one", todo);
-                    stopwatch.Stop();
-                    data.SendOneTimes.Add(stopwatch.Elapsed);
-
+                    data.GetTimes.Add(await RunTestIteration(i, string.Empty, async _ =>
+                    {
+                        var json = await httpClient.GetStringAsync($"{uri}/all");
+                        return JsonSerializer.Deserialize<Todo[]>(json);
+                    }));
+                    data.SendTimes.Add(await RunTestIteration(i, warmupTodos, async t =>
+                    {
+                        await httpClient.PostAsJsonAsync($"{uri}/send", t);
+                        return true;
+                    }));
+                    data.FirstTimes.Add(await RunTestIteration(i, string.Empty, async _ =>
+                    {
+                        var json = await httpClient.GetStringAsync($"{uri}/first");
+                        return JsonSerializer.Deserialize<Todo>(json);
+                    }));
+                    data.SendOneTimes.Add(await RunTestIteration(i, warmupTodo, async t =>
+                    {
+                        await httpClient.PostAsJsonAsync($"{uri}/send-one", t);
+                        return true;
+                    }));
                     WriteIterationLine(i + 1);
                 }
             }
@@ -281,6 +241,7 @@ namespace StupidTodo.AdminConsole
             Console.WriteLine($"GenFu data written to {path}");
         }
 
+
         private static string GetDataFilePath(string testName, int iterations)
         {
             return Path.Combine(
@@ -300,6 +261,7 @@ namespace StupidTodo.AdminConsole
             Console.WriteLine($"{iteration} / {Options.Iterations}");
         }
 
+
         static Program()
         {
             Configuration = new ConfigurationBuilder()
@@ -307,6 +269,7 @@ namespace StupidTodo.AdminConsole
                                     .AddJsonFile("appsettings.json", false, true)
                                     .Build();
             TestTypes = Configuration["TestTypes"].Split(',');
+            Watch = new Stopwatch();
             Options = new TestingOptions()
             {
                 DataFilesFolder = Configuration["DataFilesFolder"],
@@ -317,9 +280,9 @@ namespace StupidTodo.AdminConsole
             };
         }
 
-
         private static readonly IConfiguration Configuration;
         private static readonly TestingOptions Options;
         private static readonly string[] TestTypes;
+        private static readonly Stopwatch Watch;
     }
 }

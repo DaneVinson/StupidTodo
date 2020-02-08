@@ -6,6 +6,15 @@
 [FirstTimes] Iterations:10, Average:7.074180000000001, StandardDeviation:3.012514271103126, Min:3.015, Max:12.4407
 [SendOneTimes] Iterations:10, Average:5.60483, StandardDeviation:1.9797812359197668, Min:2.8548, Max:8.9461
 
+2/7/2020 19:55:03
+[GetTimes] Iterations:10, Average:137.41539000000003, StandardDeviation:12.189366291932489, Min:113.1388, Max:156.595
+[GetStreamingTimes] N/A
+[SendTimes] Iterations:10, Average:149.05482, StandardDeviation:16.741032846679445, Min:108.766, Max:173.6424
+[SendStreamingTimes] N/A
+[FirstTimes] Iterations:10, Average:7.676020000000001, StandardDeviation:3.042093911699637, Min:3.4213, Max:13.3582
+[SendOneTimes] Iterations:10, Average:5.5786500000000006, StandardDeviation:2.4401776583888317, Min:2.715, Max:10.6613
+
+
 1/31/2020 20:22:34
 [GetTimes] Iterations:100, Average:147.52838600000004, StandardDeviation:12.097886541136186, Min:116.4724, Max:179.2531
 [GetStreamingTimes] N/A
@@ -21,3 +30,12 @@
 [SendStreamingTimes] N/A
 [FirstTimes] Iterations:1000, Average:4.666881400000009, StandardDeviation:4.004722760585811, Min:2.0621, Max:45.8516
 [SendOneTimes] Iterations:1000, Average:6.65870320000001, StandardDeviation:4.535424046497724, Min:2.0163, Max:38.0364
+
+2/7/2020 20:59:35
+[GetTimes] Iterations:10, Average:147.97138, StandardDeviation:7.783607602365366, Min:134.3461, Max:159.7116
+[GetStreamingTimes] N/A
+[SendTimes] Iterations:10, Average:150.61515, StandardDeviation:15.24008721577734, Min:123.653, Max:176.3507
+[SendStreamingTimes] N/A
+[FirstTimes] Iterations:10, Average:6.60757, StandardDeviation:2.2229045184397824, Min:3.7572, Max:9.2581
+[SendOneTimes] Iterations:10, Average:5.08607, StandardDeviation:2.3192233937462774, Min:2.9431, Max:9.9688
+
