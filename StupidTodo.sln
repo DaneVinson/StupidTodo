@@ -20,6 +20,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.Grpc", "StupidTo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StupidTodo.Framework.WebApi", "StupidTodo.Framework.WebApi\StupidTodo.Framework.WebApi.csproj", "{B1574261-2637-4B7F-9AA5-2CCF5B7541D4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StupidTodo.ConsoleConductor", "StupidTodo.ConsoleConductor\StupidTodo.ConsoleConductor.csproj", "{A065C6B6-1A15-4A55-B5F1-86EFE7752E8A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +52,10 @@ Global
 		{B1574261-2637-4B7F-9AA5-2CCF5B7541D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1574261-2637-4B7F-9AA5-2CCF5B7541D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1574261-2637-4B7F-9AA5-2CCF5B7541D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A065C6B6-1A15-4A55-B5F1-86EFE7752E8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A065C6B6-1A15-4A55-B5F1-86EFE7752E8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A065C6B6-1A15-4A55-B5F1-86EFE7752E8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A065C6B6-1A15-4A55-B5F1-86EFE7752E8A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

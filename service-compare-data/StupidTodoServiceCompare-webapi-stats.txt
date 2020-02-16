@@ -1,32 +1,16 @@
-1/31/2020 20:57:32
-[GetTimes] Iterations:10, Average:103.26306, StandardDeviation:13.799987021240275, Min:86.9429, Max:126.0789
-[GetStreamingTimes] N/A
-[SendTimes] Iterations:10, Average:68.36868000000001, StandardDeviation:9.798336287941948, Min:58.1556, Max:85.178
-[SendStreamingTimes] N/A
-[FirstTimes] Iterations:10, Average:2.93449, StandardDeviation:1.2077307601034264, Min:1.7377, Max:5.4572
-[SendOneTimes] Iterations:10, Average:12.66573, StandardDeviation:2.796507910966819, Min:9.1629, Max:19.4414
+2/15/2020 22:23:49, 1000 iterations
+GetTimes             Avg:45.05549039999999, StdDev:2.7251387726990792, Min:41.2941, Max:76.3937
+GetStreamingTimes    N/A
+SendTimes            Avg:50.03557090000005, StdDev:3.3277324118118616, Min:47.4506, Max:85.8306
+SendStreamingTimes   N/A
+FirstTimes           Avg:1.0462232000000007, StdDev:0.22166568539528161, Min:0.8057, Max:5.2424
+SendOneTimes         Avg:7.11169770000001, StdDev:0.7238256958582712, Min:6.3232, Max:16.2537
 
-1/31/2020 20:26:34
-[GetTimes] Iterations:100, Average:80.05814799999999, StandardDeviation:9.650216529192285, Min:60.1999, Max:122.4655
-[GetStreamingTimes] N/A
-[SendTimes] Iterations:100, Average:60.87753499999999, StandardDeviation:7.136048040076174, Min:54.8178, Max:84.0372
-[SendStreamingTimes] N/A
-[FirstTimes] Iterations:100, Average:1.7631020000000004, StandardDeviation:1.2089104288556696, Min:1.1425, Max:12.7808
-[SendOneTimes] Iterations:100, Average:8.680820000000004, StandardDeviation:2.1410050979855235, Min:6.6353, Max:20.5396
-
-1/31/2020 22:04:16
-[GetTimes] Iterations:1000, Average:53.44800490000003, StandardDeviation:3.064313006660055, Min:48.1312, Max:85.7468
-[GetStreamingTimes] N/A
-[SendTimes] Iterations:1000, Average:57.347738499999984, StandardDeviation:2.825468224260849, Min:54.3372, Max:88.139
-[SendStreamingTimes] N/A
-[FirstTimes] Iterations:1000, Average:1.1726541000000004, StandardDeviation:0.2357874358043491, Min:0.8781, Max:5.4953
-[SendOneTimes] Iterations:1000, Average:7.323954599999999, StandardDeviation:0.8122985240900293, Min:6.4462, Max:17.3203
-
-2/7/2020 21:02:32
-[GetTimes] Iterations:10, Average:93.30681999999999, StandardDeviation:11.036878862051536, Min:79.578, Max:114.6542
-[GetStreamingTimes] N/A
-[SendTimes] Iterations:10, Average:58.150059999999996, StandardDeviation:10.171314797822355, Min:49.9446, Max:79.474
-[SendStreamingTimes] N/A
-[FirstTimes] Iterations:10, Average:2.82344, StandardDeviation:1.280449317388236, Min:1.4544, Max:5.6065
-[SendOneTimes] Iterations:10, Average:11.86152, StandardDeviation:3.96852458372126, Min:8.8219, Max:23.1204
+2/15/2020 22:23:49, 10000 iterations
+GetTimes             Avg:94.56645519999995, StdDev:18.701220999287937, Min:43.4653, Max:317.6965
+GetStreamingTimes    N/A
+SendTimes            Avg:73.42807814999992, StdDev:11.175676650689903, Min:40.8507, Max:152.5565
+SendStreamingTimes   N/A
+FirstTimes           Avg:22.938390650000073, StdDev:13.182622051709586, Min:0.757, Max:80.5903
+SendOneTimes         Avg:15.823559119999997, StdDev:8.084293611514559, Min:6.3423, Max:101.8516
 

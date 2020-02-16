@@ -22,26 +22,27 @@ namespace StupidTodo.AdminConsole
     {
         static async Task Main(string[] args)
         {
-            Data data = null;
-
             try
             {
                 //WriteGenFuData(5000);
 
+                WriteStatsBlock();
+
+                return;
                 foreach (var test in TestTypes)
                 {
                     var start = DateTime.Now;
-                    data = test switch
+                    var data = test switch
                     {
                         "grpc" => await TestGrpc(),
+                        "wcf" => await TestWcf(),
                         "webapiframework" => await TestWebApi(true),
                         "webapi" => await TestWebApi(),
-                        "wcf" => await TestWcf(),
                         _ => throw new ArgumentException($"'{test}' is and unknown test type")
                     };
                     Console.WriteLine($"{test} test completion in {DateTime.Now - start}");
-                    data.SaveToFile(GetDataFilePath(test, data.GetTimes.Count));
-                    data.SaveStatisticsToFile(GetStatisticsFilePath(test));
+                    data.SaveToFile(GetDataFilePath(test, data.GetTimes.Count, args?.FirstOrDefault()));
+                    //data.SaveStatisticsToFile(GetStatisticsFilePath(test));
                 }
             }
             catch (Exception ex)
@@ -54,6 +55,23 @@ namespace StupidTodo.AdminConsole
                 Console.WriteLine();
                 Console.WriteLine("...");
                 Console.ReadKey();
+            }
+        }
+
+
+        private static void WriteStatsBlock()
+        {
+            var directory = new DirectoryInfo(Options.DataFilesFolder);
+            var names = new[] { "grpc", "wcf", "webapi", "webapiframework" };
+            foreach (var name in names)
+            {
+                var files = directory.GetFiles($"{name}-*{Data.FileExtension}");
+                var f = files.Where(f => !f.Name.StartsWith($"{name}-client")).FirstOrDefault();
+                var n = GetStatisticsFilePath(name);
+                Data.LoadFromFile(files.Where(f => !f.Name.StartsWith($"{name}-client")).FirstOrDefault())
+                    .SaveStatisticsToFile(GetStatisticsFilePath(name));
+                Data.LoadFromFiles(files.Where(f => f.Name.StartsWith($"{name}-client")))
+                    .SaveStatisticsToFile(GetStatisticsFilePath(name));
             }
         }
 
@@ -89,14 +107,17 @@ namespace StupidTodo.AdminConsole
                     }
                 }
                 var result = await client.SendAsync(warmupTodos);
-                using (var call = client.SendStreaming())
-                {
-                    foreach (var todo in warmupTodos.Todos)
-                    {
-                        await call.RequestStream.WriteAsync(todo);
-                    }
-                    await call.RequestStream.CompleteAsync();
-                }
+
+                //Errors on the grpc service side for ~10% of sends
+                //using (var call = client.SendStreaming())
+                //{
+                //    foreach (var todo in warmupTodos.Todos)
+                //    {
+                //        await call.RequestStream.WriteAsync(todo);
+                //    }
+                //    await call.RequestStream.CompleteAsync();
+                //}
+
                 var warmupTodo = await client.FirstAsync(empty);
                 result = await client.SendOneAsync(warmupTodo);
 
@@ -119,18 +140,18 @@ namespace StupidTodo.AdminConsole
                         }
                         return todosMessage;
                     }));
-                    data.SendStreamingTimes.Add(await RunTestIteration(i, warmupTodos, async m =>
-                    {
-                        using (var call = client.SendStreaming())
-                        {
-                            foreach (var todo in m.Todos)
-                            {
-                                await call.RequestStream.WriteAsync(todo);
-                            }
-                            await call.RequestStream.CompleteAsync();
-                        }
-                        return new ResultMessage() { Success = true };
-                    }));
+                    //data.SendStreamingTimes.Add(await RunTestIteration(i, warmupTodos, async m =>
+                    //{
+                    //    using (var call = client.SendStreaming())
+                    //    {
+                    //        foreach (var todo in m.Todos)
+                    //        {
+                    //            await call.RequestStream.WriteAsync(todo);
+                    //        }
+                    //        await call.RequestStream.CompleteAsync();
+                    //    }
+                    //    return new ResultMessage() { Success = true };
+                    //}));
                     WriteIterationLine(i + 1);
                 }
             }
@@ -242,11 +263,12 @@ namespace StupidTodo.AdminConsole
         }
 
 
-        private static string GetDataFilePath(string testName, int iterations)
+        private static string GetDataFilePath(string testName, int iterations, string clientArg)
         {
+            clientArg = clientArg == null ? string.Empty : $"client_{clientArg}-";
             return Path.Combine(
                             Options.DataFilesFolder,
-                            $"{testName}-{iterations}_iterations{Data.FileExtension}");
+                            $"{testName}-{clientArg}{iterations}_iterations{Data.FileExtension}");
         }
 
         private static string GetStatisticsFilePath(string testName)

@@ -31,8 +31,10 @@ namespace StupidTodo.Domain
         public static void AppendToTarget(Data source, Data target)
         {
             target.FirstTimes.AddRange(source.FirstTimes);
+            target.GetStreamingTimes.AddRange(source.GetStreamingTimes);
             target.GetTimes.AddRange(source.GetTimes);
             target.SendOneTimes.AddRange(source.SendOneTimes);
+            target.SendStreamingTimes.AddRange(source.SendStreamingTimes);
             target.SendTimes.AddRange(source.SendTimes);
         }
 
@@ -53,28 +55,35 @@ namespace StupidTodo.Domain
 
             List<TimeSpan> ReadAndParseLine(StreamReader reader)
             {
-                return reader.ReadLine()
-                                .Split(':')
-                                .Select(v => TimeSpan.FromMilliseconds(Double.Parse(v)))
-                                .ToList();
+                var line = reader.ReadLine();
+                if (string.IsNullOrWhiteSpace(line)) { return new List<TimeSpan>(); }
+
+                return line.Split(':')
+                            .Select(v => TimeSpan.FromMilliseconds(double.Parse(v)))
+                            .ToList();
             }
         }
 
-        public static Data LoadFromFiles(DirectoryInfo sourceDirectory)
+        public static Data LoadFromFiles(IEnumerable<FileInfo> files)
         {
             var data = new Data();
-            foreach (var file in sourceDirectory.GetFiles($"*{Data.FileExtension}", SearchOption.TopDirectoryOnly))
+            foreach (var file in files)
             {
                 AppendToTarget(LoadFromFile(file), data);
             }
             return data;
         }
 
+        public static Data LoadFromFiles(DirectoryInfo sourceDirectory)
+        {
+            return LoadFromFiles(sourceDirectory.GetFiles($"*{Data.FileExtension}", SearchOption.TopDirectoryOnly));
+        }
+
         public void SaveStatisticsToFile(string path)
         {
             using (var writer = new StreamWriter(path, true))
             {
-                writer.WriteLine($"{DateTime.Now}");
+                writer.WriteLine($"{DateTime.Now}, {GetTimes.Count} iterations");
                 WriteTimingLine(writer, $"{nameof(GetTimes)}", GetTimes.Select(t => t.TotalMilliseconds));
                 WriteTimingLine(writer, $"{nameof(GetStreamingTimes)}", GetStreamingTimes.Select(t => t.TotalMilliseconds));
                 WriteTimingLine(writer, $"{nameof(SendTimes)}", SendTimes.Select(t => t.TotalMilliseconds));
@@ -89,15 +98,14 @@ namespace StupidTodo.Domain
                 if (times.Any())
                 {
                     writer.WriteLine(String.Format(
-                                                "[{0}] Iterations:{1}, Average:{2}, StandardDeviation:{3}, Min:{4}, Max:{5}",
-                                                propertyName,
-                                                times.Count(),
+                                                "{0} Avg:{1}, StdDev:{2}, Min:{3}, Max:{4}",
+                                                propertyName.PadRight(20, ' '),                                                
                                                 times.Average(),
                                                 GetStandardDeviation(times),
                                                 times.Min(),
                                                 times.Max()));
                 }
-                else { writer.WriteLine($"[{propertyName}] N/A"); }
+                else { writer.WriteLine($"{propertyName.PadRight(20, ' ')} N/A"); }
             }
         }
 
@@ -114,7 +122,7 @@ namespace StupidTodo.Domain
             }
         }
 
-        private static double GetStandardDeviation(IEnumerable<double> values)
+        public static double GetStandardDeviation(IEnumerable<double> values)
         {
             var mean = values.Average();
             return Math.Sqrt(values.Select(v => Math.Pow((v - mean), 2)).Average());
