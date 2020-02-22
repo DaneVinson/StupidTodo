@@ -9,9 +9,9 @@ using StupidTodo.Domain;
 
 namespace StupidTodo.WebApi.Controllers
 {
-    [Produces("application/json")]
+    [ApiController]
     [Route("api/[controller]")]
-    public class TodoController : Controller
+    public class TodoController : ControllerBase
     {
         public TodoController(ITodoDataProvider dataProvider)
         {
