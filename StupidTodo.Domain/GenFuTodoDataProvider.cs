@@ -13,15 +13,12 @@ namespace StupidTodo.Domain
     {
         static GenFuTodoDataProvider()
         {
-            if (Todos == null)
-            {
-                GenFu.GenFu
-                    .Configure<Todo>()
-                    .Fill(t => t.Id, () => Guid.NewGuid().ToString())
-                    .Fill(t => t.UserId, () => Bilbo.Id);
+            GenFu.GenFu
+                .Configure<Todo>()
+                .Fill(t => t.Id, () => Guid.NewGuid().ToString())
+                .Fill(t => t.UserId, () => Bilbo.Id);
 
-                Todos = A.ListOf<Todo>(5);
-            }
+            Todos = A.ListOf<Todo>(5);
         }
 
         public static void LoadDataFile(string dataFilePath, bool forceReload = false)
