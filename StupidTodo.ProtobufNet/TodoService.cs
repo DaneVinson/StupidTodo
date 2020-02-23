@@ -8,24 +8,33 @@ namespace StupidTodo.ProtobufNet
 {
     public class TodoService : ITodoService
     {
+        public TodoService(ITodoDataProvider dataProvider)
+        {
+            DataProvider = dataProvider ?? throw new ArgumentNullException();
+        }
+
+
         public Task<bool> DeleteTodo(string id)
         {
-            throw new NotImplementedException();
+            return DataProvider.Delete(id);
         }
 
         public Task<IEnumerable<Todo>> GetDoneTodos()
         {
-            throw new NotImplementedException();
+            return DataProvider.Get(true);
         }
 
         public Task<IEnumerable<Todo>> GetTodos()
         {
-            throw new NotImplementedException();
+            return DataProvider.Get();
         }
 
         public Task<Todo> UpsertTodo(Todo todo)
         {
-            throw new NotImplementedException();
+            return DataProvider.Upsert(todo);
         }
+
+
+        private readonly ITodoDataProvider DataProvider;
     }
 }

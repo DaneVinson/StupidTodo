@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -13,10 +15,17 @@ namespace StupidTodo.ProtobufNet
     {
         public static void Main(string[] args)
         {
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(builder => { builder.UseStartup<Startup>(); })
-                .Build()
-                .Run();
+            WebHost.CreateDefaultBuilder(args)
+                    .ConfigureKestrel(options =>
+                    {
+                        options.ListenLocalhost(10042, listenOptions =>
+                        {
+                            listenOptions.Protocols = HttpProtocols.Http2;
+                        });
+                    })
+                    .UseStartup<Startup>()
+                    .Build()
+                    .Run();
         }
     }
 }

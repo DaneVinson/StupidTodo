@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ProtoBuf.Grpc.Server;
+using StupidTodo.Domain;
 
 namespace StupidTodo.ProtobufNet
 {
@@ -33,6 +34,8 @@ namespace StupidTodo.ProtobufNet
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<ITodoDataProvider, SimpleTodoDataProvider>();
+
             services.AddCodeFirstGrpc(options =>
             {
                 options.ResponseCompressionLevel = CompressionLevel.Optimal;

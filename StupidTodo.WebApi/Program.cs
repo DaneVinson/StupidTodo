@@ -16,17 +16,10 @@ namespace StupidTodo.WebApi
     {
         public static void Main(string[] args)
         {
-            WebHost.CreateDefaultBuilder(args)
-                    .ConfigureKestrel(options =>
-                    {
-                        options.ListenLocalhost(10042, listenOptions =>
-                        {
-                            listenOptions.Protocols = HttpProtocols.Http2;
-                        });
-                    })
-                    .UseStartup<Startup>()
-                    .Build()
-                    .Run();
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(builder => { builder.UseStartup<Startup>(); })
+                .Build()
+                .Run();
         }
     }
 }
