@@ -18,9 +18,10 @@ namespace StupidTodo.ProtobufNet
             WebHost.CreateDefaultBuilder(args)
                     .ConfigureKestrel(options =>
                     {
-                        options.ListenLocalhost(10042, listenOptions =>
+                        options.ListenLocalhost(10023, listenOptions =>
                         {
-                            listenOptions.Protocols = HttpProtocols.Http2;
+                            listenOptions.UseHttps();
+                            listenOptions.Protocols = HttpProtocols.Http1;
                         });
                     })
                     .UseStartup<Startup>()
