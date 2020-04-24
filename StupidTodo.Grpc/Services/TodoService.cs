@@ -19,9 +19,9 @@ namespace StupidTodo.GrpcService
         }
 
 
-        public override Task<TodoMessage> First(EmptyMessage request, ServerCallContext context)
+        public override async Task<TodoMessage> First(EmptyMessage request, ServerCallContext context)
         {
-            return DataProvider.First();
+            return await DataProvider.First();
         }
 
         public override async Task GetStreaming(EmptyMessage request, IServerStreamWriter<TodoMessage> responseStream, ServerCallContext context)

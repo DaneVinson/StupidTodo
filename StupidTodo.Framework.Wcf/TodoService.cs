@@ -20,24 +20,24 @@ namespace StupidTodo.Framework.Wcf
         }
 
 
-        public Task<Todo> First()
+        public async Task<Todo> First()
         {
-            return DataProvider.GetFirst();
+            return await DataProvider.GetFirst();
         }
 
-        public Task<IEnumerable<Todo>> Get()
+        public async Task<IEnumerable<Todo>> Get()
         {
-            return DataProvider.Get();
+            return await DataProvider.Get();
         }
 
-        public Task<bool> Send(IEnumerable<Todo> todos)
+        public async Task<bool> Send(IEnumerable<Todo> todos)
         {
-            return Task.FromResult(true);
+            return await Task.FromResult(true);
         }
 
-        public Task<bool> SendOne(Todo todo)
+        public async Task<bool> SendOne(Todo todo)
         {
-            return Task.FromResult(true);
+            return await Task.FromResult(true);
         }
 
 

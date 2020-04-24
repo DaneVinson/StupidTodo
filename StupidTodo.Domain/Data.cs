@@ -27,6 +27,19 @@ namespace StupidTodo.Domain
         public List<TimeSpan> SendStreamingTimes { get; set; }
         public List<TimeSpan> SendTimes { get; set; }
 
+        public int Iterations
+        {
+            get
+            {
+                var iterations = GetTimes.Count;
+                if (iterations == 0) { iterations = GetStreamingTimes.Count; }
+                if (iterations == 0) { iterations = FirstTimes.Count; }
+                if (iterations == 0) { iterations = SendOneTimes.Count; }
+                if (iterations == 0) { iterations = SendStreamingTimes.Count; }
+                if (iterations == 0) { iterations = SendTimes.Count; }
+                return iterations;
+            }
+        }
 
         public static void AppendToTarget(Data source, Data target)
         {
@@ -40,6 +53,8 @@ namespace StupidTodo.Domain
 
         public static Data LoadFromFile(FileInfo file)
         {
+            if (!File.Exists(file.FullName)) { return new Data(); }
+
             using (var reader = new StreamReader(file.FullName))
             {
                 return new Data()
@@ -83,7 +98,7 @@ namespace StupidTodo.Domain
         {
             using (var writer = new StreamWriter(path, true))
             {
-                writer.WriteLine($"{DateTime.Now}, {GetTimes.Count} iterations");
+                writer.WriteLine($"{DateTime.Now}, {Iterations} iterations");
                 WriteTimingLine(writer, $"{nameof(GetTimes)}", GetTimes.Select(t => t.TotalMilliseconds));
                 WriteTimingLine(writer, $"{nameof(GetStreamingTimes)}", GetStreamingTimes.Select(t => t.TotalMilliseconds));
                 WriteTimingLine(writer, $"{nameof(SendTimes)}", SendTimes.Select(t => t.TotalMilliseconds));

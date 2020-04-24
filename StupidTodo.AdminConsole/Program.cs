@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.ServiceModel;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -24,11 +25,6 @@ namespace StupidTodo.AdminConsole
         {
             try
             {
-                //WriteGenFuData(5000);
-
-                WriteStatsBlock();
-
-                return;
                 foreach (var test in TestTypes)
                 {
                     var start = DateTime.Now;
@@ -41,9 +37,13 @@ namespace StupidTodo.AdminConsole
                         _ => throw new ArgumentException($"'{test}' is and unknown test type")
                     };
                     Console.WriteLine($"{test} test completion in {DateTime.Now - start}");
-                    data.SaveToFile(GetDataFilePath(test, data.GetTimes.Count, args?.FirstOrDefault()));
+                    data.SaveToFile(GetDataFilePath(test, data.Iterations, args?.FirstOrDefault()));
                     //data.SaveStatisticsToFile(GetStatisticsFilePath(test));
                 }
+
+                //WriteGenFuData(5000);
+
+                //WriteStatsBlock();
             }
             catch (Exception ex)
             {
@@ -66,10 +66,12 @@ namespace StupidTodo.AdminConsole
             foreach (var name in names)
             {
                 var files = directory.GetFiles($"{name}-*{Data.FileExtension}");
-                var f = files.Where(f => !f.Name.StartsWith($"{name}-client")).FirstOrDefault();
-                var n = GetStatisticsFilePath(name);
-                Data.LoadFromFile(files.Where(f => !f.Name.StartsWith($"{name}-client")).FirstOrDefault())
-                    .SaveStatisticsToFile(GetStatisticsFilePath(name));
+                var singleFile = files.Where(f => !f.Name.StartsWith($"{name}-client")).FirstOrDefault();
+                if (singleFile != null)
+                {
+                    Data.LoadFromFile(singleFile)
+                        .SaveStatisticsToFile(GetStatisticsFilePath(name));
+                }
                 Data.LoadFromFiles(files.Where(f => f.Name.StartsWith($"{name}-client")))
                     .SaveStatisticsToFile(GetStatisticsFilePath(name));
             }
@@ -123,35 +125,41 @@ namespace StupidTodo.AdminConsole
 
                 for (int i = 0; i < Options.Iterations; i++)
                 {
-                    data.GetTimes.Add(await RunTestIteration(i, empty, async m => await client.GetAsync(m)));
-                    data.SendTimes.Add(await RunTestIteration(i, warmupTodos, async m => await client.SendAsync(m)));
-                    data.FirstTimes.Add(await RunTestIteration(i, empty, async m => await client.FirstAsync(m)));
-                    data.SendOneTimes.Add(await RunTestIteration(i, warmupTodo, async m => await client.SendOneAsync(m)));
-                    data.GetStreamingTimes.Add(await RunTestIteration(i, empty, async m =>
+                    if (Methods.Contains("get")) { data.GetTimes.Add(await RunTestIteration(i, empty, async m => await client.GetAsync(m))); }
+                    if (Methods.Contains("send")) { data.SendTimes.Add(await RunTestIteration(i, warmupTodos, async m => await client.SendAsync(m))); }
+                    if (Methods.Contains("first")) { data.FirstTimes.Add(await RunTestIteration(i, empty, async m => await client.FirstAsync(m))); }
+                    if (Methods.Contains("sendone")) { data.SendOneTimes.Add(await RunTestIteration(i, warmupTodo, async m => await client.SendOneAsync(m))); }
+                    if (Methods.Contains("getstream"))
                     {
-                        await client.GetAsync(m);
-                        var todosMessage = new TodosMessage();
-                        using (var stream = client.GetStreaming(empty))
+                        data.GetStreamingTimes.Add(await RunTestIteration(i, empty, async m =>
                         {
-                            await foreach (var message in stream.ResponseStream.ReadAllAsync())
+                            await client.GetAsync(m);
+                            var todosMessage = new TodosMessage();
+                            using (var stream = client.GetStreaming(empty))
                             {
-                                todosMessage.Todos.Add(message);
+                                await foreach (var message in stream.ResponseStream.ReadAllAsync())
+                                {
+                                    todosMessage.Todos.Add(message);
+                                }
                             }
-                        }
-                        return todosMessage;
-                    }));
-                    //data.SendStreamingTimes.Add(await RunTestIteration(i, warmupTodos, async m =>
+                            return todosMessage;
+                        }));
+                    }
+                    //if (Methods.Contains("sendstream"))
                     //{
-                    //    using (var call = client.SendStreaming())
-                    //    {
-                    //        foreach (var todo in m.Todos)
-                    //        {
-                    //            await call.RequestStream.WriteAsync(todo);
-                    //        }
-                    //        await call.RequestStream.CompleteAsync();
-                    //    }
-                    //    return new ResultMessage() { Success = true };
-                    //}));
+                        //data.SendStreamingTimes.Add(await RunTestIteration(i, warmupTodos, async m =>
+                        //{
+                        //    using (var call = client.SendStreaming())
+                        //    {
+                        //        foreach (var todo in m.Todos)
+                        //        {
+                        //            await call.RequestStream.WriteAsync(todo);
+                        //        }
+                        //        await call.RequestStream.CompleteAsync();
+                        //    }
+                        //    return new ResultMessage() { Success = true };
+                        //}));
+                    //}
                     WriteIterationLine(i + 1);
                 }
             }
@@ -176,10 +184,10 @@ namespace StupidTodo.AdminConsole
 
                 for (int i = 0; i < Options.Iterations; i++)
                 {
-                    data.GetTimes.Add(await RunTestIteration(i, string.Empty, _ => client.GetAsync()));
-                    data.SendTimes.Add(await RunTestIteration(i, warmupTodos, t => client.SendAsync(t)));
-                    data.FirstTimes.Add(await RunTestIteration(i, string.Empty, _ => client.FirstAsync()));
-                    data.SendOneTimes.Add(await RunTestIteration(i, warmupTodo, t => client.SendOneAsync(t)));
+                    if (Methods.Contains("get")) { data.GetTimes.Add(await RunTestIteration(i, string.Empty, _ => client.GetAsync())); }
+                    if (Methods.Contains("send")) { data.SendTimes.Add(await RunTestIteration(i, warmupTodos, t => client.SendAsync(t))); }
+                    if (Methods.Contains("first")) { data.FirstTimes.Add(await RunTestIteration(i, string.Empty, _ => client.FirstAsync())); }
+                    if (Methods.Contains("sendone")) { data.SendOneTimes.Add(await RunTestIteration(i, warmupTodo, t => client.SendOneAsync(t))); }
                     WriteIterationLine(i + 1);
                 }
             }
@@ -211,26 +219,38 @@ namespace StupidTodo.AdminConsole
 
                 for (int i = 0; i < Options.Iterations; i++)
                 {
-                    data.GetTimes.Add(await RunTestIteration(i, string.Empty, async _ =>
+                    if (Methods.Contains("get"))
                     {
-                        var json = await httpClient.GetStringAsync($"{uri}/all");
-                        return JsonSerializer.Deserialize<Todo[]>(json);
-                    }));
-                    data.SendTimes.Add(await RunTestIteration(i, warmupTodos, async t =>
+                        data.GetTimes.Add(await RunTestIteration(i, string.Empty, async _ =>
+                        {
+                            var json = await httpClient.GetStringAsync($"{uri}/all");
+                            return JsonSerializer.Deserialize<Todo[]>(json);
+                        }));
+                    }
+                    if (Methods.Contains("send"))
                     {
-                        await httpClient.PostAsJsonAsync($"{uri}/send", t);
-                        return true;
-                    }));
-                    data.FirstTimes.Add(await RunTestIteration(i, string.Empty, async _ =>
+                        data.SendTimes.Add(await RunTestIteration(i, warmupTodos, async t =>
+                        {
+                            await httpClient.PostAsJsonAsync($"{uri}/send", t);
+                            return true;
+                        }));
+                    }
+                    if (Methods.Contains("first"))
                     {
-                        var json = await httpClient.GetStringAsync($"{uri}/first");
-                        return JsonSerializer.Deserialize<Todo>(json);
-                    }));
-                    data.SendOneTimes.Add(await RunTestIteration(i, warmupTodo, async t =>
+                        data.FirstTimes.Add(await RunTestIteration(i, string.Empty, async _ =>
+                        {
+                            var json = await httpClient.GetStringAsync($"{uri}/first");
+                            return JsonSerializer.Deserialize<Todo>(json);
+                        }));
+                    }
+                    if (Methods.Contains("sendone"))
                     {
-                        await httpClient.PostAsJsonAsync($"{uri}/send-one", t);
-                        return true;
-                    }));
+                        data.SendOneTimes.Add(await RunTestIteration(i, warmupTodo, async t =>
+                        {
+                            await httpClient.PostAsJsonAsync($"{uri}/send-one", t);
+                            return true;
+                        }));
+                    }
                     WriteIterationLine(i + 1);
                 }
             }
@@ -290,6 +310,8 @@ namespace StupidTodo.AdminConsole
                                     .SetBasePath(Directory.GetCurrentDirectory())
                                     .AddJsonFile("appsettings.json", false, true)
                                     .Build();
+            Methods = Configuration["Methods"].Split(',');
+            if (Methods.Length == 0) { Methods = new string[] { "get", "send", "first", "sendone", "getstream", "sendstream" }; }
             TestTypes = Configuration["TestTypes"].Split(',');
             Watch = new Stopwatch();
             Options = new TestingOptions()
@@ -304,6 +326,7 @@ namespace StupidTodo.AdminConsole
 
         private static readonly IConfiguration Configuration;
         private static readonly TestingOptions Options;
+        private static readonly string[] Methods;
         private static readonly string[] TestTypes;
         private static readonly Stopwatch Watch;
     }
