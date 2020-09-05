@@ -18,6 +18,15 @@
   <ItemGroup>
     <ProjectReference Include="..\StupidTodo.Client.Blazor\StupidTodo.Client.Blazor.csproj" />
     <ProjectReference Include="..\StupidTodo.Domain\StupidTodo.Domain.csproj" />
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\StupidTodo.Domain\StupidTodo.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
 
 </Project>
