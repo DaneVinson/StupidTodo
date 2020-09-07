@@ -27,9 +27,14 @@ namespace StupidTodo.WebApi
             }
 
             app.UseHttpsRedirection()
+                .UseBlazorFrameworkFiles()
                 .UseStaticFiles()
                 .UseRouting()
-                .UseEndpoints(endpoints => endpoints.MapControllers());
+                .UseEndpoints(endpoints =>
+                {
+                    endpoints.MapControllers();
+                    endpoints.MapFallbackToFile("index.html");
+                });
         }
 
         public void ConfigureServices(IServiceCollection services)

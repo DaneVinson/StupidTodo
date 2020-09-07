@@ -1,0 +1,39 @@
+﻿@inject TodoViewModel ViewModel
+
+<div class="col-12 alert alert-primary" role="alert">
+    @if (ViewModel.IsEdit)
+    {
+        <button @onclick="@(async () => await ViewModel.SaveAsync(Todo))" disabled="@ViewModel.IsBusy" class="btn btn-sm btn-success">
+            @if (ViewModel.IsBusy)
+            {
+                <i class="fas fa-cog fa-spin"></i>                }
+            else
+            {
+                <i class="fas fa-save"></i>
+            }
+        </button>
+        <button @onclick="@ViewModel.CancelEdit" disabled="@ViewModel.IsBusy" class="btn btn-sm btn-secondary"><i class="fas fa-undo"></i></button>
+        @:&nbsp;&nbsp;&nbsp;
+        <InputText @bind-Value="@ViewModel.DescriptionEdit" type="text" autocomplete="off" />
+    }
+    else
+    {
+        <button @onclick="@(async () => await ViewModel.SetDoneAsync(Todo))" disabled="@ViewModel.IsBusy" class="btn btn-sm btn-primary">
+            @if (ViewModel.IsBusy)
+            {
+                <i class="fas fa-cog fa-spin"></i>                }
+            else
+            {
+                <i class="fas fa-check"></i>
+            }
+        </button>
+        <button @onclick="@(() => ViewModel.Edit(Todo.Id))" disabled="@ViewModel.IsBusy" class="btn btn-sm btn-secondary" ><i class="fas fa-pencil-alt"></i></button>
+        @:&nbsp;&nbsp;&nbsp;
+        @Todo.Description
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Todo Todo { get; set; }
+}

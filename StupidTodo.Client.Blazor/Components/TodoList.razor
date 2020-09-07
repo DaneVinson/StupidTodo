@@ -1,0 +1,13 @@
+﻿@if (Todos.Any())
+{
+    <hr />
+    @foreach (var todo in Todos)
+    {
+        <TodoItem Todo="todo"></TodoItem>
+    }
+}
+
+@code {
+    [Parameter]
+    public List<Todo> Todos { get; set; }
+}

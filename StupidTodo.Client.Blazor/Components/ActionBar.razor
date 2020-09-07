@@ -1,0 +1,22 @@
+﻿@inject TodosViewModel ViewModel
+
+@if (ViewModel != null)
+{
+    <div class="col-9 col-md-6 alert alert-secondary" role="alert">
+        <InputText @bind-Value="@ViewModel.NewTodoDescription" type="text" />
+        &nbsp;
+        <button @onclick="@(async () => await ViewModel.AddTodoAsync())" disabled="@ViewModel.ActionIsBusy" class="btn btn-sm btn-success">
+            @if (ViewModel.ActionIsBusy)
+            {
+                <i class="fas fa-cog fa-spin"></i>
+            }
+            else
+            {
+                <i class="fas fa-save"></i>
+            }
+        </button>
+    </div>
+}
+@code {
+
+}

@@ -1,0 +1,32 @@
+﻿@page "/"
+@inject TodosViewModel ViewModel
+
+<EditForm EditContext="Context">
+    <ActionBar />
+    <TodoList Todos="ViewModel.Todos" />
+    <hr />
+    <button @onclick="@(async () => await ViewModel.ToggleShowDone())" class="btn btn-secondary">
+        @if (ViewModel.ShowingDone)
+        {
+            <i class="fas fa-angle-up"></i>
+        }
+        else
+        {
+            <i class="fas fa-angle-down"></i>
+        }
+        &nbsp;@ViewModel.DoneToggleText
+    </button>
+    <DoneList Dones="ViewModel.Dones" />
+</EditForm>
+
+@code 
+{ 
+    public EditContext Context { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Context = new EditContext(ViewModel);
+        ViewModel.StateChanged = StateHasChanged;
+        await ViewModel.InitializeAsync();
+    }
+}
