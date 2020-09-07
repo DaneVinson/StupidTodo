@@ -13,9 +13,11 @@ namespace StupidTodo.WebApi.Controllers
     [Route("api/[controller]")]
     public class TodoController : ControllerBase
     {
+        private readonly ITodoDataProvider _dataProvider;
+
         public TodoController(ITodoDataProvider dataProvider)
         {
-            DataProvider = dataProvider ?? throw new ArgumentNullException(nameof(dataProvider));
+            _dataProvider = dataProvider ?? throw new ArgumentNullException(nameof(dataProvider));
         }
 
         [HttpPost]
@@ -23,7 +25,7 @@ namespace StupidTodo.WebApi.Controllers
         {
             if (todo?.Description == null) { return BadRequest(); }
 
-            return await DataProvider.Upsert(todo);
+            return await _dataProvider.Upsert(todo);
         }
 
         [HttpDelete]
@@ -32,7 +34,7 @@ namespace StupidTodo.WebApi.Controllers
         {
             if (String.IsNullOrWhiteSpace(id)) { return BadRequest(); }
 
-            var success = await DataProvider.Delete(id);
+            var success = await _dataProvider.Delete(id);
             if (success) { return Ok(); }
             return NotFound();
         }
@@ -41,13 +43,13 @@ namespace StupidTodo.WebApi.Controllers
         [Route("done")]
         public async Task<ActionResult<IEnumerable<Todo>>> GetDoneTodosAsync()
         {
-            return (await DataProvider.Get(true)).ToArray();
+            return (await _dataProvider.Get(true)).ToArray();
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Todo>>> GetTodosAsync()
         {
-            return (await DataProvider.Get()).ToArray();
+            return (await _dataProvider.Get()).ToArray();
         }
 
         [HttpPut]
@@ -55,10 +57,7 @@ namespace StupidTodo.WebApi.Controllers
         public async Task<ActionResult<Todo>> UpdateTodoAsync(string id, [FromBody]Todo todo)
         {
             if (todo.Id == null) { return BadRequest(); }
-            return await DataProvider.Upsert(todo);
+            return await _dataProvider.Upsert(todo);
         }
-
-
-        private readonly ITodoDataProvider DataProvider;
     }
 }
