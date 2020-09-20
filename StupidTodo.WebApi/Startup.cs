@@ -36,7 +36,7 @@ namespace StupidTodo.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<ITodoDataProvider>(new SimpleTodoDataProvider())
-                    .AddMediatR(typeof(Startup))
+                    .AddMediatR(typeof(Todo))
                     .AddControllers();
         }
 

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace StupidTodo.Domain.Command
 {
-    public class DeleteEntity<TEntity> : IRequest<TEntity> where TEntity : IEntity
+    public class DeleteEntity<TEntity> : IRequest<bool> where TEntity : IEntity
     {
         public DeleteEntity()
         { }

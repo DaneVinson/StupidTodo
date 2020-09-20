@@ -7,20 +7,20 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace StupidTodo.Domain.Command
+namespace StupidTodo.Domain.Query
 {
-    public class AddTodoHandler : IRequestHandler<AddEntity<Todo>, Todo>
+    public class GetDoneHandler : IRequestHandler<GetEntitiesQuery<Todo, GetDoneFilter>, IEnumerable<Todo>>
     {
         private readonly ITodoDataProvider _dataProvider;
 
-        public AddTodoHandler(ITodoDataProvider dataProvider)
+        public GetDoneHandler(ITodoDataProvider dataProvider)
         {
             _dataProvider = dataProvider ?? throw new ArgumentNullException(nameof(dataProvider));
         }
 
-        public async Task<Todo> Handle(AddEntity<Todo> command, CancellationToken _)
+        public Task<IEnumerable<Todo>> Handle(GetEntitiesQuery<Todo, GetDoneFilter> request, CancellationToken _)
         {
-            return await _dataProvider.Upsert(command.Entity);
+            return _dataProvider.Get(true);
         }
     }
- }
+}

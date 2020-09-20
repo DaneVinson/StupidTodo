@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 
 namespace StupidTodo.Domain.Command
 {
-    public class AddTodoHandler : IRequestHandler<AddEntity<Todo>, Todo>
+    public class UpdateTodoHandler : IRequestHandler<UpdateEntity<Todo>, Todo>
     {
         private readonly ITodoDataProvider _dataProvider;
 
-        public AddTodoHandler(ITodoDataProvider dataProvider)
+        public UpdateTodoHandler(ITodoDataProvider dataProvider)
         {
             _dataProvider = dataProvider ?? throw new ArgumentNullException(nameof(dataProvider));
         }
 
-        public async Task<Todo> Handle(AddEntity<Todo> command, CancellationToken _)
+        public async Task<Todo> Handle(UpdateEntity<Todo> command, CancellationToken _)
         {
             return await _dataProvider.Upsert(command.Entity);
         }

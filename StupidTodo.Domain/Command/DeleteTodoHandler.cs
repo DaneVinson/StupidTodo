@@ -9,18 +9,18 @@ using System.Threading.Tasks;
 
 namespace StupidTodo.Domain.Command
 {
-    public class AddTodoHandler : IRequestHandler<AddEntity<Todo>, Todo>
+    public class DeleteTodoHandler : IRequestHandler<DeleteEntity<Todo>, bool>
     {
         private readonly ITodoDataProvider _dataProvider;
 
-        public AddTodoHandler(ITodoDataProvider dataProvider)
+        public DeleteTodoHandler(ITodoDataProvider dataProvider)
         {
             _dataProvider = dataProvider ?? throw new ArgumentNullException(nameof(dataProvider));
         }
 
-        public async Task<Todo> Handle(AddEntity<Todo> command, CancellationToken _)
+        public async Task<bool> Handle(DeleteEntity<Todo> request, CancellationToken _)
         {
-            return await _dataProvider.Upsert(command.Entity);
+            return await _dataProvider.Delete(request.Id);
         }
     }
  }

@@ -40,9 +40,9 @@ namespace StupidTodo.WebApi.Controllers
         {
             if (string.IsNullOrWhiteSpace(id)) { return BadRequest(); }
 
-            var _ = await _mediator.Send(new DeleteEntity<Todo>(id));
+            var success = await _mediator.Send(new DeleteEntity<Todo>(id));
 
-            return Accepted();
+            return success ? (ActionResult)Accepted() : BadRequest();
         }
 
         [HttpPut]
@@ -51,9 +51,7 @@ namespace StupidTodo.WebApi.Controllers
         {
             if (todo.Id == null || todo == null) { return BadRequest(); }
 
-            var response = await _mediator.Send(new UpdateEntity<Todo>(todo));
-
-            return await _dataProvider.Upsert(todo);
+            return await _mediator.Send(new UpdateEntity<Todo>(todo));
         }
 
 

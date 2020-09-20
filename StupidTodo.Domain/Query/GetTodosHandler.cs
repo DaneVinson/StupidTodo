@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace StupidTodo.Query.Handlers
+namespace StupidTodo.Domain.Query
 {
     public class GetTodosHandler : IRequestHandler<GetEntitiesQuery<Todo, GetTodosFilter>, IEnumerable<Todo>>
     {
