@@ -5,7 +5,7 @@ using System.Text;
 
 namespace StupidTodo.Domain.Command
 {
-    public class AddEntity<TEntity> : IRequest<Todo> where TEntity : class, IEntity, new()
+    public class AddEntity<TEntity> : IRequest<TEntity> where TEntity : class, IEntity, new()
     {
         public AddEntity()
         {
