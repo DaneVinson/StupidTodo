@@ -18,7 +18,7 @@ stages:
 
         steps:
         - task: UseDotNet@2
-          displayName: Install .NET Core SDK
+          displayName: Install .NET 5 SDK
           inputs:
             packageType: 'sdk'
             version: 5.x
@@ -51,3 +51,24 @@ stages:
             PathtoPublish: '$(build.ArtifactStagingDirectory)'
             ArtifactName: $(artifactName)
             Parallel: true
+
+  - stage: Deploy
+    displayName: Deploy
+    dependsOn: Build
+    condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
+  
+    jobs:
+    - deployment: Deploy
+      displayName: Deploy
+      pool:
+        vmImage: 'windows-latest'
+  
+        steps:
+        - task: AzureRmWebAppDeployment@4
+          displayName: 'Deploy REST API (Azure Web App)'
+          inputs:
+            ConnectionType: 'AzureRM'
+            azureSubscription: 'Azure Stupid Todo'
+            appType: 'webApp'
+            WebAppName: 'stupidtodo'
+            package: '$(Pipeline.Workspace)/$(artifactName)/StuidTod.WebApi.zip'
