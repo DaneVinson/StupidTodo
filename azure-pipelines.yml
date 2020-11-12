@@ -60,6 +60,7 @@ stages:
     jobs:
     - deployment: Deploy
       displayName: Deploy
+      environment: 'Live'
       pool:
         vmImage: 'windows-latest'
   
