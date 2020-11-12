@@ -8,36 +8,36 @@ variables:
 
 stages:
   - stage: Build
-    displayName: Build stage
+    displayName: 'Build'
 
     jobs:
       - job: Build
-        displayName: Build
+        displayName: 'Build'
         pool:
             vmImage: 'windows-latest'
 
         steps:
         - task: UseDotNet@2
-          displayName: Install .NET 5 SDK
+          displayName: 'Install .NET 5 SDK'
           inputs:
             packageType: 'sdk'
             version: 5.x
 
         - task: DotNetCoreCLI@2
-          displayName: Restore
+          displayName: 'Restore'
           inputs:
             command: restore
             projects: '**/*.csproj'
 
         - task: DotNetCoreCLI@2
-          displayName: Build
+          displayName: 'Build'
           inputs:
             command: build
             projects: '**/*.sln'
             arguments: --configuration $(buildConfiguration)
 
         - task: DotNetCoreCLI@2
-          displayName: Publish REST API
+          displayName: 'Publish Web API'
           inputs:
             command: publish
             projects: 'StupidTodo.WebApi/StupidTodo.WebApi.csproj'
@@ -46,30 +46,34 @@ stages:
             arguments: --configuration $(buildConfiguration) --no-build --output $(build.ArtifactStagingDirectory) --framework $(framework)
 
         - task: PublishBuildArtifacts@1
-          displayName: Upload Artifacts to Staging
+          displayName: 'Stage Artifacts'
           inputs:
             PathtoPublish: '$(build.ArtifactStagingDirectory)'
             ArtifactName: $(artifactName)
             Parallel: true
 
   - stage: Deploy
-    displayName: Deploy
+    displayName: 'Deploy'
     dependsOn: Build
     condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
   
     jobs:
     - deployment: Deploy
-      displayName: Deploy
+      displayName: 'Deploy'
       environment: 'Live'
       pool:
         vmImage: 'windows-latest'
   
-        steps:
-        - task: AzureRmWebAppDeployment@4
-          displayName: 'Deploy REST API (Azure Web App)'
-          inputs:
-            ConnectionType: 'AzureRM'
-            azureSubscription: 'Azure Stupid Todo'
-            appType: 'webApp'
-            WebAppName: 'stupidtodo'
-            package: '$(Pipeline.Workspace)/$(artifactName)/StuidTod.WebApi.zip'
+      strategy:
+        runOnce:
+          deploy:
+
+            steps:
+            - task: AzureRmWebAppDeployment@4
+              displayName: 'Deploy Web API to Azure Web App)'
+              inputs:
+                ConnectionType: 'AzureRM'
+                azureSubscription: 'Azure Stupid Todo'
+                appType: 'webApp'
+                WebAppName: 'stupidtodo'
+                package: '$(Pipeline.Workspace)/$(artifactName)/StuidTod.WebApi.zip'
