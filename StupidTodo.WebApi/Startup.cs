@@ -26,7 +26,11 @@ namespace StupidTodo.WebApi
             {
                 app.UseDeveloperExceptionPage()
                     .UseSwagger()
-                    .UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "StupidTodo.WebApi v1"));
+                    .UseSwaggerUI(options =>
+                    {
+                        options.SwaggerEndpoint("/swagger/v1/swagger.json", "StupidTodo.WebApi v1");
+                        options.RoutePrefix = "swagger";
+                    });
             }
 
             app.UseHttpsRedirection()

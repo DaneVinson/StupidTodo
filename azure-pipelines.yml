@@ -70,7 +70,7 @@ stages:
 
             steps:
             - task: AzureRmWebAppDeployment@4
-              displayName: 'Deploy Web API to Azure Web App)'
+              displayName: 'Deploy Web API to Azure Web App'
               inputs:
                 ConnectionType: 'AzureRM'
                 azureSubscription: 'Azure Stupid Todo'
