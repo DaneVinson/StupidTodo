@@ -1,24 +1,53 @@
 trigger:
 - master
 
-pool:
-  vmImage: 'windows-latest'
-
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+  framework: 'net5.0*'
+  artifactName: 'stupid-todo'
 
-steps:
-- task: NuGetToolInstaller@1
+stages:
+  - stage: Build
+    displayName: Build stage
 
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
+    jobs:
+      - job: Build
+        displayName: Build
+        pool:
+            vmImage: 'windows-latest'
 
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+        steps:
+        - task: UseDotNet@2
+          displayName: Install .NET Core SDK
+          inputs:
+            packageType: 'sdk'
+            version: 5.x
+
+        - task: DotNetCoreCLI@2
+          displayName: Restore
+          inputs:
+            command: restore
+            projects: '**/*.csproj'
+
+        - task: DotNetCoreCLI@2
+          displayName: Build
+          inputs:
+            command: build
+            projects: '**/*.sln'
+            arguments: --configuration $(buildConfiguration)
+
+        - task: DotNetCoreCLI@2
+          displayName: Publish REST API
+          inputs:
+            command: publish
+            projects: 'StupidTodo.WebApi/StupidTodo.WebApi.csproj'
+            publishWebProjects: false
+            zipAfterPublish: true
+            arguments: --configuration $(buildConfiguration) --no-build --output $(build.ArtifactStagingDirectory) --framework $(framework) --version-suffix $(appVersion)
+
+        - task: PublishBuildArtifacts@1
+          displayName: Upload Artifacts to Staging
+          inputs:
+            PathtoPublish: '$(build.ArtifactStagingDirectory)'
+            ArtifactName: $(artifactName)
+            Parallel: true
