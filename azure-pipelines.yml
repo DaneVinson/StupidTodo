@@ -76,4 +76,4 @@ stages:
                 azureSubscription: 'Azure Stupid Todo'
                 appType: 'webApp'
                 WebAppName: 'stupidtodo'
-                package: '$(Pipeline.Workspace)/$(artifactName)/StuidTod.WebApi.zip'
+                package: '$(Pipeline.Workspace)/$(artifactName)/StupidTodo.WebApi.zip'
