@@ -1,14 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.30413.136
+VisualStudioVersion = 16.0.30709.132
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.WebApi", "StupidTodo.WebApi\StupidTodo.WebApi.csproj", "{932D6A10-8E3D-4358-AF68-2211662EEC11}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.WebApi", "StupidTodo.WebApi\StupidTodo.WebApi.csproj", "{641F1F44-FF43-4927-9505-AD04CF055479}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.Domain", "StupidTodo.Domain\StupidTodo.Domain.csproj", "{EB99CEA1-B6E2-4DB9-8509-AF785A9D507D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.Domain", "StupidTodo.Domain\StupidTodo.Domain.csproj", "{2181B777-A85A-457A-BE40-3F28B9EE1D3E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Solution", ".Solution", "{B771CC4A-4585-4C51-AC22-3147B618C347}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Solution", ".Solution", "{1C1F1BB7-4D4D-4589-A095-09B6242339D9}"
 	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		azure-pipelines.yml = azure-pipelines.yml
 		Directory.Build.props = Directory.Build.props
 		readme.md = readme.md
 	EndProjectSection
@@ -19,19 +22,19 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{932D6A10-8E3D-4358-AF68-2211662EEC11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{932D6A10-8E3D-4358-AF68-2211662EEC11}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{932D6A10-8E3D-4358-AF68-2211662EEC11}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{932D6A10-8E3D-4358-AF68-2211662EEC11}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EB99CEA1-B6E2-4DB9-8509-AF785A9D507D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EB99CEA1-B6E2-4DB9-8509-AF785A9D507D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EB99CEA1-B6E2-4DB9-8509-AF785A9D507D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EB99CEA1-B6E2-4DB9-8509-AF785A9D507D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{641F1F44-FF43-4927-9505-AD04CF055479}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{641F1F44-FF43-4927-9505-AD04CF055479}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{641F1F44-FF43-4927-9505-AD04CF055479}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{641F1F44-FF43-4927-9505-AD04CF055479}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2181B777-A85A-457A-BE40-3F28B9EE1D3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2181B777-A85A-457A-BE40-3F28B9EE1D3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2181B777-A85A-457A-BE40-3F28B9EE1D3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2181B777-A85A-457A-BE40-3F28B9EE1D3E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {22770601-21EA-4C0A-9E90-B658F538392B}
+		SolutionGuid = {16F79120-514E-4EF3-8FD2-7011486C2868}
 	EndGlobalSection
 EndGlobal
