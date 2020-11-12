@@ -3,7 +3,7 @@ trigger:
 
 variables:
   buildConfiguration: 'Release'
-  framework: 'net5.0*'
+  framework: 'net5.0'
   artifactName: 'stupid-todo'
 
 stages:
@@ -43,7 +43,7 @@ stages:
             projects: 'StupidTodo.WebApi/StupidTodo.WebApi.csproj'
             publishWebProjects: false
             zipAfterPublish: true
-            arguments: --configuration $(buildConfiguration) --no-build --output $(build.ArtifactStagingDirectory) --framework $(framework) --version-suffix $(appVersion)
+            arguments: --configuration $(buildConfiguration) --no-build --output $(build.ArtifactStagingDirectory) --framework $(framework)
 
         - task: PublishBuildArtifacts@1
           displayName: Upload Artifacts to Staging
