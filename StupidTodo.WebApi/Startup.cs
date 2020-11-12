@@ -24,16 +24,12 @@ namespace StupidTodo.WebApi
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage()
-                    .UseSwagger()
-                    .UseSwaggerUI(options =>
-                    {
-                        options.SwaggerEndpoint("/swagger/v1/swagger.json", "StupidTodo.WebApi v1");
-                        options.RoutePrefix = "swagger";
-                    });
+                app.UseDeveloperExceptionPage();
             }
 
             app.UseHttpsRedirection()
+                .UseSwagger()
+                .UseSwaggerUI(options => { options.SwaggerEndpoint("/swagger/v1/swagger.json", "StupidTodo.WebApi v1"); })
                 .UseStaticFiles()
                 .UseRouting()
                 .UseEndpoints(endpoints => endpoints.MapControllers());
