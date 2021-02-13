@@ -21,7 +21,9 @@ namespace StupidTodo.WebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Todo>> AddTodoAsync([FromBody]Todo todo)
         {
+            // TODO: Blazor client is sending default todo
             if (todo?.Description == null) { return BadRequest(); }
+            if (string.IsNullOrWhiteSpace(todo.Id)) { return BadRequest("Id is required"); }
 
             return await DataProvider.Upsert(todo);
         }

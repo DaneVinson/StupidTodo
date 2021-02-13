@@ -23,7 +23,7 @@ namespace StupidTodo.Client.Blazor.ViewModels
             {
                 ActionIsBusy = true;
 
-                var todo = await _http.PostAsync<Todo>("api/todo", new Todo(NewTodoDescription));
+                var todo = await _http.PostAsync<Todo>("api/todo", new Todo(NewTodoDescription, Bilbo.Id));
 
                 NewTodoDescription = string.Empty;
                 Todos.Add(todo);

@@ -1,2 +1,2 @@
-## Stupid Todo
-A simple to-do concept application for exploratory programming.
+## Stupid Todo - blazor branch
+Exploring Blazor using the Stupid Todo concept application.
