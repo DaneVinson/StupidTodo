@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace StupidTodo.Client.Blazor.ViewModels
+namespace StupidTodo.Client.Blazor.Core.ViewModels
 {
     public class TodoViewModel
     {
@@ -53,7 +53,7 @@ namespace StupidTodo.Client.Blazor.ViewModels
             await SaveAsync(todo);
         }
 
-        public string DescriptionEdit { get; set; }
+        public string DescriptionEdit { get; set; } = string.Empty;
         public bool IsBusy { get; set; }
         public bool IsEdit { get; set; }
 

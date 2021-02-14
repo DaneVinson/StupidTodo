@@ -15,6 +15,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Solution", ".Solution", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.Client.Blazor", "StupidTodo.Client.Blazor\StupidTodo.Client.Blazor.csproj", "{01C97742-5EC1-402A-AA5D-232CE1031E5C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StupidTodo.Client.Blazor.Core", "StupidTodo.Client.Blazor.Core\StupidTodo.Client.Blazor.Core.csproj", "{4E137E9C-66B8-4CAF-A124-04823FEE9A98}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Blazor", "Blazor", "{F4F1BDE3-501E-4DBB-9939-D2A16EEA496C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StupidTodo.WebApi.Core", "StupidTodo.WebApi.Core\StupidTodo.WebApi.Core.csproj", "{184FAD10-E0DB-4D41-87CB-C3206B0203BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StupidTodo.Server.Blazor", "StupidTodo.Server.Blazor\StupidTodo.Server.Blazor.csproj", "{71F26154-E40B-49D0-BCEB-4F546BAA838E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,9 +41,26 @@ Global
 		{01C97742-5EC1-402A-AA5D-232CE1031E5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01C97742-5EC1-402A-AA5D-232CE1031E5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01C97742-5EC1-402A-AA5D-232CE1031E5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E137E9C-66B8-4CAF-A124-04823FEE9A98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E137E9C-66B8-4CAF-A124-04823FEE9A98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E137E9C-66B8-4CAF-A124-04823FEE9A98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E137E9C-66B8-4CAF-A124-04823FEE9A98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{184FAD10-E0DB-4D41-87CB-C3206B0203BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{184FAD10-E0DB-4D41-87CB-C3206B0203BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{184FAD10-E0DB-4D41-87CB-C3206B0203BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{184FAD10-E0DB-4D41-87CB-C3206B0203BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71F26154-E40B-49D0-BCEB-4F546BAA838E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71F26154-E40B-49D0-BCEB-4F546BAA838E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71F26154-E40B-49D0-BCEB-4F546BAA838E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71F26154-E40B-49D0-BCEB-4F546BAA838E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{01C97742-5EC1-402A-AA5D-232CE1031E5C} = {F4F1BDE3-501E-4DBB-9939-D2A16EEA496C}
+		{4E137E9C-66B8-4CAF-A124-04823FEE9A98} = {F4F1BDE3-501E-4DBB-9939-D2A16EEA496C}
+		{71F26154-E40B-49D0-BCEB-4F546BAA838E} = {F4F1BDE3-501E-4DBB-9939-D2A16EEA496C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {22770601-21EA-4C0A-9E90-B658F538392B}
