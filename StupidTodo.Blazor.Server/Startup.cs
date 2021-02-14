@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using StupidTodo.Client.Blazor.Core.ViewModels;
+using StupidTodo.Blazor.Core.ViewModels;
 using StupidTodo.Domain;
 using StupidTodo.Service.Core.Controllers;
 using System;
@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace StupidTodo.Server.Blazor
+namespace StupidTodo.Blazor.Server
 {
     public class Startup
     {

@@ -10,9 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\StupidTodo.Client.Blazor\StupidTodo.Client.Blazor.csproj" />
     <ProjectReference Include="..\StupidTodo.Domain\StupidTodo.Domain.csproj" />
-    <ProjectReference Include="..\StupidTodo.WebApi.Core\StupidTodo.WebApi.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

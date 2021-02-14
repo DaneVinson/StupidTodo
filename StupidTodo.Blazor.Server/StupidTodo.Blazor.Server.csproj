@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\StupidTodo.Blazor.Core\StupidTodo.Blazor.Core.csproj" />
+    <ProjectReference Include="..\StupidTodo.Service.Core\StupidTodo.Service.Core.csproj" />
+  </ItemGroup>
+
+</Project>

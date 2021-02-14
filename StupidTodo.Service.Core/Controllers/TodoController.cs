@@ -23,8 +23,8 @@ namespace StupidTodo.Service.Core.Controllers
 
         public async Task<Todo?> AddTodoAsync(Todo todo)
         {
-            // TODO: Blazor client is sending default todo
-            if (todo?.Description == null || string.IsNullOrWhiteSpace(todo.Id)) { return null; }
+            if (todo?.Description == null) { return null; }
+            todo.Id = Guid.NewGuid().ToString();
 
             return await _dataProvider.Upsert(todo);
         }

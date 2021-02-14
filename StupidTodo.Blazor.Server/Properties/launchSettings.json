@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "StupidTodo.Server.Blazor": {
+    "StupidTodo.Blazor.Server": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "launchBrowser": true,

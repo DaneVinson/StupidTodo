@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "StupidTodo.Client.Blazor": {
+    "StupidTodo.Blazor.Wasm": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

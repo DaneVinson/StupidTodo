@@ -5,10 +5,10 @@ using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using System.Net.Http;
-using StupidTodo.Client.Blazor.Core.ViewModels;
+using StupidTodo.Blazor.Core.ViewModels;
 using StupidTodo.Domain;
 
-namespace StupidTodo.Client.Blazor
+namespace StupidTodo.Blazor.Wasm
 {
     public class Program
     {

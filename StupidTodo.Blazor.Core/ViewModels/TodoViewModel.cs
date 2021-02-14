@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace StupidTodo.Client.Blazor.Core.ViewModels
+namespace StupidTodo.Blazor.Core.ViewModels
 {
     public class TodoViewModel
     {
