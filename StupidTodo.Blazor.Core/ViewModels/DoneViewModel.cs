@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace StupidTodo.Client.Blazor.ViewModels
+namespace StupidTodo.Blazor.Core.ViewModels
 {
     public class DoneViewModel
     {

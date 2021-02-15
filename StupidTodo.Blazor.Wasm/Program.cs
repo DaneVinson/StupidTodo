@@ -5,9 +5,10 @@ using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using System.Net.Http;
-using StupidTodo.Client.Blazor.ViewModels;
+using StupidTodo.Blazor.Core.ViewModels;
+using StupidTodo.Domain;
 
-namespace StupidTodo.Client.Blazor
+namespace StupidTodo.Blazor.Wasm
 {
     public class Program
     {
@@ -17,6 +18,7 @@ namespace StupidTodo.Client.Blazor
 
             builder.Services
                     .AddSingleton(new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) })
+                    .AddSingleton<ITodoApi, TodoHttpApi>()
                     .AddSingleton<TodosViewModel>()
                     .AddTransient<TodoViewModel>()
                     .AddTransient<DoneViewModel>();

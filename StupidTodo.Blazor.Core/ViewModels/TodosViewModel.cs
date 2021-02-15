@@ -1,18 +1,19 @@
-﻿using StupidTodo.Client.Blazor.Views;
-using StupidTodo.Domain;
+﻿using StupidTodo.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace StupidTodo.Client.Blazor.ViewModels
+namespace StupidTodo.Blazor.Core.ViewModels
 {
     public class TodosViewModel
     {
-        public TodosViewModel(HttpClient httpClient)
+        private readonly ITodoApi _api;
+
+        public TodosViewModel(ITodoApi api)
         {
-            _http = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _api = api ?? throw new ArgumentNullException(nameof(api));
         }
 
         public async Task AddTodoAsync()
@@ -23,10 +24,10 @@ namespace StupidTodo.Client.Blazor.ViewModels
             {
                 ActionIsBusy = true;
 
-                var todo = await _http.PostAsync<Todo>("api/todo", new Todo(NewTodoDescription, Bilbo.Id));
+                var todo = await _api.AddTodoAsync(new Todo(NewTodoDescription, Bilbo.Id));
 
                 NewTodoDescription = string.Empty;
-                Todos.Add(todo);
+                if (todo != null) { Todos.Add(todo); }
                 StateChanged?.Invoke();
             }
             finally
@@ -40,13 +41,13 @@ namespace StupidTodo.Client.Blazor.ViewModels
             var todo = Dones.First(t => t.Id == id);
             Dones.Remove(todo);
 
-            var _ = await _http.DeleteAsync($"api/todo/{id}");
+            var _ = await _api.DeleteTodoAsync(id);
         }
 
         public async Task InitializeAsync()
         {
-            Todos = (await _http.GetAsync<IEnumerable<Todo>>("api/todo"))
-                                .ToList();
+            var todos = await _api.GetTodosAsync();
+            Todos = todos?.ToList() ?? new List<Todo>();
         }
 
         public async Task SaveAsync(string id)
@@ -60,7 +61,7 @@ namespace StupidTodo.Client.Blazor.ViewModels
             }
             if (todo == null) { return; }
 
-            var _ = await _http.PutAsync<Todo>($"api/todo/{id}", todo);
+            var _ = await _api.UpdateTodoAsync(todo);
 
             if (todo.Done && !doneBeforeChange)
             {
@@ -82,8 +83,8 @@ namespace StupidTodo.Client.Blazor.ViewModels
 
             if (ShowingDone)
             {
-                Dones = (await _http.GetAsync<IEnumerable<Todo>>("api/todo/done"))
-                                    .ToList();
+                var dones = await _api.GetTodosAsync(true);
+                Dones = dones?.ToList() ?? new List<Todo>();
             }
             else { Dones.Clear(); }
         }
@@ -93,10 +94,7 @@ namespace StupidTodo.Client.Blazor.ViewModels
         public string NewTodoDescription { get; set; } = string.Empty;
         public string DoneToggleText => ShowingDone ? "Hide Done" : "Show Done";
         public bool ShowingDone { get; set; }
-        public Action StateChanged { get; set; }
+        public Action? StateChanged { get; set; }
         public List<Todo> Todos { get; set; } = new List<Todo>();
-
-
-        private readonly HttpClient _http;
     }
 }

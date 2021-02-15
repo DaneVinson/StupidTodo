@@ -4,10 +4,10 @@
     <button @onclick="@(async () => await ViewModel.UndoAsync(Todo))" class="btn btn-sm btn-secondary"><i class="fas fa-check"></i></button>
     <button @onclick="@(async () => await ViewModel.DeleteAsync(Todo))" class="btn btn-sm btn-danger pull-right"><i class="fas fa-trash"></i></button>
     &nbsp;&nbsp;&nbsp;
-    @Todo.Description
+    @Todo?.Description
 </div>
 
 @code {
     [Parameter]
-    public Todo Todo { get; set; }
+    public Todo Todo { get; set; } = new Todo();
 }

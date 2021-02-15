@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using StupidTodo.Domain;
+using StupidTodo.Service.Core.Controllers;
 
 namespace StupidTodo.WebApi
 {
@@ -27,6 +28,10 @@ namespace StupidTodo.WebApi
                     .UseDeveloperExceptionPage()
                     .UseSwagger()
                     .UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "StupidTodo.WebApi v1"));
+            }
+            else
+            {
+                app.UseHsts();
             }
 
             app

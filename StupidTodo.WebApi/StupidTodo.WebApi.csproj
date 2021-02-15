@@ -5,25 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Properties\PublishProfiles\**" />
-    <Content Remove="Properties\PublishProfiles\**" />
-    <EmbeddedResource Remove="Properties\PublishProfiles\**" />
-    <None Remove="Properties\PublishProfiles\**" />
-    <_WebToolingArtifacts Remove="Properties\PublishProfiles\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="5.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\StupidTodo.Client.Blazor\StupidTodo.Client.Blazor.csproj" />
-    <ProjectReference Include="..\StupidTodo.Domain\StupidTodo.Domain.csproj" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\" />
+    <ProjectReference Include="..\StupidTodo.Blazor.Wasm\StupidTodo.Blazor.Wasm.csproj" />
+    <ProjectReference Include="..\StupidTodo.Service.Core\StupidTodo.Service.Core.csproj" />
   </ItemGroup>
 
 </Project>

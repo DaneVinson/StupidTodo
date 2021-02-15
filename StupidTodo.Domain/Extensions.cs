@@ -57,7 +57,7 @@ namespace StupidTodo.Domain
             var response = await httpCall.Invoke();
             var json = await response.Content.ReadAsStringAsync();
 
-            return string.IsNullOrWhiteSpace(json) ? default : json.DeserializeJson<TResult>();
+            return string.IsNullOrWhiteSpace(json) ? default! : json.DeserializeJson<TResult>();
         }
 
         private static readonly JsonSerializerOptions _defaultSerializerOptions = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
