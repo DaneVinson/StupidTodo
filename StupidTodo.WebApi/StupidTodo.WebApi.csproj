@@ -10,11 +10,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\StupidTodo.Domain\StupidTodo.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\" />
+    <ProjectReference Include="..\StupidTodo.Blazor.Wasm\StupidTodo.Blazor.Wasm.csproj" />
+    <ProjectReference Include="..\StupidTodo.Service.Core\StupidTodo.Service.Core.csproj" />
   </ItemGroup>
 
 </Project>
