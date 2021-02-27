@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using System.Net.Http;
 using StupidTodo.Blazor.Core.ViewModels;
 using StupidTodo.Domain;
+using StupidTodo.Blazor.Core;
 
 namespace StupidTodo.Blazor.Wasm
 {
