@@ -1,10 +1,12 @@
+using Fluxor;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using StupidTodo.Blazor.Core.ViewModels;
+using StupidTodo.Blazor.Core;
+using StupidTodo.Blazor.Core.Store.States;
 using StupidTodo.Domain;
 using StupidTodo.Service.Core.Controllers;
 using System;
@@ -25,14 +27,12 @@ namespace StupidTodo.Blazor.Server
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddRazorPages();
-            services.AddServerSideBlazor();
             services
                 .AddSingleton<ITodoDataProvider>(new SimpleTodoDataProvider())
                 .AddSingleton<ITodoApi, TodoController>()
-                .AddSingleton<TodosViewModel>()
-                .AddTransient<TodoViewModel>()
-                .AddTransient<DoneViewModel>();
+                .AddFluxor(options => options.ScanAssemblies(typeof(Main).Assembly));
+            services.AddRazorPages();
+            services.AddServerSideBlazor();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

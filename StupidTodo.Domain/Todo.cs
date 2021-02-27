@@ -5,7 +5,7 @@ using System.Text;
 
 namespace StupidTodo.Domain
 {
-    public class Todo
+    public class Todo : ITodo
     {
         public Todo()
         { }

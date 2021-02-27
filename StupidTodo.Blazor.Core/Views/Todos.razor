@@ -1,12 +1,17 @@
-﻿@page "/"
-@inject TodosViewModel ViewModel
+﻿@inherits FluxorComponent
 
-<EditForm EditContext="Context">
-    <ActionBar />
-    <TodoList Todos="ViewModel.Todos" />
+@page "/"
+
+<EditForm Model="State.Value">
+    <ActionBar AddTodo="Add" TodosState="State.Value" />
+
+    @foreach (var todo in TodoItems)
+    {
+        <TodoItem SaveAction="Save" TodosState="State.Value" Todo="todo" />
+    }
     <hr />
-    <button @onclick="@(async () => await ViewModel.ToggleShowDone())" class="btn btn-secondary">
-        @if (ViewModel.ShowingDone)
+    <button @onclick="@ToggleShowDone" class="btn btn-secondary">
+        @if (State.Value.ShowingDone)
         {
             <i class="fas fa-angle-up"></i>
         }
@@ -14,19 +19,33 @@
         {
             <i class="fas fa-angle-down"></i>
         }
-        &nbsp;@ViewModel.DoneToggleText
+        &nbsp;@State.Value.ShowDoneLabel
     </button>
-    <DoneList Dones="ViewModel.Dones" />
+    @if (State.Value.ShowingDone)
+    {
+        <hr />
+        if (Dones.Any())
+        {
+            foreach (var todo in Dones)
+            {
+                <DoneItem SaveAction="Save" DeleteAction="Delete" Todo="todo" />
+            }
+        }
+        else
+        {
+            <p>No completed todos</p>
+        }
+    }
 </EditForm>
 
-@code 
-{ 
-    public EditContext? Context { get; set; }
-
-    protected override async Task OnInitializedAsync()
+@code
+{
+    protected override Task OnAfterRenderAsync(bool firstRender)
     {
-        Context = new EditContext(ViewModel);
-        ViewModel.StateChanged = StateHasChanged;
-        await ViewModel.InitializeAsync();
+        if (firstRender)
+        {
+            Dispatcher.Dispatch(new GetTodosAction());
+        }
+        return Task.CompletedTask;
     }
 }

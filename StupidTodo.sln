@@ -21,6 +21,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.Blazor.Wasm", "S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.Service.Core", "StupidTodo.Service.Core\StupidTodo.Service.Core.csproj", "{6F635A02-DCF9-4F4A-AC96-4B04F4986336}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{C3CD22D3-5AAD-42DE-8AED-85A707DE6E25}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{14A6AD16-BE02-4886-B12B-CC74E82E7005}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,6 +58,14 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{932D6A10-8E3D-4358-AF68-2211662EEC11} = {C3CD22D3-5AAD-42DE-8AED-85A707DE6E25}
+		{EB99CEA1-B6E2-4DB9-8509-AF785A9D507D} = {14A6AD16-BE02-4886-B12B-CC74E82E7005}
+		{4AB70310-A471-490C-A9C1-9038E4ED39CB} = {14A6AD16-BE02-4886-B12B-CC74E82E7005}
+		{30108AF4-0D47-49F6-8469-C8062D1DEEBB} = {C3CD22D3-5AAD-42DE-8AED-85A707DE6E25}
+		{2ECE34B0-37B7-4FC7-B252-E95905F1E752} = {C3CD22D3-5AAD-42DE-8AED-85A707DE6E25}
+		{6F635A02-DCF9-4F4A-AC96-4B04F4986336} = {14A6AD16-BE02-4886-B12B-CC74E82E7005}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {22770601-21EA-4C0A-9E90-B658F538392B}

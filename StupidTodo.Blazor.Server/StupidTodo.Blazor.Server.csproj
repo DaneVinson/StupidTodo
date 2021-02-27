@@ -7,6 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="..\StupidTodo.Blazor.Core\StupidTodo.Blazor.Core.csproj" />
     <ProjectReference Include="..\StupidTodo.Service.Core\StupidTodo.Service.Core.csproj" />
+    <PackageReference Include="Fluxor.Blazor.Web" Version="4.0.0" />
   </ItemGroup>
 
 </Project>

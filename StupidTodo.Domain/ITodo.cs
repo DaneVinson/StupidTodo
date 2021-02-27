@@ -6,8 +6,9 @@ namespace StupidTodo.Domain
 {
     public interface ITodo
     {
-        string Description { get; set; }
-        bool Done { get; set; }
-        string Id { get; set; }
+        string Description { get; }
+        bool Done { get; }
+        string Id { get; }
+        string UserId { get; }
     }
 }

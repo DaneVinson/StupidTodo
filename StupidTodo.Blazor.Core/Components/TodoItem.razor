@@ -1,10 +1,8 @@
-﻿@inject TodoViewModel ViewModel
-
-<div class="col-12 alert alert-primary" role="alert">
-    @if (ViewModel.IsEdit)
+﻿<div class="col-12 alert alert-primary" role="alert">
+    @if (IsEdit)
     {
-        <button @onclick="@(async () => await ViewModel.SaveAsync(Todo))" disabled="@ViewModel.IsBusy" class="btn btn-sm btn-success">
-            @if (ViewModel.IsBusy)
+        <button @onclick="@(() => SaveAction(Todo.Id, Description, Todo.Done))" disabled="@TodosState.Busy" class="btn btn-sm btn-success">
+            @if (TodosState.Busy)
             {
                 <i class="fas fa-cog fa-spin"></i>                }
             else
@@ -12,14 +10,14 @@
                 <i class="fas fa-save"></i>
             }
         </button>
-        <button @onclick="@ViewModel.CancelEdit" disabled="@ViewModel.IsBusy" class="btn btn-sm btn-secondary"><i class="fas fa-undo"></i></button>
+        <button @onclick="@(() => SetEditMode(false))" disabled="@TodosState.Busy" class="btn btn-sm btn-secondary"><i class="fas fa-undo"></i></button>
         @:&nbsp;&nbsp;&nbsp;
-        <InputText @bind-Value="@ViewModel.DescriptionEdit" type="text" autocomplete="off" />
+        <InputText @bind-Value="@Description" type="text" autocomplete="off" />
     }
     else
     {
-        <button @onclick="@(async () => await ViewModel.SetDoneAsync(Todo))" disabled="@ViewModel.IsBusy" class="btn btn-sm btn-primary">
-            @if (ViewModel.IsBusy)
+        <button @onclick="@(() => SaveAction(Todo.Id, Description, true))" disabled="@TodosState.Busy" class="btn btn-sm btn-primary">
+            @if (TodosState.Busy)
             {
                 <i class="fas fa-cog fa-spin"></i>                }
             else
@@ -27,7 +25,7 @@
                 <i class="fas fa-check"></i>
             }
         </button>
-        <button @onclick="@(() => ViewModel.Edit(Todo.Id))" disabled="@ViewModel.IsBusy" class="btn btn-sm btn-secondary" ><i class="fas fa-pencil-alt"></i></button>
+        <button @onclick="@(() => SetEditMode(true))" disabled="@TodosState.Busy" class="btn btn-sm btn-secondary" ><i class="fas fa-pencil-alt"></i></button>
         @:&nbsp;&nbsp;&nbsp;
         @Todo.Description
     }
@@ -35,5 +33,21 @@
 
 @code {
     [Parameter]
-    public Todo Todo { get; set; } = default!;
+    public Action<string, string, bool> SaveAction { get; set; } = default!;
+
+    [Parameter]
+    public ITodo Todo { get; set; } = default!;
+
+    [Parameter]
+    public TodosState TodosState { get; set; } = default!;
+
+    private string Description { get; set; } = string.Empty;
+
+    public bool IsEdit { get; set; }
+
+    public void SetEditMode(bool isEdit)
+    {
+        IsEdit = isEdit;
+        Description = IsEdit ? Todo.Description : string.Empty;
+    }
 }
