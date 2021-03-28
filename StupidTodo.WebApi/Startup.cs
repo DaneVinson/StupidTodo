@@ -38,7 +38,9 @@ namespace StupidTodo.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddSingleton<ITodoDataProvider>(new SimpleTodoDataProvider())
+                .AddSingleton(Configuration.GetSection("CosmosDBOptions").Get<CosmosDBOptions>())
+                .AddTransient<TodosDbContext>()
+                .AddTransient<ITodoDataProvider, CosmosDBDataProvider>()
                 .AddSwaggerGen(options => { options.SwaggerDoc("v1", new OpenApiInfo { Title = "StupidTodo.WebApi", Version = "v1" }); })
                 .AddControllers();
         }

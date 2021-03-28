@@ -1,2 +1,2 @@
-## Stupid Todo
-A simple to-do concept application for exploratory programming.
+## Stupid Todo - ef-cosmos branch
+Exploring the Entity Framework Core data provider for Azure Cosmos DB.
