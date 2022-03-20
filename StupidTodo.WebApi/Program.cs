@@ -1,5 +1,3 @@
-using StupidTodo.WebApi;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
