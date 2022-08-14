@@ -16,12 +16,10 @@ namespace StupidTodo.WebApi.Controllers
     [Route("api/[controller]")]
     public class TodoController : ControllerBase
     {
-        private readonly ITodoDataProvider _dataProvider;
         private readonly IMediator _mediator;
 
         public TodoController(ITodoDataProvider dataProvider, IMediator mediator)
         {
-            _dataProvider = dataProvider ?? throw new ArgumentNullException(nameof(dataProvider));
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
