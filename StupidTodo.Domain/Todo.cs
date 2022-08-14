@@ -1,15 +1,21 @@
-﻿namespace StupidTodo.Domain;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Text;
 
-public class Todo
+namespace StupidTodo.Domain
 {
-    public Todo()
-    { }
+    public class Todo : IEntity
+    {
+        public Todo()
+        { }
 
-    public Todo(string description, string userid) => 
-        (Description, UserId) = (description, userid);
+        public Todo(string description, string userid) => 
+            (Description, UserId) = (description, userid);
 
-    public string Description { get; set; } = string.Empty;
-    public bool Done { get; set; }
-    public string Id { get; set; } = string.Empty;
-    public string UserId { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public bool Done { get; set; }
+        public string Id { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
+    }
 }

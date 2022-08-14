@@ -4,8 +4,8 @@ using System.Text;
 
 namespace StupidTodo.Domain
 {
-    public static class Bilbo
+    public interface IEntity
     {
-        public const string Id = "bilbo.baggins@shire.me";
+        string Id { get; }
     }
 }

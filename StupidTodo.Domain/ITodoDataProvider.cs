@@ -1,8 +1,14 @@
-﻿namespace StupidTodo.Domain;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 
-public interface ITodoDataProvider
+namespace StupidTodo.Domain
 {
-    Task<bool> Delete(string id);
-    Task<IEnumerable<Todo>> Get(bool done = false);
-    Task<Todo> Upsert(Todo todo);
+    public interface ITodoDataProvider
+    {
+        Task<bool> Delete(string id);
+        Task<IEnumerable<Todo>> Get(bool done = false);
+        Task<Todo> Upsert(Todo todo);
+    }
 }
