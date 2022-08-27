@@ -1,7 +1,15 @@
+using StupidTodo.WebApi.EndpointHandlers;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddSingleton<ITodoDataProvider>(new SimpleTodoDataProvider())
+    .AddTransient<AddTodoEndpointHandler>()
+    .AddTransient<DeleteTodoEndpointHandler>()
+    .AddTransient<GetDoneEndpointHandler>()
+    .AddTransient<GetTodosEndpointHandler>()
+    .AddTransient<UpdateTodoEndpointHandler>()
+    .AddMediatR(typeof(Todo))
     .AddEndpointsApiExplorer()
     .AddSwaggerGen(options =>
     {
@@ -20,6 +28,9 @@ app
     .UseHttpsRedirection()
     .UseStaticFiles()
     .UseSwagger()
-    .UseSwaggerUI(options => { options.SwaggerEndpoint("/swagger/v1/swagger.json", "StupidTodo.WebApi v1"); });
+    .UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "StupidTodo.WebApi v1");
+    });
 
 app.Run();
