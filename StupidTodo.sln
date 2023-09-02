@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30413.136
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.WebApi", "StupidTodo.WebApi\StupidTodo.WebApi.csproj", "{932D6A10-8E3D-4358-AF68-2211662EEC11}"
 EndProject
@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.Domain", "Stupid
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".Solution", ".Solution", "{B771CC4A-4585-4C51-AC22-3147B618C347}"
 	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
 		readme.md = readme.md
 	EndProjectSection

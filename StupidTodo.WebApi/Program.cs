@@ -1,22 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+var builder = WebApplication.CreateBuilder(args);
 
-namespace StupidTodo.WebApi
-{
-    public class Program
+builder.Services
+    .AddSingleton<ITodoDataProvider, SimpleTodoDataProvider>()
+    .AddSingleton<ITodoApi, TodoApi>()
+    .AddEndpointsApiExplorer()
+    .AddSwaggerGen(options =>
     {
-        public static void Main(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(builder => builder.UseStartup<Startup>())
-                .Build()
-                .Run();
-    }
+        options.SwaggerDoc("v1", new OpenApiInfo { Title = "StupidTodo.WebApi", Version = "v1" });
+    });
+
+var app = builder.Build();
+
+if (builder.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
 }
+
+app
+	.MapTodoEndpoints()
+	.UseHttpsRedirection()
+    .UseBlazorFrameworkFiles()
+    .UseStaticFiles()
+    .UseRouting()
+	.UseSwagger()
+	.UseSwaggerUI(options => { options.SwaggerEndpoint("/swagger/v1/swagger.json", "StupidTodo.WebApi v1"); })
+    .UseEndpoints(endpoints =>
+    {
+	    endpoints.MapFallbackToFile("index.html");
+    });
+
+app.Run();

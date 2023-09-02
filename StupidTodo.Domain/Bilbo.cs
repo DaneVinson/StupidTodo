@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace StupidTodo.Domain;
 
-namespace StupidTodo.Domain
+public static class Bilbo
 {
-    public static class Bilbo
-    {
-        public const string Id = "bilbo.baggins@shire.me";
-    }
+    public const string Id = "bilbo.baggins@shire.me";
 }

@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace StupidTodo.Domain;
 
-namespace StupidTodo.Domain
+public interface ITodo
 {
-    public interface ITodo
-    {
-        string Description { get; set; }
-        bool Done { get; set; }
-        string Id { get; set; }
-    }
+    string Description { get; set; }
+    bool Done { get; set; }
+    string Id { get; set; }
 }
