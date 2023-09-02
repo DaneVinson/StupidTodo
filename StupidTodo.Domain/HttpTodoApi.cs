@@ -7,7 +7,6 @@ public class HttpTodoApi : ITodoApi
     public HttpTodoApi(HttpClient httpClient)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-        Console.WriteLine($"BaseUri: {httpClient.BaseAddress}");
     }
 
     public async Task<Todo?> AddTodoAsync(Todo todo)
