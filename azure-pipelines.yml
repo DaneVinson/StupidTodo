@@ -3,7 +3,7 @@ trigger:
 
 variables:
   buildConfiguration: 'Release'
-  framework: 'net5.0'
+  framework: 'net7.0'
   artifactName: 'stupid-todo'
 
 stages:
@@ -18,10 +18,10 @@ stages:
 
         steps:
         - task: UseDotNet@2
-          displayName: 'Install .NET 5 SDK'
+          displayName: 'Install .NET 7 SDK'
           inputs:
             packageType: 'sdk'
-            version: 5.x
+            version: 7.x
 
         - task: DotNetCoreCLI@2
           displayName: 'Restore'
