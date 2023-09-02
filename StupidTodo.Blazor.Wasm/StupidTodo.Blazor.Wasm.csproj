@@ -13,7 +13,6 @@
   
   <ItemGroup>
     <ProjectReference Include="..\StupidTodo.Blazor.Core\StupidTodo.Blazor.Core.csproj" />
-    <ProjectReference Include="..\StupidTodo.Domain\StupidTodo.Domain.csproj" />
   </ItemGroup>
 
 </Project>
