@@ -1,7 +1,7 @@
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
-    .AddSingleton<ITodoDataProvider>(new SimpleTodoDataProvider())
+    .AddSingleton<ITodoDataProvider, SimpleTodoDataProvider>()
     .AddEndpointsApiExplorer()
     .AddSwaggerGen(options =>
     {
