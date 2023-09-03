@@ -1,2 +1,2 @@
 ## Stupid Todo - blazor branch
-Exploring Blazor using the Stupid Todo concept application.
+Exploring Maui Blazor using the Stupid Todo concept application.

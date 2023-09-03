@@ -9,6 +9,6 @@ builder.Services
         .AddTransient<TodoViewModel>()
         .AddTransient<DoneViewModel>();
 
-builder.RootComponents.Add<App>("app");
+builder.RootComponents.Add<App>("#app");
 
 await builder.Build().RunAsync();
