@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.Runtime;
 
-namespace StupidTodo.Maui.Blazor;
+namespace StupidTodo.Blazor.Maui;
 [Application]
 public class MainApplication : MauiApplication
 {

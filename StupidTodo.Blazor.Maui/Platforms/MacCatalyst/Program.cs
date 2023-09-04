@@ -1,7 +1,7 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace StupidTodo.Maui.Blazor;
+namespace StupidTodo.Blazor.Maui;
 public class Program
 {
 	// This is the main entry point of the application.

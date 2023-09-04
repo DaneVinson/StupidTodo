@@ -19,9 +19,11 @@
     </button>
     <DoneList Dones="ViewModel.Dones" />
 </EditForm>
+<hr />
+<button @onclick="WriteFile" class="btn btn-secondary">Write File</button>
 
 @code 
-{ 
+{
     public EditContext? Context { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -29,5 +31,11 @@
         Context = new EditContext(ViewModel);
         ViewModel.StateChanged = StateHasChanged;
         await ViewModel.InitializeAsync();
+    }
+
+    private void WriteFile()
+    {
+        using var writer = new StreamWriter("c:\\temp\\todos.txt");
+        writer.WriteLine("stuff");
     }
 }

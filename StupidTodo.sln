@@ -23,7 +23,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.Blazor.Wasm", "S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.Service.Core", "StupidTodo.Service.Core\StupidTodo.Service.Core.csproj", "{6F635A02-DCF9-4F4A-AC96-4B04F4986336}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.Maui.Blazor", "StupidTodo.Maui.Blazor\StupidTodo.Maui.Blazor.csproj", "{D235E808-83D3-4E98-916C-A2A6A56BA778}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.Blazor.Maui", "StupidTodo.Blazor.Maui\StupidTodo.Blazor.Maui.csproj", "{A0708893-63F9-42C0-A78D-EEEFE97AE9EC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{6BC7F248-999F-4AF3-8F3B-10043D3A75B7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,15 +57,21 @@ Global
 		{6F635A02-DCF9-4F4A-AC96-4B04F4986336}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F635A02-DCF9-4F4A-AC96-4B04F4986336}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F635A02-DCF9-4F4A-AC96-4B04F4986336}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D235E808-83D3-4E98-916C-A2A6A56BA778}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D235E808-83D3-4E98-916C-A2A6A56BA778}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D235E808-83D3-4E98-916C-A2A6A56BA778}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{D235E808-83D3-4E98-916C-A2A6A56BA778}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D235E808-83D3-4E98-916C-A2A6A56BA778}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D235E808-83D3-4E98-916C-A2A6A56BA778}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{A0708893-63F9-42C0-A78D-EEEFE97AE9EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0708893-63F9-42C0-A78D-EEEFE97AE9EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0708893-63F9-42C0-A78D-EEEFE97AE9EC}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{A0708893-63F9-42C0-A78D-EEEFE97AE9EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0708893-63F9-42C0-A78D-EEEFE97AE9EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0708893-63F9-42C0-A78D-EEEFE97AE9EC}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{932D6A10-8E3D-4358-AF68-2211662EEC11} = {6BC7F248-999F-4AF3-8F3B-10043D3A75B7}
+		{30108AF4-0D47-49F6-8469-C8062D1DEEBB} = {6BC7F248-999F-4AF3-8F3B-10043D3A75B7}
+		{2ECE34B0-37B7-4FC7-B252-E95905F1E752} = {6BC7F248-999F-4AF3-8F3B-10043D3A75B7}
+		{A0708893-63F9-42C0-A78D-EEEFE97AE9EC} = {6BC7F248-999F-4AF3-8F3B-10043D3A75B7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {22770601-21EA-4C0A-9E90-B658F538392B}

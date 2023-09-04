@@ -1,6 +1,6 @@
 ﻿using Foundation;
 
-namespace StupidTodo.Maui.Blazor;
+namespace StupidTodo.Blazor.Maui;
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate
 {

@@ -1,4 +1,4 @@
-﻿namespace StupidTodo.Maui.Blazor;
+﻿namespace StupidTodo.Blazor.Maui;
 
 public partial class App : Application
 {

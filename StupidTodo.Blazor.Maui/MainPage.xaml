@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:StupidTodo.Maui.Blazor"
+             xmlns:local="clr-namespace:StupidTodo.Blazor.Maui"
              xmlns:blazor="clr-namespace:StupidTodo.Blazor.Core;assembly=StupidTodo.Blazor.Core"
-             x:Class="StupidTodo.Maui.Blazor.MainPage"
+             x:Class="StupidTodo.Blazor.Maui.MainPage"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
 
     <BlazorWebView x:Name="blazorWebView" HostPage="wwwroot/index.html">
