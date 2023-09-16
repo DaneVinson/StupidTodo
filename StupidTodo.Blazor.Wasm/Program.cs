@@ -5,6 +5,7 @@ var webApiBaseUri = builder.Configuration["WebApiBaseUri"] ?? builder.HostEnviro
 builder.Services
 		.AddSingleton(new HttpClient { BaseAddress = new Uri(webApiBaseUri) })
         .AddSingleton<ITodoApi, HttpTodoApi>()
+        .AddSingleton(new AppOptions())
         .AddSingleton<TodosViewModel>()
         .AddTransient<TodoViewModel>()
         .AddTransient<DoneViewModel>();

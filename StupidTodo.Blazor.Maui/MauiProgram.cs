@@ -24,6 +24,7 @@ public static class MauiProgram
 			.AddSingleton(new HttpClient { BaseAddress = new Uri(builder.Configuration["WebApiBaseUri"] ?? string.Empty) })
 			.AddSingleton<ITodoApi, HttpTodoApi>()
 			.AddSingleton<ITodoDataProvider, SimpleTodoDataProvider>()
+			.AddSingleton(new AppOptions() { IsMaui = true })
 			.AddSingleton<TodosViewModel>()
 			.AddTransient<TodoViewModel>()
 			.AddTransient<DoneViewModel>();

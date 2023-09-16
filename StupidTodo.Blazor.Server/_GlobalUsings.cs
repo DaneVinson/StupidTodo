@@ -1,3 +1,4 @@
-﻿global using StupidTodo.Blazor.Core.ViewModels;
+﻿global using StupidTodo.Blazor.Core;
+global using StupidTodo.Blazor.Core.ViewModels;
 global using StupidTodo.Domain;
 global using StupidTodo.Service.Core;

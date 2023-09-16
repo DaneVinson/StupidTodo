@@ -5,6 +5,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services
 	.AddSingleton<ITodoDataProvider, SimpleTodoDataProvider>()
 	.AddSingleton<ITodoApi, TodoApi>()
+	.AddSingleton(new AppOptions())
 	.AddSingleton<TodosViewModel>()
 	.AddTransient<TodoViewModel>()
 	.AddTransient<DoneViewModel>();
