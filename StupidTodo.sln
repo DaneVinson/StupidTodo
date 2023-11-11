@@ -23,6 +23,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.Blazor.Wasm", "S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.Service.Core", "StupidTodo.Service.Core\StupidTodo.Service.Core.csproj", "{6F635A02-DCF9-4F4A-AC96-4B04F4986336}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.Blazor.LazyCache", "StupidTodo.Blazor.LazyCache\StupidTodo.Blazor.LazyCache.csproj", "{4FB95961-87B8-481F-AE7E-1E02F7D3AF1F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StupidTodo.Blazor.EasyCaching", "StupidTodo.Blazor.EasyCaching\StupidTodo.Blazor.EasyCaching.csproj", "{243E1A49-8F2F-40E0-BD35-CFDF5C4FC0F6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{1B2A3A9E-5D68-43A3-9B51-CACB5731D3D4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,9 +59,22 @@ Global
 		{6F635A02-DCF9-4F4A-AC96-4B04F4986336}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F635A02-DCF9-4F4A-AC96-4B04F4986336}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F635A02-DCF9-4F4A-AC96-4B04F4986336}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FB95961-87B8-481F-AE7E-1E02F7D3AF1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FB95961-87B8-481F-AE7E-1E02F7D3AF1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FB95961-87B8-481F-AE7E-1E02F7D3AF1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FB95961-87B8-481F-AE7E-1E02F7D3AF1F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{243E1A49-8F2F-40E0-BD35-CFDF5C4FC0F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{243E1A49-8F2F-40E0-BD35-CFDF5C4FC0F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{243E1A49-8F2F-40E0-BD35-CFDF5C4FC0F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{243E1A49-8F2F-40E0-BD35-CFDF5C4FC0F6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{932D6A10-8E3D-4358-AF68-2211662EEC11} = {1B2A3A9E-5D68-43A3-9B51-CACB5731D3D4}
+		{30108AF4-0D47-49F6-8469-C8062D1DEEBB} = {1B2A3A9E-5D68-43A3-9B51-CACB5731D3D4}
+		{2ECE34B0-37B7-4FC7-B252-E95905F1E752} = {1B2A3A9E-5D68-43A3-9B51-CACB5731D3D4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {22770601-21EA-4C0A-9E90-B658F538392B}
